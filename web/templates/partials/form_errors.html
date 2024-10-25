@@ -1,0 +1,13 @@
+{% if form.errors %}
+<div class="col-span-6">
+  <ul class="text-red-500 list-disc list-inside">
+    {% for field, errors in form.errors.items %} {% for error in errors %}
+    <li>
+      {% if field != '__all__' %}
+      <strong>{{ field|title }}:</strong>
+      {% endif %} {{ error }}
+    </li>
+    {% endfor %} {% endfor %}
+  </ul>
+</div>
+{% endif %}

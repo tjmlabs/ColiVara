@@ -1,0 +1,415 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+  <!-- Page content -->
+  <main class="grow">
+    <!-- Hero -->
+    <section class="relative">
+      <!-- Stripes illustration -->
+      <div class="absolute left-1/2 transform -translate-x-1/2 top-0 pointer-events-none -z-10"
+           aria-hidden="true">
+        <img class="max-w-none"
+             src="{% static 'images/stripes.svg' %}"
+             width="768"
+             height="432"
+             alt="Stripes" />
+      </div>
+      <!-- Circles -->
+      <div class="absolute left-1/2 -translate-x-1/2 -top-32 ml-[580px] pointer-events-none"
+           aria-hidden="true">
+        <div class="w-80 h-80 rounded-full bg-gradient-to-tr from-brown-500 opacity-50 blur-[160px]"></div>
+      </div>
+      <div class="absolute left-1/2 -translate-x-1/2 top-[420px] ml-[380px] pointer-events-none"
+           aria-hidden="true">
+        <div class="w-80 h-80 rounded-full bg-gradient-to-tr from-brown-500 to-gray-900 opacity-50 blur-[160px]"></div>
+      </div>
+      <div class="absolute left-1/2 -translate-x-1/2 top-[640px] -ml-[300px] pointer-events-none"
+           aria-hidden="true">
+        <div class="w-80 h-80 rounded-full bg-gradient-to-tr from-brown-500 to-gray-900 opacity-50 blur-[160px]"></div>
+      </div>
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <!-- Hero content -->
+        <div class="pt-32 pb-12 md:pt-40 md:pb-20">
+          <!-- Section header -->
+          <div class="text-center pb-12 md:pb-16">
+            <h1 class="text-5xl md:text-6xl font-bold mb-6 border-y [border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1]">
+              ColiVara
+              <br class="max-lg:hidden" />
+            </h1>
+            <div class="max-w-3xl mx-auto">
+              <p class="text-lg text-gray-700 mb-8">
+                Welcome to the ColiVara documentation! Here you&#x27;ll get an overview of all the features ColiVara offers to help you build a state of the art retrieval system.
+              </p>
+              <div class="relative before:absolute before:inset-0 before:border-y before:[border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1]">
+                <div class="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center">
+                  <a class="btn bg-brown-500 hover:bg-brown-600 bg-[bottom] shadow w-full mb-4 sm:w-auto sm:mb-0 group"
+                     href="{% url 'account_signup' %}">
+                    <span class="relative inline-flex items-center">
+                      Sign Up Today <span class="tracking-normal text-blue-300 group-hover:translate-x-0.5 transition-transform ml-1">-&gt;</span>
+                    </span>
+                  </a>
+                  <a class="btn text-gray-800 bg-white hover:bg-gray-50 shadow w-full sm:w-auto sm:ml-4"
+                     href="#">Learn More</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Hero image -->
+          <div class="max-w-3xl mx-auto">
+            <div class="relative aspect-video rounded-2xl px-5 py-3 shadow-xl before:absolute before:-inset-5 before:border-y before:[border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1] before:pointer-events-none after:absolute after:-inset-5 after:border-x after:[border-image:linear-gradient(to_bottom,transparent,theme(colors.slate.300/.8),transparent)1] after:-z-10">
+              <img src="{% static 'images/newsletter.png' %}"
+                   height="auto"
+                   width="auto"
+                   alt="ColiVara" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Features -->
+    <section class="relative before:absolute before:inset-0 before:-z-20 bg-brown-50">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="py-12 md:py-20">
+          <!-- Section header -->
+          <div class="max-w-3xl mx-auto text-center pb-16 md:pb-20">
+            <h2 class="text-3xl md:text-4xl font-bold">Updated News. All in one place. Straight to your inbox.</h2>
+          </div>
+          <!-- Planet -->
+          <div class="pb-16 md:pb-20">
+            <div class="text-center">
+              <div class="inline-flex relative rounded-full">
+                <img src="{% static 'images/planet.svg' %}"
+                     height="auto"
+                     width="auto"
+                     alt="Planet" />
+              </div>
+            </div>
+          </div>
+          <!-- Grid -->
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 overflow-hidden [&>*]:p-6 md:[&>*]:p-10 [&>*]:relative [&>*]:before:absolute [&>*]:before:bg-gray-800 [&>*]:before:[block-size:100vh] [&>*]:before:[inline-size:1px] [&>*]:before:[inset-inline-start:-1px] [&>*]:before:[inset-block-start:0] [&>*]:after:absolute [&>*]:after:bg-gray-800 [&>*]:after:[block-size:1px] [&>*]:after:[inline-size:100vw] [&>*]:after:[inset-inline-start:0] [&>*]:after:[inset-block-start:-1px]">
+            <article>
+              <h3 class="font-medium flex items-center space-x-2 mb-2">
+                <svg class="fill-blue-500"
+                     xmlns="http://www.w3.org/2000/svg"
+                     width="16"
+                     height="16">
+                  <path d="M10.284.33a1 1 0 1 0-.574 1.917 6.049 6.049 0 0 1 2.417 1.395A1 1 0 0 0 13.5 2.188 8.034 8.034 0 0 0 10.284.33ZM6.288 2.248A1 1 0 0 0 5.718.33 8.036 8.036 0 0 0 2.5 2.187a1 1 0 0 0 1.372 1.455 6.036 6.036 0 0 1 2.415-1.395ZM1.42 5.401a1 1 0 0 1 .742 1.204 6.025 6.025 0 0 0 0 2.79 1 1 0 0 1-1.946.462 8.026 8.026 0 0 1 0-3.714A1 1 0 0 1 1.421 5.4Zm2.452 6.957A1 1 0 0 0 2.5 13.812a8.036 8.036 0 0 0 3.216 1.857 1 1 0 0 0 .574-1.916 6.044 6.044 0 0 1-2.417-1.395Zm9.668.04a1 1 0 0 1-.041 1.414 8.033 8.033 0 0 1-3.217 1.857 1 1 0 1 1-.571-1.917 6.035 6.035 0 0 0 2.415-1.395 1 1 0 0 1 1.414.042Zm2.242-6.255a1 1 0 1 0-1.946.462 6.03 6.03 0 0 1 0 2.79 1 1 0 1 0 1.946.462 8.022 8.022 0 0 0 0-3.714Z" />
+                </svg>
+                <span>Weight Loss/Anti-Obesity</span>
+              </h3>
+              <p class="text-[15px]">
+                Stay updated with the latest research and expert insights on effective weight loss strategies, from diets to medical interventions, tailored to help you achieve healthier living.
+              </p>
+            </article>
+            <article>
+              <h3 class="font-medium flex items-center space-x-2 mb-2">
+                <svg class="fill-blue-500"
+                     xmlns="http://www.w3.org/2000/svg"
+                     width="16"
+                     height="16">
+                  <path d="M10.284.33a1 1 0 1 0-.574 1.917 6.049 6.049 0 0 1 2.417 1.395A1 1 0 0 0 13.5 2.188 8.034 8.034 0 0 0 10.284.33ZM6.288 2.248A1 1 0 0 0 5.718.33 8.036 8.036 0 0 0 2.5 2.187a1 1 0 0 0 1.372 1.455 6.036 6.036 0 0 1 2.415-1.395ZM1.42 5.401a1 1 0 0 1 .742 1.204 6.025 6.025 0 0 0 0 2.79 1 1 0 0 1-1.946.462 8.026 8.026 0 0 1 0-3.714A1 1 0 0 1 1.421 5.4Zm2.452 6.957A1 1 0 0 0 2.5 13.812a8.036 8.036 0 0 0 3.216 1.857 1 1 0 0 0 .574-1.916 6.044 6.044 0 0 1-2.417-1.395Zm9.668.04a1 1 0 0 1-.041 1.414 8.033 8.033 0 0 1-3.217 1.857 1 1 0 1 1-.571-1.917 6.035 6.035 0 0 0 2.415-1.395 1 1 0 0 1 1.414.042Zm2.242-6.255a1 1 0 1 0-1.946.462 6.03 6.03 0 0 1 0 2.79 1 1 0 1 0 1.946.462 8.022 8.022 0 0 0 0-3.714Z" />
+                </svg>
+                <span>Cell Gene Therapy</span>
+              </h3>
+              <p class="text-[15px]">
+                Discover the cutting-edge advancements in immunology, exploring how the immune system defends the body and the latest breakthroughs in treating autoimmune diseases and allergies. Stay informed on evidence-based practices to enhance patient outcomes and provide top-notch care.
+              </p>
+            </article>
+            <article>
+              <h3 class="font-medium flex items-center space-x-2 mb-2">
+                <svg class="fill-blue-500"
+                     xmlns="http://www.w3.org/2000/svg"
+                     width="16"
+                     height="16">
+                  <path d="M10.284.33a1 1 0 1 0-.574 1.917 6.049 6.049 0 0 1 2.417 1.395A1 1 0 0 0 13.5 2.188 8.034 8.034 0 0 0 10.284.33ZM6.288 2.248A1 1 0 0 0 5.718.33 8.036 8.036 0 0 0 2.5 2.187a1 1 0 0 0 1.372 1.455 6.036 6.036 0 0 1 2.415-1.395ZM1.42 5.401a1 1 0 0 1 .742 1.204 6.025 6.025 0 0 0 0 2.79 1 1 0 0 1-1.946.462 8.026 8.026 0 0 1 0-3.714A1 1 0 0 1 1.421 5.4Zm2.452 6.957A1 1 0 0 0 2.5 13.812a8.036 8.036 0 0 0 3.216 1.857 1 1 0 0 0 .574-1.916 6.044 6.044 0 0 1-2.417-1.395Zm9.668.04a1 1 0 0 1-.041 1.414 8.033 8.033 0 0 1-3.217 1.857 1 1 0 1 1-.571-1.917 6.035 6.035 0 0 0 2.415-1.395 1 1 0 0 1 1.414.042Zm2.242-6.255a1 1 0 1 0-1.946.462 6.03 6.03 0 0 1 0 2.79 1 1 0 1 0 1.946.462 8.022 8.022 0 0 0 0-3.714Z" />
+                </svg>
+                <span>Rare Diseases</span>
+              </h3>
+              <p class="text-[15px]">
+                Stay at the forefront of oncology with the latest research and treatment protocols in cancer care. From innovative therapies to early detection strategies, our expert insights will empower you to deliver the highest level of care and improve patient survival and quality of life.
+              </p>
+            </article>
+            <article>
+              <h3 class="font-medium flex items-center space-x-2 mb-2">
+                <svg class="fill-blue-500"
+                     xmlns="http://www.w3.org/2000/svg"
+                     width="16"
+                     height="16">
+                  <path d="M10.284.33a1 1 0 1 0-.574 1.917 6.049 6.049 0 0 1 2.417 1.395A1 1 0 0 0 13.5 2.188 8.034 8.034 0 0 0 10.284.33ZM6.288 2.248A1 1 0 0 0 5.718.33 8.036 8.036 0 0 0 2.5 2.187a1 1 0 0 0 1.372 1.455 6.036 6.036 0 0 1 2.415-1.395ZM1.42 5.401a1 1 0 0 1 .742 1.204 6.025 6.025 0 0 0 0 2.79 1 1 0 0 1-1.946.462 8.026 8.026 0 0 1 0-3.714A1 1 0 0 1 1.421 5.4Zm2.452 6.957A1 1 0 0 0 2.5 13.812a8.036 8.036 0 0 0 3.216 1.857 1 1 0 0 0 .574-1.916 6.044 6.044 0 0 1-2.417-1.395Zm9.668.04a1 1 0 0 1-.041 1.414 8.033 8.033 0 0 1-3.217 1.857 1 1 0 1 1-.571-1.917 6.035 6.035 0 0 0 2.415-1.395 1 1 0 0 1 1.414.042Zm2.242-6.255a1 1 0 1 0-1.946.462 6.03 6.03 0 0 1 0 2.79 1 1 0 1 0 1.946.462 8.022 8.022 0 0 0 0-3.714Z" />
+                </svg>
+                <span>Immuno-oncology</span>
+              </h3>
+              <p class="text-[15px]">
+                Gain deep insights into the world of rare diseases, exploring the challenges of diagnosis and the latest advancements in treatment options. Stay informed on emerging research and therapeutic approaches that can make a difference in the lives of patients with rare conditions.
+              </p>
+            </article>
+            <article>
+              <h3 class="font-medium flex items-center space-x-2 mb-2">
+                <svg class="fill-blue-500"
+                     xmlns="http://www.w3.org/2000/svg"
+                     width="16"
+                     height="16">
+                  <path d="M10.284.33a1 1 0 1 0-.574 1.917 6.049 6.049 0 0 1 2.417 1.395A1 1 0 0 0 13.5 2.188 8.034 8.034 0 0 0 10.284.33ZM6.288 2.248A1 1 0 0 0 5.718.33 8.036 8.036 0 0 0 2.5 2.187a1 1 0 0 0 1.372 1.455 6.036 6.036 0 0 1 2.415-1.395ZM1.42 5.401a1 1 0 0 1 .742 1.204 6.025 6.025 0 0 0 0 2.79 1 1 0 0 1-1.946.462 8.026 8.026 0 0 1 0-3.714A1 1 0 0 1 1.421 5.4Zm2.452 6.957A1 1 0 0 0 2.5 13.812a8.036 8.036 0 0 0 3.216 1.857 1 1 0 0 0 .574-1.916 6.044 6.044 0 0 1-2.417-1.395Zm9.668.04a1 1 0 0 1-.041 1.414 8.033 8.033 0 0 1-3.217 1.857 1 1 0 1 1-.571-1.917 6.035 6.035 0 0 0 2.415-1.395 1 1 0 0 1 1.414.042Zm2.242-6.255a1 1 0 1 0-1.946.462 6.03 6.03 0 0 1 0 2.79 1 1 0 1 0 1.946.462 8.022 8.022 0 0 0 0-3.714Z" />
+                </svg>
+                <span>Oncology</span>
+              </h3>
+              <p class="text-[15px]">
+                Explore the revolutionary field of cell and gene therapy, where cutting-edge treatments are transforming the future of medicine. Stay informed on the latest advancements, clinical trials, and therapeutic applications that are redefining possibilities in personalized medicine and offering new hope for patients with complex conditions.
+              </p>
+            </article>
+            <article>
+              <h3 class="font-medium flex items-center space-x-2 mb-2">
+                <svg class="fill-blue-500"
+                     xmlns="http://www.w3.org/2000/svg"
+                     width="16"
+                     height="16">
+                  <path d="M9 1a1 1 0 1 0-2 0v6a1 1 0 0 0 2 0V1ZM4.572 3.08a1 1 0 0 0-1.144-1.64A7.987 7.987 0 0 0 0 8a8 8 0 0 0 16 0c0-2.72-1.36-5.117-3.428-6.56a1 1 0 1 0-1.144 1.64A5.987 5.987 0 0 1 14 8 6 6 0 1 1 2 8a5.987 5.987 0 0 1 2.572-4.92Z" />
+                </svg>
+                <span>Payers/PBM news</span>
+              </h3>
+              <p class="text-[15px">
+                Stay ahead with the latest updates and analysis in the payer and Pharmacy Benefit Manager (PBM) landscape. Understand evolving policies, reimbursement trends, and the impact of regulatory changes on healthcare costs and patient access to medications, helping you navigate the complexities of the healthcare system with confidence.
+              </p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Pricing -->
+    <section class="bg-gray-100 flex justify-center items-center h-screen">
+      <div class="bg-white rounded-3xl shadow-lg p-8 w-3/4 max-w-screen-md">
+        <h1 class="text-4xl font-bold text-center mb-12">Pricing Plan</h1>
+        <div class="flex justify-between space-x-8">
+          <div class="w-1/2">
+            <h2 class="text-2xl font-semibold mb-2">Basic</h2>
+            <p class="text-4xl font-bold mb-2">Free</p>
+            <p class="text-gray-500 mb-6">You're currently on this plan</p>
+            <p class="font-medium mb-4">Features include:</p>
+            <ul class="space-y-2">
+              <li class="flex items-center">
+                <i class="fas fa-check text-green-500 mr-2"></i>
+                <span class="text-gray-600">One subscription</span>
+              </li>
+              <li class="flex items-center">
+                <i class="fas fa-check text-green-500 mr-2"></i>
+                <span class="text-gray-600">News delivered to your inbox</span>
+              </li>
+              <li class="flex items-center">
+                <i class="fas fa-check text-green-500 mr-2"></i>
+                <span class="text-gray-600">Personalized dashboard</span>
+              </li>
+            </ul>
+          </div>
+          <div class="w-1/2 bg-brown-50 rounded-lg p-6 relative">
+            <span class="absolute top-0 right-0 bg-[#A7F3D0] text-green-800 text-xs font-semibold px-3 py-1 rounded-bl-lg rounded-tr-lg">Most Popular</span>
+            <h2 class="text-2xl font-semibold mb-2">Pro</h2>
+            <p class="text-4xl font-bold mb-2">
+              $29<span class="text-lg font-normal">/mo</span>
+            </p>
+            <p class="font-medium mb-4">Unlimited access</p>
+            <p class="font-medium mb-4">All free features, plus:</p>
+            <ul class="space-y-2 mb-6">
+              <li class="flex items-center">
+                <i class="fas fa-check text-green-500 mr-2"></i>
+                <span>Unlimited access to topics</span>
+              </li>
+              <li class="flex items-center">
+                <i class="fas fa-check text-green-500 mr-2"></i>
+                <span>Unlimited subscriptions</span>
+              </li>
+            </ul>
+            {% if request.user.is_authenticated %}
+              {% if request.user.tier == 'free' %}
+                <a href="{% url 'stripe_checkout' %}"
+                   class="w-3/4 bg-brown-500 hover:bg-brown-600 text-black font-semibold py-3 rounded-lg transition duration-300 block text-center">
+                  Upgrade to pro
+                </a>
+              {% else %}
+                <p class="text-center text-gray-500">You're already on the Pro plan</p>
+              {% endif %}
+            {% else %}
+              <button hx-get="{% url 'account_signup' %}"
+                      hx-target="body"
+                      hx-push-url="true"
+                      class="w-full bg-brown-500 hover:bg-brown-600 text-black font-semibold py-3 rounded-lg transition duration-300">
+                Get started
+              </button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Testimonials -->
+    <section class="bg-brown-50">
+      <div class="mx-auto max-w-screen-xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <h2 class="text-center text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">What our customers have to say</h2>
+        <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-8">
+          <blockquote class="rounded-lg bg-gray-50 p-6 shadow-sm sm:p-8">
+            <div class="flex items-center gap-4">
+              <img alt=""
+                   height="40"
+                   width="40"
+                   src="https://images.unsplash.com/photo-1595152772835-219674b2a8a6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80"
+                   class="size-14 rounded-full object-cover" />
+              <div>
+                <div class="flex justify-center gap-0.5 text-green-500">
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="size-5"
+                       viewBox="0 0 20 20"
+                       fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="size-5"
+                       viewBox="0 0 20 20"
+                       fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="size-5"
+                       viewBox="0 0 20 20"
+                       fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="size-5"
+                       viewBox="0 0 20 20"
+                       fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="size-5"
+                       viewBox="0 0 20 20"
+                       fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                </div>
+                <p class="mt-0.5 text-lg font-medium text-gray-900">Paul Starr</p>
+              </div>
+            </div>
+            <p class="mt-4 text-gray-700">
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Culpa sit rerum incidunt, a
+              consequuntur recusandae ab saepe illo est quia obcaecati neque quibusdam eius accusamus
+              error officiis atque voluptates magnam!
+            </p>
+          </blockquote>
+          <blockquote class="rounded-lg bg-gray-50 p-6 shadow-sm sm:p-8">
+            <div class="flex items-center gap-4">
+              <img alt=""
+                   height="40"
+                   width="40"
+                   src="https://images.unsplash.com/photo-1595152772835-219674b2a8a6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80"
+                   class="size-14 rounded-full object-cover" />
+              <div>
+                <div class="flex justify-center gap-0.5 text-green-500">
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="size-5"
+                       viewBox="0 0 20 20"
+                       fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="size-5"
+                       viewBox="0 0 20 20"
+                       fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="size-5"
+                       viewBox="0 0 20 20"
+                       fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="size-5"
+                       viewBox="0 0 20 20"
+                       fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="size-5"
+                       viewBox="0 0 20 20"
+                       fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                </div>
+                <p class="mt-0.5 text-lg font-medium text-gray-900">Paul Starr</p>
+              </div>
+            </div>
+            <p class="mt-4 text-gray-700">
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Culpa sit rerum incidunt, a
+              consequuntur recusandae ab saepe illo est quia obcaecati neque quibusdam eius accusamus
+              error officiis atque voluptates magnam!
+            </p>
+          </blockquote>
+          <blockquote class="rounded-lg bg-gray-50 p-6 shadow-sm sm:p-8">
+            <div class="flex items-center gap-4">
+              <img alt=""
+                   height="40"
+                   width="40"
+                   src="https://images.unsplash.com/photo-1595152772835-219674b2a8a6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80"
+                   class="size-14 rounded-full object-cover" />
+              <div>
+                <div class="flex justify-center gap-0.5 text-green-500">
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="size-5"
+                       viewBox="0 0 20 20"
+                       fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="size-5"
+                       viewBox="0 0 20 20"
+                       fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="size-5"
+                       viewBox="0 0 20 20"
+                       fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="size-5"
+                       viewBox="0 0 20 20"
+                       fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg"
+                       class="size-5"
+                       viewBox="0 0 20 20"
+                       fill="currentColor">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                </div>
+                <p class="mt-0.5 text-lg font-medium text-gray-900">Paul Starr</p>
+              </div>
+            </div>
+            <p class="mt-4 text-gray-700">
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Culpa sit rerum incidunt, a
+              consequuntur recusandae ab saepe illo est quia obcaecati neque quibusdam eius accusamus
+              error officiis atque voluptates magnam!
+            </p>
+          </blockquote>
+        </div>
+      </div>
+    </section>
+    <section class="p-8">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="rounded-2xl text-center relative overflow-hidden shadow-xl before:absolute before:inset-0 before:rounded-2xl before:bg-brown-50 before:pointer-events-none before:-z-10">
+          <div class="py-12 md:py-20 px-4 md:px-12">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6 md:mb-12 border-y [border-image:linear-gradient(to_right,transparent,theme(colors.slate.400/.7),transparent)1]">
+              Get caught up today with ColiVara
+            </h2>
+            <div class="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center">
+              <a class="btn bg-brown-500 hover:bg-brown-600 shadow w-full mb-4 sm:w-auto sm:mb-0 group"
+                 href="{% url 'account_signup' %}">
+                <span class="relative inline-flex items-center">Subscribe now</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+{% endblock content %}

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="relative w-full h-screen overflow-hidden mt-8">
+    <div class="relative flex justify-center items-center h-full">
+      <div class="bg-white p-8 rounded-3xl shadow-lg text-center w-full md:w-7/12">
+        <h1 class="mt-6 text-2xl font-bold text-slate-900 sm:text-3xl md:text-4xl">Create your account</h1>
+        <form action="{% url 'account_signup' %}" method="post" class="m-6">
+          {% csrf_token %}
+          {% if form.errors %}
+            {% include "partials/form_errors.html" %}
+          {% endif %}
+          <div class="text-left">
+            <label for="FullName" class="block text-sm font-medium text-slate-700">Full Name</label>
+            <input type="text"
+                   id="FullName"
+                   name="full_name"
+                   placeholder="John Doe"
+                   class="mt-1 w-full rounded-md border-slate-200 bg-white text-sm text-slate-700 shadow-sm"
+                   required />
+          </div>
+          <div class="pt-4 text-left">
+            <label for="Email" class="block text-sm font-medium text-slate-700">Email</label>
+            <input type="email"
+                   id="Email"
+                   name="email"
+                   placeholder="JohnDoe@email.com"
+                   class="mt-1 w-full rounded-md border-slate-200 bg-white text-sm text-slate-700 shadow-sm"
+                   required />
+          </div>
+          <div class="text-left pt-4">
+            <label for="Password1" class="block text-sm font-medium text-slate-700">Password</label>
+            <input type="password"
+                   id="Password1"
+                   name="password1"
+                   placeholder="Please enter your password"
+                   class="mt-1 w-full rounded-md border-slate-200 bg-white text-sm text-slate-700 shadow-sm"
+                   required />
+          </div>
+          <div class="col-span-6 pt-4">
+            <label for="MarketingAccept" class="flex">
+              <input type="checkbox"
+                     id="MarketingAccept"
+                     name="subscribe_to_emails"
+                     class="size-5 rounded-md border-slate-200 bg-white shadow-sm"
+                     checked="checked" />
+              <span class="text-xs text-slate-700">
+                I want to receive emails about ColiVara updates!
+              </span>
+            </label>
+          </div>
+          <div class="pt-8">
+            <input type="submit"
+                   value="Create Account"
+                   class="w-full bg-brown-500 hover:bg-brown-600 text-black py-2 rounded-md font-medium">
+          </div>
+          <div class="pt-8">
+            <p class="text-sm text-slate-500 sm:mt-0">
+              Already have an account?
+              <a href="{% url 'account_login' %}" class="text-slate-700 underline">Log in</a>.
+            </p>
+            <p class="text-sm text-slate-500">
+              By creating an account, you agree to our
+              <a href="#" class="text-slate-700 underline">Terms of Service</a>
+              and
+              <a href="#" class="text-slate-700 underline">Privacy Policy</a>.
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- Wavy SVG Background -->
+    <div class="fixed bottom-0 w-full h-11/12 -z-10">
+      <svg class="w-full h-full"
+           viewBox="0 0 1440 464"
+           fill="none"
+           xmlns="http://www.w3.org/2000/svg">
+        <path d="M864 160C688.291 241.356 563.242 55.5988 282 96.5C203.734 119.405 162.635 147.912 97.5 233.5C42.1525 319.506 7.60938 369.622 -15.5 460C36.1 537.2 837.833 575.5 1223.5 585L1444 460V56.5C1448 43 1362.56 -8.87052 1270.5 1.49996C1178.44 11.8704 1039.71 78.6435 864 160Z" fill="#FFEDD5" />
+      </svg>
+    </div>
+  </section>
+  <script>
+    const isNumericInput = (event) => {
+        const key = event.keyCode;
+        return ((key >= 48 && key <= 57) || // Allow number line
+            (key >= 96 && key <= 105) // Allow number pad
+        );
+    };
+    
+    const isModifierKey = (event) => {
+        const key = event.keyCode;
+        return (event.shiftKey === true || key === 35 || key === 36) || // Allow Shift, Home, End
+            (key === 8 || key === 9 || key === 13 || key === 46) || // Allow Backspace, Tab, Enter, Delete
+            (key > 36 && key < 41) || // Allow left, up, right, down
+            (
+                // Allow Ctrl/Command + A,C,V,X,Z
+                (event.ctrlKey === true || event.metaKey === true) &&
+                (key === 65 || key === 67 || key === 86 || key === 88 || key === 90)
+            )
+    };
+    
+    const enforceFormat = (event) => {
+        // Input must be of a valid number format or a modifier key, and not longer than ten digits
+        if(!isNumericInput(event) && !isModifierKey(event)){
+            event.preventDefault();
+        }
+    };
+    
+    const formatToPhone = (event) => {
+        if(isModifierKey(event)) {return;}
+    
+        const input = event.target.value.replace(/\D/g,'').substring(0,10); // First ten digits of input only
+        const areaCode = input.substring(0,3);
+        const middle = input.substring(3,6);
+        const last = input.substring(6,10);
+    
+        if(input.length > 6){event.target.value = `(${areaCode}) ${middle} - ${last}`;}
+        else if(input.length > 3){event.target.value = `(${areaCode}) ${middle}`;}
+        else if(input.length > 0){event.target.value = `(${areaCode}`;}
+    };
+    
+    const inputElement = document.getElementById('phoneNumber');
+    inputElement.addEventListener('keydown',enforceFormat);
+    inputElement.addEventListener('keyup',formatToPhone);
+  </script>
+{% endblock content %}

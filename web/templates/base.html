@@ -1,0 +1,48 @@
+{% load tailwind_cli %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+          content="ColiVara is a company that specializes in artificial intelligence and machine learning." />
+    <meta name="keywords"
+          content="ColiVara, artificial intelligence, machine learning" />
+    <title>
+      {% block title %}
+        ColiVara
+      {% endblock title %}
+    </title>
+    {% tailwind_css %}
+    {% block extra_head %}
+    {% endblock extra_head %}
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="font-inter antialiased bg-gray-50 text-gray-900 tracking-tight">
+    <!-- Page wrapper -->
+    <div class="flex flex-col min-h-screen overflow-hidden supports-[overflow:clip]:overflow-clip">
+      {% if messages %}
+        {% include "partials/messages.html" %}
+      {% endif %}
+      {% block navbar %}
+        {% include "partials/nav_bar.html" %}
+      {% endblock navbar %}
+      {% block content %}
+      {% endblock content %}
+      {% block footer %}
+        {% include "partials/footer.html" %}
+      {% endblock footer %}
+      <script defer
+              src="https://unpkg.com/htmx.org@2.0.1"
+              integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/"
+              crossorigin="anonymous"></script>
+      <script defer
+              src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+      {% block extra_scripts %}
+      {% endblock extra_scripts %}
+    </div>
+  </body>
+</html>

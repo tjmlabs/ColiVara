@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+  <section class="relative w-full h-screen overflow-hidden">
+    <div class="relative flex justify-center items-center h-full">
+      <div class="bg-white p-8 rounded-3xl shadow-lg max-w-md text-center w-full md:w-1/2">
+        <h1 class="text-2xl font-bold text-slate-900">Sign in to your account</h1>
+        <form method="post"
+              action="{% url 'account_confirm_login_code' %}"
+              id="loginForm">
+          <p class="mt-2 text-sm text-gray-500">
+            We’ve sent a code to <a href="mailto:{{ email }}">{{ email }}</a>. The code expires shortly, so please enter it soon.
+          </p>
+          {% csrf_token %}
+          {% if form.errors %}
+            {% include "partials/form_errors.html" %}
+          {% endif %}
+          <div class="pt-8 col-span-6 sm:col-span-3 text-left">
+            <input type="text"
+                   name="code"
+                   placeholder="Code"
+                   autocomplete="one-time-code"
+                   required
+                   id="id_code"
+                   class="mt-1 w-full rounded-md border-slate-200 shadow-sm sm:text-sm" />
+          </div>
+          <div class="col-span-10 sm:flex sm:items-center sm:gap-4">
+            <input type="submit"
+                   value="Continue"
+                   class="w-full bg-brown-500 hover:bg-brown-600 text-black py-2 rounded-md font-medium" />
+            <p class="mt-2 text-sm">
+              <a class="underline" href="{% url 'account_login' %}">Sign in with password</a>
+            </p>
+          </div>
+        </form>
+      </div>
+      <!-- Wavy SVG Background -->
+      <div class="fixed bottom-0 w-full h-11/12 -z-10">
+        <svg class="w-full h-full"
+             viewBox="0 0 1440 464"
+             fill="none"
+             xmlns="http://www.w3.org/2000/svg">
+          <path d="M864 160C688.291 241.356 563.242 55.5988 282 96.5C203.734 119.405 162.635 147.912 97.5 233.5C42.1525 319.506 7.60938 369.622 -15.5 460C36.1 537.2 837.833 575.5 1223.5 585L1444 460V56.5C1448 43 1362.56 -8.87052 1270.5 1.49996C1178.44 11.8704 1039.71 78.6435 864 160Z" fill="#FFEDD5" />
+        </svg>
+      </div>
+    </div>
+  </section>
+{% endblock content %}

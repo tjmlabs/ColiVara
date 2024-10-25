@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+    <section class="relative w-full h-screen overflow-hidden mt-8">
+        <div class="relative flex justify-center">
+            <div class="bg-white rounded-3xl shadow-lg p-8 w-3/4 max-w-screen-md text-center">
+                <h1 class="text-4xl font-bold mb-12">Thanks!</h1>
+                <div class="mb-8 mx-auto">
+                    <img src="{% static 'images/payment_success.svg' %}"
+                         alt="Payment success"
+                         height="auto"
+                         width="auto"
+                         class="mx-auto">
+                </div>
+                <a href="{% url 'home' %}"
+                   class="w-3/4 mx-auto bg-brown-500 hover:bg-brown-600 text-black font-semibold py-3 rounded-lg transition duration-300 block text-center">Go to dashboard</a>
+            </div>
+        </div>
+        <!-- Wavy SVG Background -->
+        <div class="fixed bottom-0 w-full h-11/12 -z-10">
+            <svg class="w-full h-full"
+                 viewBox="0 0 1440 464"
+                 fill="none"
+                 xmlns="http://www.w3.org/2000/svg">
+                <path d="M864 160C688.291 241.356 563.242 55.5988 282 96.5C203.734 119.405 162.635 147.912 97.5 233.5C42.1525 319.506 7.60938 369.622 -15.5 460C36.1 537.2 837.833 575.5 1223.5 585L1444 460V56.5C1448 43 1362.56 -8.87052 1270.5 1.49996C1178.44 11.8704 1039.71 78.6435 864 160Z" fill="#FFEDD5" />
+            </svg>
+        </div>
+    </section>
+{% endblock content %}

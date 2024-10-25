@@ -5,14 +5,6 @@ from django.http import HttpResponse
 from django.urls import include, path, reverse
 from ninja import NinjaAPI
 
-
-# dummy view at home that return a simple response
-def home(request):
-    return HttpResponse(
-        f"Your Installation is Successful! <p> <a href='{reverse('api-1.0.0:openapi-view')}'>Go to Docs</a> </p>"
-    )
-
-
 api = NinjaAPI(
     title="ColiVara",
     version="1.0.0",
@@ -29,7 +21,8 @@ api.add_router("", "api.views.router")
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
-    path("", home, name="home"),
+    path("accounts/", include("accounts.urls")),
+    path("", include("frontend.urls")),
     path("v1/", api.urls),
 ]
 
