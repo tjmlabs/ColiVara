@@ -1,11 +1,12 @@
+import asyncio
 import base64
 import logging
 from enum import Enum
 from typing import Dict, List, Optional, Tuple, Union
 
 import aiohttp
-import asyncio
 from accounts.models import CustomUser
+from asgiref.sync import sync_to_async
 from django.conf import settings
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.mail import EmailMessage
@@ -398,6 +399,31 @@ async def process_upsert_document(
             )
         )
         logger.info(f"Document {document.name} processed successfully.")
+
+        # Increase consumed credits by the number of pages
+        available_credits = await sync_to_async(request.auth.get_available_credits)()
+        consumed_credits = await sync_to_async(request.auth.get_consumed_credits)()
+        logger.info(
+            f"Current available credits: {available_credits}, consumed credits: {consumed_credits}"
+        )
+
+        if available_credits >= document.num_pages:
+            await sync_to_async(request.auth.set_available_credits)(
+                available_credits - document.num_pages
+            )
+            logger.info(f"Decreased available credits by {document.num_pages}")
+        else:
+            await sync_to_async(request.auth.set_consumed_credits)(
+                consumed_credits + document.num_pages - available_credits
+            )
+
+            if available_credits != 0:
+                await sync_to_async(request.auth.set_available_credits)(0)
+
+            logger.info(
+                f"Set available credits to 0 and increased consumed credits by {document.num_pages - available_credits}"
+            )
+
         return 201, DocumentOut(
             id=document.id,
             name=document.name,
@@ -944,6 +970,21 @@ async def search(
         )
         async for row in results
     ]
+
+    # Increase consumed credits by 1
+    available_credits = await sync_to_async(request.auth.get_available_credits)()
+    consumed_credits = await sync_to_async(request.auth.get_consumed_credits)()
+    logger.info(
+        f"Current available credits: {available_credits}, consumed credits: {consumed_credits}"
+    )
+
+    if available_credits >= 1:
+        await sync_to_async(request.auth.set_available_credits)(available_credits - 1)
+        logger.info(f"Decreased available credits by 1")
+    else:
+        await sync_to_async(request.auth.set_consumed_credits)(consumed_credits + 1)
+        logger.info(f"Increased consumed credits by 1")
+
     return 200, QueryOut(query=payload.query, results=formatted_results)
 
 

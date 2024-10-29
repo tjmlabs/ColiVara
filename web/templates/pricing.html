@@ -3,46 +3,29 @@
   <section class="relative w-full h-screen overflow-hidden mt-8">
     <div class="relative flex justify-center items-center h-full">
       <div class="bg-white rounded-3xl shadow-lg p-8 w-3/4 max-w-screen-md">
-        <h1 class="text-4xl font-bold text-center mb-12">Want more content?</h1>
+        <h1 class="text-4xl font-bold text-center mb-12">API Pricing</h1>
         <div class="flex justify-between space-x-8">
           <div class="w-1/2">
-            <h2 class="text-2xl font-semibold mb-2">Basic</h2>
-            <p class="text-4xl font-bold mb-2">Free</p>
+            <h2 class="text-2xl font-semibold mb-2">Individual</h2>
+            <p class="text-4xl font-bold mb-2">
+              $25<span class="text-lg font-normal">/mo</span>
+            </p>
             {% if request.user.is_authenticated and request.user.tier == "free" %}
               <p class="text-gray-500 mb-6">You're currently on this plan</p>
             {% endif %}
             <p class="font-medium mb-4">Features include:</p>
-            <ul class="space-y-2">
+            <ul class="space-y-2 mb-12">
               <li class="flex items-center">
                 <i class="fas fa-check text-green-500 mr-2"></i>
-                <span class="text-gray-600">One subscription</span>
+                <span class="text-gray-600">Credit based - 1 credit per page or query</span>
               </li>
               <li class="flex items-center">
                 <i class="fas fa-check text-green-500 mr-2"></i>
-                <span class="text-gray-600">News delivered to your inbox</span>
+                <span class="text-gray-600">Free 1000 credits on signup, no CC required</span>
               </li>
               <li class="flex items-center">
                 <i class="fas fa-check text-green-500 mr-2"></i>
-                <span class="text-gray-600">Personalized dashboard</span>
-              </li>
-            </ul>
-          </div>
-          <div class="w-1/2 bg-brown-50 rounded-lg p-6 relative">
-            <span class="absolute top-0 right-0 bg-[#A7F3D0] text-green-800 text-xs font-semibold px-3 py-1 rounded-bl-lg rounded-tr-lg">Most Popular</span>
-            <h2 class="text-2xl font-semibold mb-2">Pro</h2>
-            <p class="text-4xl font-bold mb-2">
-              $29<span class="text-lg font-normal">/mo</span>
-            </p>
-            <p class="font-medium mb-4">Unlimited access</p>
-            <p class="font-medium mb-4">All free features, plus:</p>
-            <ul class="space-y-2 mb-6">
-              <li class="flex items-center">
-                <i class="fas fa-check text-green-500 mr-2"></i>
-                <span>Unlimited access to topics</span>
-              </li>
-              <li class="flex items-center">
-                <i class="fas fa-check text-green-500 mr-2"></i>
-                <span>Unlimited subscriptions</span>
+                <span class="text-gray-600">$25 in credit monthly, then pay as you go</span>
               </li>
             </ul>
             {% if request.user.is_authenticated %}
@@ -59,7 +42,49 @@
                       hx-target="body"
                       hx-push-url="true"
                       class="w-full bg-brown-500 hover:bg-brown-600 text-black font-semibold py-3 rounded-lg transition duration-300">
-                Get started
+                Sign up
+              </button>
+            {% endif %}
+          </div>
+          <div class="w-1/2">
+            <h2 class="text-2xl font-semibold mb-2">Team</h2>
+            <p class="text-4xl font-bold mb-2">
+              $250<span class="text-lg font-normal">/mo</span>
+            </p>
+            <p class="font-medium mb-4">Features include:</p>
+            <ul class="space-y-2 mb-4">
+              <li class="flex items-center">
+                <i class="fas fa-check text-green-500 mr-2"></i>
+                <span class="text-gray-600">Credit based - 1 credit per page or query</span>
+              </li>
+              <li class="flex items-center">
+                <i class="fas fa-check text-green-500 mr-2"></i>
+                <span class="text-gray-600">Free 1000 credits on signup, no CC required</span>
+              </li>
+              <li class="flex items-center">
+                <i class="fas fa-check text-green-500 mr-2"></i>
+                <span class="text-gray-600">$250 in credit monthly, then pay as you go</span>
+              </li>
+              <li class="flex items-center">
+                <i class="fas fa-check text-green-500 mr-2"></i>
+                <span class="text-gray-600">Multiple API keys/Accounts, but one bill</span>
+              </li>
+            </ul>
+            {% if request.user.is_authenticated %}
+              {% if request.user.tier == 'free' %}
+                <a href="{% url 'stripe_checkout' %}"
+                   class="w-3/4 bg-brown-500 hover:bg-brown-600 text-black font-semibold py-3 rounded-lg transition duration-300 block text-center">
+                  Upgrade to pro
+                </a>
+              {% else %}
+                <p class="text-center text-gray-500">You're already on the Pro plan</p>
+              {% endif %}
+            {% else %}
+              <button hx-get="{% url 'account_signup' %}"
+                      hx-target="body"
+                      hx-push-url="true"
+                      class="w-full bg-brown-500 hover:bg-brown-600 text-black font-semibold py-3 rounded-lg transition duration-300">
+                Sign up
               </button>
             {% endif %}
           </div>
