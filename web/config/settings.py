@@ -26,10 +26,7 @@ LOCAL = env.bool("LOCAL", default=True)
 ALLOWED_HOSTS = ["*"]
 
 # Admin definition
-ADMINS = env.list(
-    "DJANGO_ADMINS",
-    default=[("Dummy Name", "dummy@example.com")]
-)
+ADMINS = env.list("DJANGO_ADMINS", default=[("Dummy Name", "dummy@example.com")])
 
 
 # Application definition
@@ -56,6 +53,7 @@ INSTALLED_APPS = [
     # local
     "accounts",
     "api",
+    "frontend",
 ]
 
 # Change in production
@@ -99,13 +97,16 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [str(BASE_DIR.joinpath("templates"))],
-        "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+            ],
+            "loaders": [
+                "django.template.loaders.filesystem.Loader",
+                "django.template.loaders.app_directories.Loader",
             ],
         },
     },
@@ -200,7 +201,7 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
-ACCOUNT_FORMS = {'signup': 'accounts.forms.CustomSignupForm'}
+ACCOUNT_FORMS = {"signup": "accounts.forms.CustomSignupForm"}
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 
