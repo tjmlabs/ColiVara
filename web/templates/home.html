@@ -4,6 +4,7 @@
   <!-- Page content -->
   <main class="grow">
     <!-- Hero -->
+    <!-- Hero -->
     <section class="relative">
       <!-- Stripes illustration -->
       <div class="absolute left-1/2 transform -translate-x-1/2 top-0 pointer-events-none -z-10"
@@ -17,49 +18,124 @@
       <!-- Circles -->
       <div class="absolute left-1/2 -translate-x-1/2 -top-32 ml-[580px] pointer-events-none"
            aria-hidden="true">
-        <div class="w-80 h-80 rounded-full bg-gradient-to-tr from-brown-500 opacity-50 blur-[160px]"></div>
+        <div class="w-80 h-80 rounded-full bg-gradient-to-tr from-blue-500 opacity-50 blur-[160px]"></div>
       </div>
       <div class="absolute left-1/2 -translate-x-1/2 top-[420px] ml-[380px] pointer-events-none"
            aria-hidden="true">
-        <div class="w-80 h-80 rounded-full bg-gradient-to-tr from-brown-500 to-gray-900 opacity-50 blur-[160px]"></div>
+        <div class="w-80 h-80 rounded-full bg-gradient-to-tr from-blue-500 to-gray-900 opacity-50 blur-[160px]"></div>
       </div>
       <div class="absolute left-1/2 -translate-x-1/2 top-[640px] -ml-[300px] pointer-events-none"
            aria-hidden="true">
-        <div class="w-80 h-80 rounded-full bg-gradient-to-tr from-brown-500 to-gray-900 opacity-50 blur-[160px]"></div>
+        <div class="w-80 h-80 rounded-full bg-gradient-to-tr from-blue-500 to-gray-900 opacity-50 blur-[160px]"></div>
       </div>
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <!-- Hero content -->
         <div class="pt-32 pb-12 md:pt-40 md:pb-20">
           <!-- Section header -->
           <div class="text-center pb-12 md:pb-16">
-            <h1 class="text-5xl md:text-6xl font-bold mb-6 border-y [border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1]">
-              ColiVara
+            <div class="mb-6 border-y [border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1]"
+                 data-aos="zoom-y-out">
+              <div class="flex justify-center -space-x-3 -mx-0.5">
+                <img class="rounded-full border-2 border-gray-50 box-content"
+                     src="{% static 'images/avatar-01.jpg' %}"
+                     width="32"
+                     height="32"
+                     alt="Avatar 01" />
+                <img class="rounded-full border-2 border-gray-50 box-content"
+                     src="{% static 'images/avatar-02.jpg' %}"
+                     width="32"
+                     height="32"
+                     alt="Avatar 02" />
+                <img class="rounded-full border-2 border-gray-50 box-content"
+                     src="{% static 'images/avatar-03.jpg' %}"
+                     width="32"
+                     height="32"
+                     alt="Avatar 03" />
+                <img class="rounded-full border-2 border-gray-50 box-content"
+                     src="{% static 'images/avatar-04.jpg' %}"
+                     width="32"
+                     height="32"
+                     alt="Avatar 04" />
+                <img class="rounded-full border-2 border-gray-50 box-content"
+                     src="{% static 'images/avatar-05.jpg' %}"
+                     width="32"
+                     height="32"
+                     alt="Avatar 05" />
+                <img class="rounded-full border-2 border-gray-50 box-content"
+                     src="{% static 'images/avatar-06.jpg' %}"
+                     width="32"
+                     height="32"
+                     alt="Avatar 06" />
+              </div>
+            </div>
+            <h1 class="text-5xl md:text-6xl font-bold mb-6 border-y [border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1]"
+                data-aos="zoom-y-out"
+                data-aos-delay="150">
+              The RAG solution you're
               <br class="max-lg:hidden" />
+              looking for
             </h1>
             <div class="max-w-3xl mx-auto">
-              <p class="text-lg text-gray-700 mb-8">State of the Art Retrieval - with a delightful developer experience.</p>
-         
+              <p class="text-lg text-gray-700 mb-8"
+                 data-aos="zoom-y-out"
+                 data-aos-delay="300">
+                Colivara is a State of the Art Retrieval API - with a delightful developer experience.
+              </p>
               <div class="relative before:absolute before:inset-0 before:border-y before:[border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1]">
-                <div class="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center">
-                  <a class="btn bg-brown-500 hover:bg-brown-600 bg-[bottom] shadow w-full mb-4 sm:w-auto sm:mb-0 group"
+                <div class="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center"
+                     data-aos="zoom-y-out"
+                     data-aos-delay="450">
+                  <a class="btn text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full mb-4 sm:w-auto sm:mb-0 group"
                      href="{% url 'account_signup' %}">
                     <span class="relative inline-flex items-center">
-                      Sign Up Today <span class="tracking-normal text-blue-300 group-hover:translate-x-0.5 transition-transform ml-1">-&gt;</span>
+                      Start Free Trial <span class="tracking-normal text-blue-300 group-hover:translate-x-0.5 transition-transform ml-1">-&gt;</span>
                     </span>
                   </a>
                   <a class="btn text-gray-800 bg-white hover:bg-gray-50 shadow w-full sm:w-auto sm:ml-4"
-                     href="#">Learn More</a>
+                     href="https://docs.colivara.com"
+                     target="_blank">Learn More</a>
                 </div>
               </div>
             </div>
           </div>
           <!-- Hero image -->
           <div class="max-w-3xl mx-auto">
-            <div class="relative aspect-video rounded-2xl px-5 py-3 shadow-xl before:absolute before:-inset-5 before:border-y before:[border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1] before:pointer-events-none after:absolute after:-inset-5 after:border-x after:[border-image:linear-gradient(to_bottom,transparent,theme(colors.slate.300/.8),transparent)1] after:-z-10">
-              <img src="{% static 'images/newsletter.png' %}"
-                   height="auto"
-                   width="auto"
-                   alt="ColiVara" />
+            <div class="relative aspect-video bg-gray-900 rounded-2xl px-5 py-3 shadow-xl before:absolute before:-inset-5 before:border-y before:[border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1] before:pointer-events-none after:absolute after:-inset-5 after:border-x after:[border-image:linear-gradient(to_bottom,transparent,theme(colors.slate.300/.8),transparent)1] after:-z-10">
+              <div class="relative flex items-center justify-between before:block before:w-[41px] before:h-[9px] before:[background-image:radial-gradient(circle_at_4.5px_4.5px,_theme(colors.gray.600)_4.5px,_transparent_0)] before:bg-[length:16px_9px] after:w-[41px] mb-8">
+                <span class="text-white font-medium text-[13px]">colivara.com</span>
+              </div>
+              <div class="text-sm font-mono" data-aos="fade-up">
+                <!-- Bash commands section -->
+                <div class="text-gray-500" data-aos="fade-right" data-aos-delay="100">
+                  <span class="text-gray-200">pip install</span> <span>colivara_py</span>
+                </div>
+                <!-- Python code section -->
+                <div class="text-gray-200" data-aos="fade-left" data-aos-delay="200">
+                  <span class="text-yellow-400"># Import and initialize ColiVara</span>
+                  <br />
+                  <span class="text-blue-300">from</span> colivara_py <span class="text-blue-300">import</span> ColiVara
+                  <br />
+                  <br />
+                  rag_client = <span class="text-blue-300">ColiVara</span>()
+                  <br />
+                  <br />
+                  <span class="text-yellow-400"># Upload a document to the default collection</span>
+                  <br />
+                  document = rag_client.upsert_document(
+                  <br />
+                  &nbsp;&nbsp;name=<span class="text-green-300">"sample_document"</span>,
+                  <br />
+                  &nbsp;&nbsp;url=<span class="text-green-300">"https://example.com/sample.pdf"</span>,
+                  <br />
+                  &nbsp;&nbsp;metadata={<span class="text-green-300">"author"</span>: <span class="text-green-300">"John Doe"</span>}
+                  <br />
+                  )
+                  <br />
+                  results = rag_client.search(query=<span class="text-green-300">"machine learning"</span>)
+                  <br />
+                  <span class="text-blue-300">print</span>(results) <span class="text-yellow-400"># top 3 pages with the most relevant information</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

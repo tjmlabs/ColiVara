@@ -15,11 +15,11 @@
       {% endblock title %}
     </title>
     {% tailwind_css %}
+    <link rel="stylesheet" href="{% static 'css/vendors/aos.css' %}">
     {% block extra_head %}
     {% endblock extra_head %}
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
   </head>
   <body class="font-inter antialiased bg-gray-50 text-gray-900 tracking-tight">
     <!-- Page wrapper -->
@@ -35,12 +35,10 @@
       {% block footer %}
         {% include "partials/footer.html" %}
       {% endblock footer %}
-      <script defer
-              src="https://unpkg.com/htmx.org@2.0.1"
-              integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/"
-              crossorigin="anonymous"></script>
-      <script defer
-              src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+      <script src="{% static 'js/vendors/focus.min.js' %}" defer></script>
+      <script src="{% static 'js/vendors/alpinejs.min.js' %}" defer></script>
+      <script src="{% static 'js/vendors/aos.js' %}"></script>
+      <script src="{% static 'js/main.js' %}"></script>
       {% block extra_scripts %}
       {% endblock extra_scripts %}
     </div>
