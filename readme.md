@@ -2,7 +2,7 @@
 
 [![codecov](https://codecov.io/gh/tjmlabs/ColiVara/branch/main/graph/badge.svg)](https://codecov.io/gh/tjmlabs/ColiVara) [![Tests](https://github.com/tjmlabs/ColiVara/actions/workflows/test.yml/badge.svg)](https://github.com/tjmlabs/Colivara/actions/workflows/test.yml)
 
-**State of the Art Retrieval - with a delightful deveoper experience**
+**State of the Art Retrieval - with a delightful developer experience**
 
 Colivara is a suite of services that allows you to store, search, and retrieve documents based on their **_visual_** embedding.
 
