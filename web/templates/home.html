@@ -935,7 +935,7 @@
                     <div class="mt-6">
                       <a 
                       class="btn-sm py-1.5 rounded-lg text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
-                      :href="isCloud ? '{% url 'account_signup' %}' : 'mailto:founders@tjmlabs.com'" 
+                      :href="isCloud ? '{% url 'stripe_checkout' %}?tier=individual' : 'mailto:founders@tjmlabs.com'" 
                       x-text="isCloud ? 'Try for free' : 'Contact us'"></a>
                 
                     </div>
@@ -1004,7 +1004,7 @@
                     <div class="mt-6">
                       <a 
                       class="btn-sm py-1.5 rounded-lg text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
-                      :href="isCloud ? '{% url 'account_signup' %}' : 'mailto:founders@tjmlabs.com'" 
+                      :href="isCloud ? '{% url 'stripe_checkout' %}?tier=team' : 'mailto:founders@tjmlabs.com'" 
                       x-text="isCloud ? 'Try for free' : 'Contact us'"></a>
                     </div>
                 </div>

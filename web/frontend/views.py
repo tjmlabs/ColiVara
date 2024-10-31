@@ -1,5 +1,5 @@
 import stripe
-from accounts.models import CustomUser
+from accounts.models import CustomUser, Team
 from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
@@ -21,25 +21,32 @@ def payment_cancel(request):
 
 
 def stripe_checkout(request):
-    if request.user.is_anonymous:
-        request.session["plan"] = "pro"
-        return redirect(reverse("account_signup"))
     stripe.api_key = settings.STRIPE_SECRET_KEY
     success_url = request.build_absolute_uri(reverse("home"))
     cancel_url = request.build_absolute_uri(reverse("home"))
     email = request.user.email
+
+    # Get the subscription type from the query parameter
+    subscription_type = request.GET.get('tier', 'individual')  # Default to 'individual' if not provided
+
+    price_id = settings.STRIPE_INDIVIDUAL_PRICE_ID
+    if subscription_type == 'team':
+        price_id = settings.STRIPE_TEAM_PRICE_ID
+    
     checkout_session = stripe.checkout.Session.create(
         line_items=[
             {
-                "price": f"{settings.STRIPE_PRICE_ID}",
-                "quantity": 1,
+                "price": price_id,
             },
         ],
         client_reference_id=request.user.id,
         mode="subscription",
         customer_email=email,
-        success_url=success_url + "/payment-success/",
-        cancel_url=cancel_url + "/payment-cancel/",
+        success_url=success_url + "payment-success/",
+        cancel_url=cancel_url + "payment-cancel/",
+        metadata={
+            "subscription_type": subscription_type
+        }
     )
     return redirect(checkout_session.url, code=303)
 
@@ -60,7 +67,7 @@ def stripe_webhook(request):
     webhook_secret = settings.STRIPE_WH_SECRET
     if settings.LOCAL:
         webhook_secret = (
-            "whsec_ba621ab4001800ffb9f7dca15c7d2f1e749f6ae563342edce7b0e7b01ba64d70"
+            "whsec_2b98f86c7f5931ff1393ac3e3b00c289b494c7a7c034a3cf701405f4a38bed86"
         )
     else:
         webhook_secret = settings.STRIPE_WH_SECRET
@@ -81,9 +88,16 @@ def stripe_webhook(request):
         user = CustomUser.objects.get(id=user_id)
         user.stripe_customer_id = data_object["customer"]
         user.stripe_subscription_id = data_object["subscription"]
-        user.tier = "pro"
+
+        # Check the subscription type from metadata
+        subscription_type = data_object["metadata"].get("subscription_type")
+        user.tier = subscription_type
+        if subscription_type == "team":
+            team = Team.objects.create(name=f"{user.first_name}'s Team", owner=user)
+            user.team = team
+
         user.save()
-    if event["type"] == "customer.subscription.deleted":
+    elif event["type"] == "customer.subscription.deleted":
         customer_id = data_object["customer"]
         user = CustomUser.objects.get(stripe_customer_id=customer_id)
         user.tier = "free"

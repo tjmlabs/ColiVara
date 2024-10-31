@@ -360,6 +360,12 @@ async def process_upsert_document(
     url = payload.url or ""
     base64 = payload.base64 or ""
     try:
+        if request.auth.get_available_credits() == 0 and request.auth.tier == "free":
+            # raise an exception so it's caught by the error handler
+            raise ValueError(
+                "You have no available credits. Please upgrade your subscription."
+            )
+
         # we look up the document by name and collection
         # if it exists, we update its metadate and embeddings (by calling embed_document)
         exists = await Document.objects.filter(
@@ -402,10 +408,7 @@ async def process_upsert_document(
 
         # Increase consumed credits by the number of pages
         available_credits = await sync_to_async(request.auth.get_available_credits)()
-        consumed_credits = await sync_to_async(request.auth.get_consumed_credits)()
-        logger.info(
-            f"Current available credits: {available_credits}, consumed credits: {consumed_credits}"
-        )
+        logger.info(f"Current available credits: {available_credits}")
 
         if available_credits >= document.num_pages:
             await sync_to_async(request.auth.set_available_credits)(
@@ -413,15 +416,15 @@ async def process_upsert_document(
             )
             logger.info(f"Decreased available credits by {document.num_pages}")
         else:
-            await sync_to_async(request.auth.set_consumed_credits)(
-                consumed_credits + document.num_pages - available_credits
+            await sync_to_async(request.auth.record_consumed_credits)(
+                document.num_pages - available_credits
             )
 
             if available_credits != 0:
                 await sync_to_async(request.auth.set_available_credits)(0)
 
             logger.info(
-                f"Set available credits to 0 and increased consumed credits by {document.num_pages - available_credits}"
+                f"Set available credits to 0 and recorded {document.num_pages - available_credits} consumed credits"
             )
 
         return 201, DocumentOut(
@@ -907,6 +910,12 @@ async def search(
             }
         }
     """
+
+    if request.auth.get_available_credits() == 0 and request.auth.tier == "free":
+        return 400, GenericError(
+            detail="You have no available credits. Please upgrade your subscription."
+        )
+
     query_embeddings = await get_query_embeddings(payload.query)
     if not query_embeddings:
         return 503, GenericError(
@@ -973,16 +982,13 @@ async def search(
 
     # Increase consumed credits by 1
     available_credits = await sync_to_async(request.auth.get_available_credits)()
-    consumed_credits = await sync_to_async(request.auth.get_consumed_credits)()
-    logger.info(
-        f"Current available credits: {available_credits}, consumed credits: {consumed_credits}"
-    )
+    logger.info(f"Current available credits: {available_credits}")
 
     if available_credits >= 1:
         await sync_to_async(request.auth.set_available_credits)(available_credits - 1)
         logger.info(f"Decreased available credits by 1")
     else:
-        await sync_to_async(request.auth.set_consumed_credits)(consumed_credits + 1)
+        await sync_to_async(request.auth.record_consumed_credits)(1)
         logger.info(f"Increased consumed credits by 1")
 
     return 200, QueryOut(query=payload.query, results=formatted_results)
