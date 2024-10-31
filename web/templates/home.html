@@ -67,56 +67,20 @@
               </div>
             </div>
           </div>
-          <!-- Hero image -->
+           <!-- Hero image -->
           <div class="max-w-3xl mx-auto">
-            <div class="relative aspect-video bg-gray-900 rounded-2xl px-5 py-3 shadow-xl before:absolute before:-inset-5 before:border-y before:[border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1] before:pointer-events-none after:absolute after:-inset-5 after:border-x after:[border-image:linear-gradient(to_bottom,transparent,theme(colors.slate.300/.8),transparent)1] after:-z-10">
-              <div class="relative flex items-center justify-between before:block before:w-[41px] before:h-[9px] before:[background-image:radial-gradient(circle_at_4.5px_4.5px,_theme(colors.gray.600)_4.5px,_transparent_0)] before:bg-[length:16px_9px] after:w-[41px] mb-8">
-                <span class="text-white font-medium text-[13px]">colivara.com</span>
-              </div>
-              <div class="text-sm font-mono" data-aos="fade-up">
-                <!-- Bash commands section -->
-                <div class="text-gray-500" data-aos="fade-right" data-aos-delay="100">
-                  <span class="text-gray-200">pip install</span> <span>colivara_py</span>
-                </div>
-                <!-- Python code section -->
-                <div class="text-gray-200" data-aos="fade-left" data-aos-delay="200">
-                  <span class="text-yellow-400"># Import and initialize ColiVara</span>
-                  <br />
-                  <span class="text-blue-300">from</span> colivara_py <span class="text-blue-300">import</span> ColiVara
-                  <br />
-                  <br />
-                  rag_client = <span class="text-blue-300">ColiVara</span>()
-                  <br />
-                  <br />
-                  <span class="text-yellow-400"># Upload a document to the default collection</span>
-                  <br />
-                  document = rag_client.upsert_document(
-                  <br />
-                  &nbsp;&nbsp;name=<span class="text-green-300">"sample_document"</span>,
-                  <br />
-                  &nbsp;&nbsp;url=<span class="text-green-300">"https://example.com/sample.pdf"</span>,
-                  <br />
-                  &nbsp;&nbsp;metadata={<span class="text-green-300">"author"</span>: <span class="text-green-300">"John Doe"</span>}
-                  <br />
-                  )
-                  <br />
-                  results = rag_client.search(query=<span class="text-green-300">"machine learning"</span>)
-                  <br />
-                  <span class="text-blue-300">print</span>(results) <span class="text-yellow-400"># top 3 pages with the most relevant information</span>
-                </div>
-              </div>
-            </div>
+            {% include "partials/code_snippet.html" %}
           </div>
         </div>
       </div>
     </section>
     <section>
-      <div class="max-w-3xl mx-auto pt-32 pb-12 md:pt-40 md:pb-20">
+      <div class="max-w-3xl mx-auto pt-16 pb-12 md:pt-20 md:pb-20">
         <div class="space-y-10 border-l [border-image:linear-gradient(to_bottom,theme(colors.slate.200),theme(colors.slate.300),transparent)1]">
           <article class="pl-6 sm:pl-10">
             <header class="mb-2">
               <h2 class="text-2xl font-bold">
-                <a class="hover:underline" href="https://docs.colivara.com/">How does ColiVara work?</a>
+                <a class="hover:unde  rline" href="https://docs.colivara.com/">About ColiVara</a>
               </h2>
             </header>
             <p class="text-gray-700 mb-4">
@@ -868,7 +832,7 @@
 
     
     <!-- Pricing -->
-    <section>
+    <section id="pricing">
       <div class="pt-32 pb-12 md:pt-40 md:pb-20">
 
         <!-- Section header -->

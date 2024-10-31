@@ -12,12 +12,6 @@ def home(request):
     return render(request, "home.html")
 
 
-def pricing(request):
-    # get dashboard request GET parameter
-    dashboard = request.GET.get("dashboard", None)
-    return render(request, "pricing.html", {"dashboard": dashboard})
-
-
 def payment_success(request):
     return render(request, "payment_success.html")
 
