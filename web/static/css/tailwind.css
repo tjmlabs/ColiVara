@@ -1884,6 +1884,50 @@ input[type="search"]::-webkit-search-results-decoration {
   animation: breath 8s ease-in-out infinite both;
 }
 
+@keyframes code-1{
+  0%{
+    opacity: 0;
+  }
+
+  2.5%{
+    opacity: 1;
+  }
+
+  97.5%{
+    opacity: 1;
+  }
+
+  100%{
+    opacity: 0;
+  }
+}
+
+.animate-\[code-1_10s_infinite\]{
+  animation: code-1 10s infinite;
+}
+
+@keyframes code-3{
+  32.5%{
+    opacity: 0;
+  }
+
+  35%{
+    opacity: 1;
+  }
+
+  97.5%{
+    opacity: 1;
+  }
+
+  100%{
+    opacity: 0;
+  }
+}
+
+.animate-\[code-3_10s_infinite\]{
+  animation: code-3 10s infinite;
+}
+
 @keyframes float{
   0%, 100%{
     transform: translateY(0);
@@ -2481,6 +2525,10 @@ input[type="search"]::-webkit-search-results-decoration {
 
 .pl-6{
   padding-left: 1.5rem;
+}
+
+.pt-16{
+  padding-top: 4rem;
 }
 
 .pt-32{
@@ -3623,6 +3671,10 @@ input[type="search"]::-webkit-search-results-decoration {
     padding-bottom: 5rem;
   }
 
+  .md\:pt-20{
+    padding-top: 5rem;
+  }
+
   .md\:pt-40{
     padding-top: 10rem;
   }
@@ -3775,4 +3827,8 @@ input[type="search"]::-webkit-search-results-decoration {
   .md\:\[\&\>\*\]\:p-10>*{
     padding: 2.5rem;
   }
+}
+
+.\[\&_span\]\:opacity-0 span{
+  opacity: 0;
 }
