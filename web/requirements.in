@@ -19,4 +19,3 @@ pytest-asyncio==0.24.0
 pytest-cov==5.0.0
 mypy==1.11
 django-stubs[compatible-mypy]==5.1.0
-django_tailwind_cli==2.18.1

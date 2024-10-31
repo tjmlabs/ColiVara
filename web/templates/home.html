@@ -35,38 +35,7 @@
           <div class="text-center pb-12 md:pb-16">
             <div class="mb-6 border-y [border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1]"
                  data-aos="zoom-y-out">
-              <div class="flex justify-center -space-x-3 -mx-0.5">
-                <img class="rounded-full border-2 border-gray-50 box-content"
-                     src="{% static 'images/avatar-01.jpg' %}"
-                     width="32"
-                     height="32"
-                     alt="Avatar 01" />
-                <img class="rounded-full border-2 border-gray-50 box-content"
-                     src="{% static 'images/avatar-02.jpg' %}"
-                     width="32"
-                     height="32"
-                     alt="Avatar 02" />
-                <img class="rounded-full border-2 border-gray-50 box-content"
-                     src="{% static 'images/avatar-03.jpg' %}"
-                     width="32"
-                     height="32"
-                     alt="Avatar 03" />
-                <img class="rounded-full border-2 border-gray-50 box-content"
-                     src="{% static 'images/avatar-04.jpg' %}"
-                     width="32"
-                     height="32"
-                     alt="Avatar 04" />
-                <img class="rounded-full border-2 border-gray-50 box-content"
-                     src="{% static 'images/avatar-05.jpg' %}"
-                     width="32"
-                     height="32"
-                     alt="Avatar 05" />
-                <img class="rounded-full border-2 border-gray-50 box-content"
-                     src="{% static 'images/avatar-06.jpg' %}"
-                     width="32"
-                     height="32"
-                     alt="Avatar 06" />
-              </div>
+              <span class="text-xs text-gray-500">ColiVara is a State of the Art Retrieval API - with a delightful developer experience.</span>
             </div>
             <h1 class="text-5xl md:text-6xl font-bold mb-6 border-y [border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1]"
                 data-aos="zoom-y-out"
@@ -79,7 +48,7 @@
               <p class="text-lg text-gray-700 mb-8"
                  data-aos="zoom-y-out"
                  data-aos-delay="300">
-                Colivara is a State of the Art Retrieval API - with a delightful developer experience.
+                ColiVara is a State of the Art Retrieval API. It store, search, and retrieve documents based on their <strong>visual</strong> embedding.
               </p>
               <div class="relative before:absolute before:inset-0 before:border-y before:[border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1]">
                 <div class="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center"
@@ -98,424 +67,979 @@
               </div>
             </div>
           </div>
-          <!-- Hero image -->
+           <!-- Hero image -->
           <div class="max-w-3xl mx-auto">
-            <div class="relative aspect-video bg-gray-900 rounded-2xl px-5 py-3 shadow-xl before:absolute before:-inset-5 before:border-y before:[border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1] before:pointer-events-none after:absolute after:-inset-5 after:border-x after:[border-image:linear-gradient(to_bottom,transparent,theme(colors.slate.300/.8),transparent)1] after:-z-10">
-              <div class="relative flex items-center justify-between before:block before:w-[41px] before:h-[9px] before:[background-image:radial-gradient(circle_at_4.5px_4.5px,_theme(colors.gray.600)_4.5px,_transparent_0)] before:bg-[length:16px_9px] after:w-[41px] mb-8">
-                <span class="text-white font-medium text-[13px]">colivara.com</span>
-              </div>
-              <div class="text-sm font-mono" data-aos="fade-up">
-                <!-- Bash commands section -->
-                <div class="text-gray-500" data-aos="fade-right" data-aos-delay="100">
-                  <span class="text-gray-200">pip install</span> <span>colivara_py</span>
-                </div>
-                <!-- Python code section -->
-                <div class="text-gray-200" data-aos="fade-left" data-aos-delay="200">
-                  <span class="text-yellow-400"># Import and initialize ColiVara</span>
-                  <br />
-                  <span class="text-blue-300">from</span> colivara_py <span class="text-blue-300">import</span> ColiVara
-                  <br />
-                  <br />
-                  rag_client = <span class="text-blue-300">ColiVara</span>()
-                  <br />
-                  <br />
-                  <span class="text-yellow-400"># Upload a document to the default collection</span>
-                  <br />
-                  document = rag_client.upsert_document(
-                  <br />
-                  &nbsp;&nbsp;name=<span class="text-green-300">"sample_document"</span>,
-                  <br />
-                  &nbsp;&nbsp;url=<span class="text-green-300">"https://example.com/sample.pdf"</span>,
-                  <br />
-                  &nbsp;&nbsp;metadata={<span class="text-green-300">"author"</span>: <span class="text-green-300">"John Doe"</span>}
-                  <br />
-                  )
-                  <br />
-                  results = rag_client.search(query=<span class="text-green-300">"machine learning"</span>)
-                  <br />
-                  <span class="text-blue-300">print</span>(results) <span class="text-yellow-400"># top 3 pages with the most relevant information</span>
-                </div>
-              </div>
-            </div>
+            {% include "partials/code_snippet.html" %}
           </div>
         </div>
       </div>
     </section>
+    <section>
+      <div class="max-w-3xl mx-auto pt-16 pb-12 md:pt-20 md:pb-20">
+        <div class="space-y-10 border-l [border-image:linear-gradient(to_bottom,theme(colors.slate.200),theme(colors.slate.300),transparent)1]">
+          <article class="pl-6 sm:pl-10">
+            <header class="mb-2">
+              <h2 class="text-2xl font-bold">
+                <a class="hover:unde  rline" href="https://docs.colivara.com/">About ColiVara</a>
+              </h2>
+            </header>
+            <p class="text-gray-700 mb-4">
+              Retrieval Augmented Generation (RAG) is a powerful technique that allows us to enhance LLMs (Language Models) output with private documents and proprietary knowledge that is not available elsewhere. For example, a company's internal documents or a researcher's notes.
+              However, it is limited by the quality of the text extraction pipeline. With limited ability to extract visual cues and other non-textual information, RAG can be sub-optimal for documents that are visually rich.
+              ColiVara uses vision models to generate embeddings for documents, allowing you to retrieve documents based on their visual content.
+              From the ColiPali paper:
+            </p>
+            <blockquote class="text-xl italic font-semibold text-gray-900 dark:text-white">
+              <p>
+                Documents are visually rich structures that convey information through text, as well as tables, figures, page layouts, or fonts. While modern document retrieval systems exhibit strong performance on query-to-text matching, they struggle to exploit visual cues efficiently, hindering their performance on practical document retrieval applications such as Retrieval Augmented Generation.
+              </p>
+            </blockquote>
+            <footer>
+              <a class="text-sm font-medium text-blue-500 hover:text-blue-600 transition-colors"
+                 href="https://arxiv.org/abs/2407.01449"
+                 target="_blank">Learn more in the ColiPali Paper <span class="tracking-normal text-blue-300">-&gt;</span></a>
+            </footer>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div>
+          <!-- Tabs component -->
+          <div x-data="{ activeTab: 1 }">
+            <!-- Buttons -->
+            <div class="flex justify-center">
+              <div role="tablist"
+                   class="relative max-[480px]:max-w-[180px] inline-flex flex-wrap justify-center bg-white rounded-xl p-2 shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-transparent before:[background:linear-gradient(theme(colors.gray.100),theme(colors.gray.200))_border-box] before:[mask:linear-gradient(white_0_0)_padding-box,_linear-gradient(white_0_0)] before:[mask-composite:exclude_!important] before:pointer-events-none mb-8 min-[480px]:mb-12"
+                   @keydown.right.prevent.stop="$focus.wrap().next()"
+                   @keydown.left.prevent.stop="$focus.wrap().prev()"
+                   @keydown.home.prevent.stop="$focus.first()"
+                   @keydown.end.prevent.stop="$focus.last()">
+                <!-- Button #1 -->
+                <button id="tab-1"
+                        class="flex-1 flex items-center gap-2.5 text-sm font-medium h-8 px-3 rounded-lg whitespace-nowrap focus-visible:outline-none focus-visible:ring focus-visible:ring-blue-300 transition-colors"
+                        :class="activeTab === 1 ? 'bg-gray-800 text-gray-200' : 'text-gray-700'"
+                        :tabindex="activeTab === 1 ? 0 : -1"
+                        :aria-selected="activeTab === 1"
+                        aria-controls="tabpanel-1"
+                        @click="activeTab = 1"
+                        @focus="activeTab = 1">
+                  <svg class="fill-current"
+                       :class="activeTab === 1 ? 'text-gray-400' : 'text-gray-500'"
+                       xmlns="http://www.w3.org/2000/svg"
+                       width="16"
+                       height="16">
+                    <path d="M8 2a6 6 0 1 0 0 12A6 6 0 0 0 8 2ZM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Z" />
+                  </svg>
+                  <span>Search</span>
+                </button>
+                <!-- Button #2 -->
+                <button id="tab-2"
+                        class="flex-1 flex items-center gap-2.5 text-sm font-medium h-8 px-3 rounded-lg whitespace-nowrap focus-visible:outline-none focus-visible:ring focus-visible:ring-blue-300 transition-colors"
+                        :class="activeTab === 2 ? 'bg-gray-800 text-gray-200' : 'text-gray-700'"
+                        :tabindex="activeTab === 2 ? 0 : -1"
+                        :aria-selected="activeTab === 2"
+                        aria-controls="tabpanel-2"
+                        @click="activeTab = 2"
+                        @focus="activeTab = 2">
+                  <svg class="fill-current"
+                       :class="activeTab === 1 ? 'text-gray-400' : 'text-gray-500'"
+                       xmlns="http://www.w3.org/2000/svg"
+                       width="16"
+                       height="16">
+                    <path d="M5.936.278A7.983 7.983 0 0 1 8 0a8 8 0 1 1-8 8c0-.722.104-1.413.278-2.064a1 1 0 1 1 1.932.516A5.99 5.99 0 0 0 2 8a6 6 0 1 0 6-6c-.53 0-1.045.076-1.548.21A1 1 0 1 1 5.936.278Zm.132 7.204A2.003 2.003 0 0 0 8 10a2 2 0 1 0-.518-3.932L3.707 2.293a1 1 0 0 0-1.414 1.414l3.775 3.775Z" />
+                  </svg>
+                  <span>Data Extraction</span>
+                </button>
+                <!-- Button #3 -->
+                <button id="tab-3"
+                        class="flex-1 flex items-center gap-2.5 text-sm font-medium h-8 px-3 rounded-lg whitespace-nowrap focus-visible:outline-none focus-visible:ring focus-visible:ring-blue-300 transition-colors"
+                        :class="activeTab === 3 ? 'bg-gray-800 text-gray-200' : 'text-gray-700'"
+                        :tabindex="activeTab === 3 ? 0 : -1"
+                        :aria-selected="activeTab === 3"
+                        aria-controls="tabpanel-3"
+                        @click="activeTab = 3"
+                        @focus="activeTab = 3">
+                  <svg class="fill-current"
+                       :class="activeTab === 1 ? 'text-gray-400' : 'text-gray-500'"
+                       xmlns="http://www.w3.org/2000/svg"
+                       width="16"
+                       height="16">
+                    <path d="M3 2a1 1 0 0 0-2 0v12a1 1 0 1 0 2 0V2Zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm4 12a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm-5 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm5-13a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm4 0a1 1 0 1 0-2 0v12a1 1 0 1 0 2 0V2Z" />
+                  </svg>
+                  <span>Advanced Filtering</span>
+                </button>
+                <!-- Button #4 -->
+                <button id="tab-4"
+                        class="flex-1 flex items-center gap-2.5 text-sm font-medium h-8 px-3 rounded-lg whitespace-nowrap focus-visible:outline-none focus-visible:ring focus-visible:ring-blue-300 transition-colors"
+                        :class="activeTab === 4 ? 'bg-gray-800 text-gray-200' : 'text-gray-700'"
+                        :tabindex="activeTab === 4 ? 0 : -1"
+                        :aria-selected="activeTab === 4"
+                        aria-controls="tabpanel-4"
+                        @click="activeTab = 4"
+                        @focus="activeTab = 4">
+                  <svg class="fill-current"
+                       :class="activeTab === 1 ? 'text-gray-400' : 'text-gray-500'"
+                       xmlns="http://www.w3.org/2000/svg"
+                       width="16"
+                       height="16">
+                    <path d="M.06 10.003a1 1 0 0 1 1.947.455c-.019.08.01.152.078.19l5.83 3.333c.052.03.115.03.168 0l5.83-3.333a.163.163 0 0 0 .078-.188 1 1 0 1 1 1.947-.459 2.161 2.161 0 0 1-1.032 2.384l-5.83 3.331a2.168 2.168 0 0 1-2.154 0l-5.83-3.331A2.162 2.162 0 0 1 .06 10.003Zm7.855-7.981-5.83 3.332a.17.17 0 0 0 0 .295l5.828 3.33a.172.172 0 0 0 .17.002l5.83-3.333a.17.17 0 0 0 0-.294L8.084 2.023a.172.172 0 0 0-.17-.001h.001ZM9.075.285l5.83 3.332c1.458.833 1.458 2.935 0 3.768l-5.83 3.333c-.667.38-1.485.38-2.153-.001l-5.83-3.332c-1.457-.833-1.457-2.935 0-3.767L6.924.285a2.173 2.173 0 0 1 2.15 0h.001Z" />
+                  </svg>
+                  <span>Enteprise</span>
+                </button>
+              </div>
+            </div>
+            <div class="relative flex items-center justify-center h-[324px]">
+              <!-- Small blue dots -->
+              <div class="absolute -z-10">
+                <svg class="fill-blue-500"
+                     xmlns="http://www.w3.org/2000/svg"
+                     width="164"
+                     height="41"
+                     viewBox="0 0 164 41"
+                     fill="none">
+                  <circle cx="1" cy="8" r="1" fill-opacity="0.24" />
+                  <circle cx="1" cy="1" r="1" fill-opacity="0.16" />
+                  <circle cx="1" cy="15" r="1" />
+                  <circle cx="1" cy="26" r="1" fill-opacity="0.64" />
+                  <circle cx="1" cy="33" r="1" fill-opacity="0.24" />
+                  <circle cx="8" cy="8" r="1" />
+                  <circle cx="8" cy="15" r="1" />
+                  <circle cx="8" cy="26" r="1" fill-opacity="0.24" />
+                  <circle cx="15" cy="15" r="1" fill-opacity="0.64" />
+                  <circle cx="15" cy="26" r="1" fill-opacity="0.16" />
+                  <circle cx="8" cy="33" r="1" />
+                  <circle cx="1" cy="40" r="1" />
+                  <circle cx="1" cy="1" r="1" transform="matrix(-1 0 0 1 164 7)" fill-opacity="0.24" />
+                  <circle cx="1" cy="1" r="1" transform="matrix(-1 0 0 1 164 0)" fill-opacity="0.16" />
+                  <circle cx="1" cy="1" r="1" transform="matrix(-1 0 0 1 164 14)" />
+                  <circle cx="1" cy="1" r="1" transform="matrix(-1 0 0 1 164 25)" fill-opacity="0.64" />
+                  <circle cx="1" cy="1" r="1" transform="matrix(-1 0 0 1 164 32)" fill-opacity="0.24" />
+                  <circle cx="1" cy="1" r="1" transform="matrix(-1 0 0 1 157 7)" />
+                  <circle cx="1" cy="1" r="1" transform="matrix(-1 0 0 1 157 14)" />
+                  <circle cx="1" cy="1" r="1" transform="matrix(-1 0 0 1 157 25)" fill-opacity="0.24" />
+                  <circle cx="1" cy="1" r="1" transform="matrix(-1 0 0 1 150 14)" fill-opacity="0.64" />
+                  <circle cx="1" cy="1" r="1" transform="matrix(-1 0 0 1 150 25)" fill-opacity="0.16" />
+                  <circle cx="1" cy="1" r="1" transform="matrix(-1 0 0 1 157 32)" />
+                  <circle cx="1" cy="1" r="1" transform="matrix(-1 0 0 1 164 39)" />
+                </svg>
+              </div>
+              <!-- Blue glow -->
+              <div class="absolute -z-10">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="432"
+                     height="160"
+                     viewBox="0 0 432 160"
+                     fill="none">
+                  <g opacity="0.6" filter="url(#filter0_f_2044_9)">
+                  <path class="fill-blue-500" fill-rule="evenodd" clip-rule="evenodd" d="M80 112C62.3269 112 48 97.6731 48 80C48 62.3269 62.3269 48 80 48C97.6731 48 171 62.3269 171 80C171 97.6731 97.6731 112 80 112ZM352 112C369.673 112 384 97.6731 384 80C384 62.3269 369.673 48 352 48C334.327 48 261 62.3269 261 80C261 97.6731 334.327 112 352 112Z" />
+                  </g>
+                  <defs>
+                  <filter id="filter0_f_2044_9" x="0" y="0" width="432" height="160" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                  <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                  <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                  <feGaussianBlur stdDeviation="32" result="effect1_foregroundBlur_2044_9" />
+                  </filter>
+                  </defs>
+                </svg>
+              </div>
+              <!-- Horizontal lines -->
+              <div class="absolute -z-10 inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mix-blend-multiply">
+              </div>
+              <div class="absolute -z-10 inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent mix-blend-multiply">
+              </div>
+              <div class="absolute -z-10 inset-x-[200px] top-1/2 h-px bg-gradient-to-r from-transparent via-blue-500/60 to-transparent mix-blend-multiply">
+              </div>
+              <div class="absolute -z-10 inset-x-0 top-1/2 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent -translate-y-[82px] before:absolute before:inset-y-0 before:w-24 before:bg-gradient-to-r before:via-blue-500 before:animate-[line_10s_ease-in-out_infinite_both] mix-blend-multiply">
+              </div>
+              <div class="absolute -z-10 inset-x-0 top-1/2 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent translate-y-[82px] before:absolute before:inset-y-0 before:w-24 before:bg-gradient-to-r before:via-blue-500 before:animate-[line_10s_ease-in-out_infinite_5s_both] mix-blend-multiply">
+              </div>
+              <!-- Diagonal lines -->
+              <div class="absolute -z-10 inset-x-[300px] top-1/2 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent rotate-[20deg] mix-blend-multiply">
+              </div>
+              <div class="absolute -z-10 inset-x-[300px] top-1/2 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent -rotate-[20deg] mix-blend-multiply">
+              </div>
+              <!-- Vertical lines -->
+              <div class="absolute -z-10 inset-y-0 left-1/2 w-px bg-gradient-to-b from-gray-200 to-transparent -translate-x-[216px] mix-blend-multiply">
+              </div>
+              <div class="absolute -z-10 inset-y-0 left-1/2 w-px bg-gradient-to-t from-gray-200 to-transparent translate-x-[216px] mix-blend-multiply">
+              </div>
+              <!-- Logos -->
+              <div class="absolute before:absolute before:-inset-3 before:rounded-full before:[background:conic-gradient(from_180deg,transparent,theme(colors.blue.500))_border-box] before:border before:border-transparent before:[mask:linear-gradient(white_0_0)_padding-box,_linear-gradient(white_0_0)] before:[mask-composite:exclude_!important] before:animate-[spin_3s_linear_infinite]">
+                <div class="animate-[breath_8s_ease-in-out_infinite_both]">
+                  <div class="flex items-center justify-center w-24 h-24 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                    <img class="relative"
+                         src="{% static 'images/logo-01.svg' %}"
+                         width="32"
+                         height="32"
+                         alt="Logo 01" />
+                  </div>
+                </div>
+              </div>
+              <!-- Panel #1 -->
+              <div id="tabpanel-1"
+                   class="w-full h-full flex items-center justify-center"
+                   role="tabpanel"
+                   tabindex="0"
+                   aria-labelledby="tab-1"
+                   x-show="activeTab === 1"
+                   x-transition:enter="transition ease-[cubic-bezier(0.38,0,0.32,1)] duration-700 transform order-first"
+                   x-transition:enter-start="opacity-0 scale-90"
+                   x-transition:enter-end="opacity-100 scale-100"
+                   x-transition:leave="transition ease-[cubic-bezier(0.38,0,0.32,1)] duration-300 transform absolute"
+                   x-transition:leave-start="opacity-100 scale-100"
+                   x-transition:leave-end="opacity-0 scale-125">
+                <div class="absolute -translate-x-[136px]">
+                  <div class="animate-[breath_7s_ease-in-out_3s_infinite_both]">
+                    <div class="flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-02.svg' %}"
+                           width="23"
+                           height="22"
+                           alt="Logo 02" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute translate-x-[136px]">
+                  <div class="animate-[breath_7s_ease-in-out_3.5s_infinite_both]">
+                    <div class="flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-03.svg' %}"
+                           width="22"
+                           height="22"
+                           alt="Logo 03" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute -translate-x-[216px] -translate-y-[82px]">
+                  <div class="animate-[breath_6s_ease-in-out_3.5s_infinite_both]">
+                    <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-04.svg' %}"
+                           width="24"
+                           height="22"
+                           alt="Logo 04" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute translate-x-[216px] -translate-y-[82px]">
+                  <div class="animate-[breath_6s_ease-in-out_1.5s_infinite_both]">
+                    <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-05.svg' %}"
+                           width="25"
+                           height="25"
+                           alt="Logo 05" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute translate-x-[216px] translate-y-[82px]">
+                  <div class="animate-[breath_6s_ease-in-out_2s_infinite_both]">
+                    <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-06.svg' %}"
+                           width="20"
+                           height="18"
+                           alt="Logo 06" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute -translate-x-[216px] translate-y-[82px]">
+                  <div class="animate-[breath_6s_ease-in-out_2.5s_infinite_both]">
+                    <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-07.svg' %}"
+                           width="25"
+                           height="25"
+                           alt="Logo 07" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute -translate-x-[292px] opacity-40">
+                  <div class="animate-[breath_6s_ease-in-out_2s_infinite_both]">
+                    <div class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200/60">
+                      <img class="relative"
+                           src="{% static 'images/logo-08.svg' %}"
+                           width="20"
+                           height="20"
+                           alt="Logo 08" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute translate-x-[292px] opacity-40">
+                  <div class="animate-[breath_6s_ease-in-out_4s_infinite_both]">
+                    <div class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200/60">
+                      <img class="relative"
+                           src="{% static 'images/logo-09.svg' %}"
+                           width="21"
+                           height="13"
+                           alt="Logo 09" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Panel #2 -->
+              <div id="tabpanel-2"
+                   class="w-full h-full flex items-center justify-center"
+                   role="tabpanel"
+                   tabindex="0"
+                   aria-labelledby="tab-2"
+                   x-show="activeTab === 2"
+                   x-transition:enter="transition ease-[cubic-bezier(0.38,0,0.32,1)] duration-700 transform order-first"
+                   x-transition:enter-start="opacity-0 scale-90"
+                   x-transition:enter-end="opacity-100 scale-100"
+                   x-transition:leave="transition ease-[cubic-bezier(0.38,0,0.32,1)] duration-300 transform absolute"
+                   x-transition:leave-start="opacity-100 scale-100"
+                   x-transition:leave-end="opacity-0 scale-125">
+                <div class="absolute -translate-x-[136px]">
+                  <div class="animate-[breath_7s_ease-in-out_3s_infinite_both]">
+                    <div class="flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-03.svg' %}"
+                           width="23"
+                           height="22"
+                           alt="Logo 03" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute translate-x-[136px]">
+                  <div class="animate-[breath_7s_ease-in-out_3.5s_infinite_both]">
+                    <div class="flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-04.svg' %}"
+                           width="22"
+                           height="22"
+                           alt="Logo 04" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute -translate-x-[216px] -translate-y-[82px]">
+                  <div class="animate-[breath_6s_ease-in-out_3.5s_infinite_both]">
+                    <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-05.svg' %}"
+                           width="24"
+                           height="22"
+                           alt="Logo 05" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute translate-x-[216px] -translate-y-[82px]">
+                  <div class="animate-[breath_6s_ease-in-out_1.5s_infinite_both]">
+                    <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-02.svg' %}"
+                           width="25"
+                           height="25"
+                           alt="Logo 02" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute translate-x-[216px] translate-y-[82px]">
+                  <div class="animate-[breath_6s_ease-in-out_2s_infinite_both]">
+                    <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-07.svg' %}"
+                           width="20"
+                           height="18"
+                           alt="Logo 07" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute -translate-x-[216px] translate-y-[82px]">
+                  <div class="animate-[breath_6s_ease-in-out_2.5s_infinite_both]">
+                    <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-06.svg' %}"
+                           width="25"
+                           height="25"
+                           alt="Logo 06" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute -translate-x-[292px] opacity-40">
+                  <div class="animate-[breath_6s_ease-in-out_2s_infinite_both]">
+                    <div class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200/60">
+                      <img class="relative"
+                           src="{% static 'images/logo-09.svg' %}"
+                           width="20"
+                           height="20"
+                           alt="Logo 09" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute translate-x-[292px] opacity-40">
+                  <div class="animate-[breath_6s_ease-in-out_4s_infinite_both]">
+                    <div class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200/60">
+                      <img class="relative"
+                           src="{% static 'images/logo-08.svg' %}"
+                           width="21"
+                           height="13"
+                           alt="Logo 08" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Panel #3 -->
+              <div id="tabpanel-3"
+                   class="w-full h-full flex items-center justify-center"
+                   role="tabpanel"
+                   tabindex="0"
+                   aria-labelledby="tab-3"
+                   x-show="activeTab === 3"
+                   x-transition:enter="transition ease-[cubic-bezier(0.38,0,0.32,1)] duration-700 transform order-first"
+                   x-transition:enter-start="opacity-0 scale-90"
+                   x-transition:enter-end="opacity-100 scale-100"
+                   x-transition:leave="transition ease-[cubic-bezier(0.38,0,0.32,1)] duration-300 transform absolute"
+                   x-transition:leave-start="opacity-100 scale-100"
+                   x-transition:leave-end="opacity-0 scale-125">
+                <div class="absolute -translate-x-[136px]">
+                  <div class="animate-[breath_7s_ease-in-out_3s_infinite_both]">
+                    <div class="flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-02.svg' %}"
+                           width="23"
+                           height="22"
+                           alt="Logo 02" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute translate-x-[136px]">
+                  <div class="animate-[breath_7s_ease-in-out_3.5s_infinite_both]">
+                    <div class="flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-03.svg' %}"
+                           width="22"
+                           height="22"
+                           alt="Logo 03" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute -translate-x-[216px] -translate-y-[82px]">
+                  <div class="animate-[breath_6s_ease-in-out_3.5s_infinite_both]">
+                    <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-04.svg' %}"
+                           width="24"
+                           height="22"
+                           alt="Logo 04" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute translate-x-[216px] -translate-y-[82px]">
+                  <div class="animate-[breath_6s_ease-in-out_1.5s_infinite_both]">
+                    <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-05.svg' %}"
+                           width="25"
+                           height="25"
+                           alt="Logo 05" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute translate-x-[216px] translate-y-[82px]">
+                  <div class="animate-[breath_6s_ease-in-out_2s_infinite_both]">
+                    <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-06.svg' %}"
+                           width="20"
+                           height="18"
+                           alt="Logo 06" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute -translate-x-[216px] translate-y-[82px]">
+                  <div class="animate-[breath_6s_ease-in-out_2.5s_infinite_both]">
+                    <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-07.svg' %}"
+                           width="25"
+                           height="25"
+                           alt="Logo 07" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute -translate-x-[292px] opacity-40">
+                  <div class="animate-[breath_6s_ease-in-out_2s_infinite_both]">
+                    <div class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200/60">
+                      <img class="relative"
+                           src="{% static 'images/logo-08.svg' %}"
+                           width="20"
+                           height="20"
+                           alt="Logo 08" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute translate-x-[292px] opacity-40">
+                  <div class="animate-[breath_6s_ease-in-out_4s_infinite_both]">
+                    <div class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200/60">
+                      <img class="relative"
+                           src="{% static 'images/logo-09.svg' %}"
+                           width="21"
+                           height="13"
+                           alt="Logo 09" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Panel #4 -->
+              <div id="tabpanel-4"
+                   class="w-full h-full flex items-center justify-center"
+                   role="tabpanel"
+                   tabindex="0"
+                   aria-labelledby="tab-4"
+                   x-show="activeTab === 4"
+                   x-transition:enter="transition ease-[cubic-bezier(0.38,0,0.32,1)] duration-700 transform order-first"
+                   x-transition:enter-start="opacity-0 scale-90"
+                   x-transition:enter-end="opacity-100 scale-100"
+                   x-transition:leave="transition ease-[cubic-bezier(0.38,0,0.32,1)] duration-300 transform absolute"
+                   x-transition:leave-start="opacity-100 scale-100"
+                   x-transition:leave-end="opacity-0 scale-125">
+                <div class="absolute -translate-x-[136px]">
+                  <div class="animate-[breath_7s_ease-in-out_3s_infinite_both]">
+                    <div class="flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-03.svg' %}"
+                           width="23"
+                           height="22"
+                           alt="Logo 03" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute translate-x-[136px]">
+                  <div class="animate-[breath_7s_ease-in-out_3.5s_infinite_both]">
+                    <div class="flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-04.svg' %}"
+                           width="22"
+                           height="22"
+                           alt="Logo 04" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute -translate-x-[216px] -translate-y-[82px]">
+                  <div class="animate-[breath_6s_ease-in-out_3.5s_infinite_both]">
+                    <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-05.svg' %}"
+                           width="24"
+                           height="22"
+                           alt="Logo 05" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute translate-x-[216px] -translate-y-[82px]">
+                  <div class="animate-[breath_6s_ease-in-out_1.5s_infinite_both]">
+                    <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-02.svg' %}"
+                           width="25"
+                           height="25"
+                           alt="Logo 02" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute translate-x-[216px] translate-y-[82px]">
+                  <div class="animate-[breath_6s_ease-in-out_2s_infinite_both]">
+                    <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-07.svg' %}"
+                           width="20"
+                           height="18"
+                           alt="Logo 07" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute -translate-x-[216px] translate-y-[82px]">
+                  <div class="animate-[breath_6s_ease-in-out_2.5s_infinite_both]">
+                    <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
+                      <img class="relative"
+                           src="{% static 'images/logo-06.svg' %}"
+                           width="25"
+                           height="25"
+                           alt="Logo 06" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute -translate-x-[292px] opacity-40">
+                  <div class="animate-[breath_6s_ease-in-out_2s_infinite_both]">
+                    <div class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200/60">
+                      <img class="relative"
+                           src="{% static 'images/logo-09.svg' %}"
+                           width="20"
+                           height="20"
+                           alt="Logo 09" />
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute translate-x-[292px] opacity-40">
+                  <div class="animate-[breath_6s_ease-in-out_4s_infinite_both]">
+                    <div class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200/60">
+                      <img class="relative"
+                           src="{% static 'images/logo-08.svg' %}"
+                           width="21"
+                           height="13"
+                           alt="Logo 08" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End: Tabs component -->
+        </div>
+      </div>
+    </section>
     <!-- Features -->
-    <section class="relative before:absolute before:inset-0 before:-z-20 bg-brown-50">
+    <section class="relative before:absolute before:inset-0 before:bg-gray-900 before:-z-20">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="py-12 md:py-20">
           <!-- Section header -->
           <div class="max-w-3xl mx-auto text-center pb-16 md:pb-20">
-            <h2 class="text-3xl md:text-4xl font-bold">Updated News. All in one place. Straight to your inbox.</h2>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-200">
+              State of the Art Retrieval. Delightful developer experience
+            </h2>
           </div>
           <!-- Planet -->
-          <div class="pb-16 md:pb-20">
+          <div class="pb-16 md:pb-20" data-aos="zoom-y-out">
             <div class="text-center">
-              <div class="inline-flex relative rounded-full">
-                <img src="{% static 'images/planet.svg' %}"
-                     height="auto"
-                     width="auto"
+              <div class="inline-flex relative rounded-full before:absolute before:inset-0 before:-z-10 before:scale-[.85] before:bg-gradient-to-b before:from-blue-900 before:to-sky-700/50 before:blur-3xl before:animate-[pulse_4s_cubic-bezier(.4,0,.6,1)_infinite] after:absolute after:inset-0 after:rounded-[inherit] after:[background:radial-gradient(closest-side,theme(colors.blue.500),transparent)]">
+                <img class="bg-gray-900 rounded-full"
+                     src="{% static 'images/planet.png' %}"
+                     width="400"
+                     height="400"
                      alt="Planet" />
+                <div class="pointer-events-none" aria-hidden="true">
+                  <img class="absolute z-10 -top-20 -right-64 max-w-none"
+                       src="{% static 'images/planet-overlay.svg' %}"
+                       width="789"
+                       height="755"
+                       alt="Planet decoration" />
+                  <div>
+                    <img class="absolute z-10 top-16 -left-28 opacity-80 transition-opacity duration-500 animate-[float_4s_ease-in-out_infinite_both]"
+                         src="{% static 'images/planet-tag-01.png' %}"
+                         width="253"
+                         height="56"
+                         alt="Tag 01" />
+                    <img class="absolute z-10 top-7 left-56 opacity-30 transition-opacity duration-500 animate-[float_4s_ease-in-out_infinite_1s_both]"
+                         src="{% static 'images/planet-tag-02.png' %}"
+                         width="241"
+                         height="56"
+                         alt="Tag 02" />
+                    <img class="absolute z-10 bottom-24 -left-20 opacity-25 transition-opacity duration-500 animate-[float_4s_ease-in-out_infinite_2s_both]"
+                         src="{% static 'images/planet-tag-03.png' %}"
+                         width="243"
+                         height="56"
+                         alt="Tag 03" />
+                    <img class="absolute z-10 bottom-32 left-64 opacity-80 transition-opacity duration-500 animate-[float_4s_ease-in-out_infinite_3s_both]"
+                         src="{% static 'images/planet-tag-04.png' %}"
+                         width="251"
+                         height="56"
+                         alt="Tag 04" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           <!-- Grid -->
           <div class="grid sm:grid-cols-2 lg:grid-cols-3 overflow-hidden [&>*]:p-6 md:[&>*]:p-10 [&>*]:relative [&>*]:before:absolute [&>*]:before:bg-gray-800 [&>*]:before:[block-size:100vh] [&>*]:before:[inline-size:1px] [&>*]:before:[inset-inline-start:-1px] [&>*]:before:[inset-block-start:0] [&>*]:after:absolute [&>*]:after:bg-gray-800 [&>*]:after:[block-size:1px] [&>*]:after:[inline-size:100vw] [&>*]:after:[inset-inline-start:0] [&>*]:after:[inset-block-start:-1px]">
             <article>
-              <h3 class="font-medium flex items-center space-x-2 mb-2">
+              <h3 class="font-medium text-gray-200 flex items-center space-x-2 mb-2">
+                <svg class="fill-blue-500"
+                     xmlns="http://www.w3.org/2000/svg"
+                     width="16"
+                     height="16">
+                  <path d="M2 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4Zm2-4a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V4a4 4 0 0 0-4-4H4Zm1 10a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2H5Z" />
+                </svg>
+                <span>Wide Document Support</span>
+              </h3>
+              <p class="text-[15px] text-gray-400">Supports over 100 file formats including PDF, DOCX, PPTX, and more.</p>
+            </article>
+            <article>
+              <h3 class="font-medium text-gray-200 flex items-center space-x-2 mb-2">
+                <svg class="fill-blue-500"
+                     xmlns="http://www.w3.org/2000/svg"
+                     width="16"
+                     height="16">
+                  <path d="M14.29 2.614a1 1 0 0 0-1.58-1.228L6.407 9.492l-3.199-3.2a1 1 0 1 0-1.414 1.415l4 4a1 1 0 0 0 1.496-.093l7-9ZM1 14a1 1 0 1 0 0 2h14a1 1 0 1 0 0-2H1Z" />
+                </svg>
+                <span>Modern PgVector Features</span>
+              </h3>
+              <p class="text-[15px] text-gray-400">We use HalfVecs for faster search and reduced storage requirements.</p>
+            </article>
+            <article>
+              <h3 class="font-medium text-gray-200 flex items-center space-x-2 mb-2">
+                <svg class="fill-blue-500"
+                     xmlns="http://www.w3.org/2000/svg"
+                     width="16"
+                     height="16">
+                  <path d="M2.248 6.285a1 1 0 0 1-1.916-.57A8.014 8.014 0 0 1 5.715.332a1 1 0 0 1 .57 1.916 6.014 6.014 0 0 0-4.037 4.037Z" opacity=".3" />
+                  <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm0-2a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm1.715-6.752a1 1 0 0 1 .57-1.916 8.014 8.014 0 0 1 5.383 5.383 1 1 0 1 1-1.916.57 6.014 6.014 0 0 0-4.037-4.037Zm4.037 7.467a1 1 0 1 1 1.916.57 8.014 8.014 0 0 1-5.383 5.383 1 1 0 1 1-.57-1.916 6.014 6.014 0 0 0 4.037-4.037Zm-7.467 4.037a1 1 0 1 1-.57 1.916 8.014 8.014 0 0 1-5.383-5.383 1 1 0 1 1 1.916-.57 6.014 6.014 0 0 0 4.037 4.037Z" />
+                </svg>
+                <span>State of the Art retrieval</span>
+              </h3>
+              <p class="text-[15px] text-gray-400">
+                The API is based on the ColiPali paper and uses the ColQwen2 model for embeddings. It outperforms existing retrieval systems on both quality and latency.
+              </p>
+            </article>
+            <article>
+              <h3 class="font-medium text-gray-200 flex items-center space-x-2 mb-2">
+                <svg class="fill-blue-500"
+                     xmlns="http://www.w3.org/2000/svg"
+                     width="16"
+                     height="16">
+                  <path d="M8 0a1 1 0 0 1 1 1v14a1 1 0 1 1-2 0V1a1 1 0 0 1 1-1Zm6 3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h1a1 1 0 1 1 0 2h-1a3 3 0 0 1-3-3V4a3 3 0 0 1 3-3h1a1 1 0 1 1 0 2h-1ZM1 1a1 1 0 0 0 0 2h1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 1 0 0 2h1a3 3 0 0 0 3-3V4a3 3 0 0 0-3-3H1Z" />
+                </svg>
+                <span>Filtering</span>
+              </h3>
+              <p class="text-[15px] text-gray-400">
+                Filtering for collections and documents on arbitrary metadata fields. For example, you can filter documents by author or year. Or filter collections by type.
+              </p>
+            </article>
+            <article>
+              <h3 class="font-medium text-gray-200 flex items-center space-x-2 mb-2">
                 <svg class="fill-blue-500"
                      xmlns="http://www.w3.org/2000/svg"
                      width="16"
                      height="16">
                   <path d="M10.284.33a1 1 0 1 0-.574 1.917 6.049 6.049 0 0 1 2.417 1.395A1 1 0 0 0 13.5 2.188 8.034 8.034 0 0 0 10.284.33ZM6.288 2.248A1 1 0 0 0 5.718.33 8.036 8.036 0 0 0 2.5 2.187a1 1 0 0 0 1.372 1.455 6.036 6.036 0 0 1 2.415-1.395ZM1.42 5.401a1 1 0 0 1 .742 1.204 6.025 6.025 0 0 0 0 2.79 1 1 0 0 1-1.946.462 8.026 8.026 0 0 1 0-3.714A1 1 0 0 1 1.421 5.4Zm2.452 6.957A1 1 0 0 0 2.5 13.812a8.036 8.036 0 0 0 3.216 1.857 1 1 0 0 0 .574-1.916 6.044 6.044 0 0 1-2.417-1.395Zm9.668.04a1 1 0 0 1-.041 1.414 8.033 8.033 0 0 1-3.217 1.857 1 1 0 1 1-.571-1.917 6.035 6.035 0 0 0 2.415-1.395 1 1 0 0 1 1.414.042Zm2.242-6.255a1 1 0 1 0-1.946.462 6.03 6.03 0 0 1 0 2.79 1 1 0 1 0 1.946.462 8.022 8.022 0 0 0 0-3.714Z" />
                 </svg>
-                <span>Weight Loss/Anti-Obesity</span>
+                <span>Webpage Support</span>
               </h3>
-              <p class="text-[15px]">
-                Stay updated with the latest research and expert insights on effective weight loss strategies, from diets to medical interventions, tailored to help you achieve healthier living.
+              <p class="text-[15px] text-gray-400">
+                Automatically takes a screenshot of webpages and indexes them even if it not a file.
               </p>
             </article>
             <article>
-              <h3 class="font-medium flex items-center space-x-2 mb-2">
-                <svg class="fill-blue-500"
-                     xmlns="http://www.w3.org/2000/svg"
-                     width="16"
-                     height="16">
-                  <path d="M10.284.33a1 1 0 1 0-.574 1.917 6.049 6.049 0 0 1 2.417 1.395A1 1 0 0 0 13.5 2.188 8.034 8.034 0 0 0 10.284.33ZM6.288 2.248A1 1 0 0 0 5.718.33 8.036 8.036 0 0 0 2.5 2.187a1 1 0 0 0 1.372 1.455 6.036 6.036 0 0 1 2.415-1.395ZM1.42 5.401a1 1 0 0 1 .742 1.204 6.025 6.025 0 0 0 0 2.79 1 1 0 0 1-1.946.462 8.026 8.026 0 0 1 0-3.714A1 1 0 0 1 1.421 5.4Zm2.452 6.957A1 1 0 0 0 2.5 13.812a8.036 8.036 0 0 0 3.216 1.857 1 1 0 0 0 .574-1.916 6.044 6.044 0 0 1-2.417-1.395Zm9.668.04a1 1 0 0 1-.041 1.414 8.033 8.033 0 0 1-3.217 1.857 1 1 0 1 1-.571-1.917 6.035 6.035 0 0 0 2.415-1.395 1 1 0 0 1 1.414.042Zm2.242-6.255a1 1 0 1 0-1.946.462 6.03 6.03 0 0 1 0 2.79 1 1 0 1 0 1.946.462 8.022 8.022 0 0 0 0-3.714Z" />
-                </svg>
-                <span>Cell Gene Therapy</span>
-              </h3>
-              <p class="text-[15px]">
-                Discover the cutting-edge advancements in immunology, exploring how the immune system defends the body and the latest breakthroughs in treating autoimmune diseases and allergies. Stay informed on evidence-based practices to enhance patient outcomes and provide top-notch care.
-              </p>
-            </article>
-            <article>
-              <h3 class="font-medium flex items-center space-x-2 mb-2">
-                <svg class="fill-blue-500"
-                     xmlns="http://www.w3.org/2000/svg"
-                     width="16"
-                     height="16">
-                  <path d="M10.284.33a1 1 0 1 0-.574 1.917 6.049 6.049 0 0 1 2.417 1.395A1 1 0 0 0 13.5 2.188 8.034 8.034 0 0 0 10.284.33ZM6.288 2.248A1 1 0 0 0 5.718.33 8.036 8.036 0 0 0 2.5 2.187a1 1 0 0 0 1.372 1.455 6.036 6.036 0 0 1 2.415-1.395ZM1.42 5.401a1 1 0 0 1 .742 1.204 6.025 6.025 0 0 0 0 2.79 1 1 0 0 1-1.946.462 8.026 8.026 0 0 1 0-3.714A1 1 0 0 1 1.421 5.4Zm2.452 6.957A1 1 0 0 0 2.5 13.812a8.036 8.036 0 0 0 3.216 1.857 1 1 0 0 0 .574-1.916 6.044 6.044 0 0 1-2.417-1.395Zm9.668.04a1 1 0 0 1-.041 1.414 8.033 8.033 0 0 1-3.217 1.857 1 1 0 1 1-.571-1.917 6.035 6.035 0 0 0 2.415-1.395 1 1 0 0 1 1.414.042Zm2.242-6.255a1 1 0 1 0-1.946.462 6.03 6.03 0 0 1 0 2.79 1 1 0 1 0 1.946.462 8.022 8.022 0 0 0 0-3.714Z" />
-                </svg>
-                <span>Rare Diseases</span>
-              </h3>
-              <p class="text-[15px]">
-                Stay at the forefront of oncology with the latest research and treatment protocols in cancer care. From innovative therapies to early detection strategies, our expert insights will empower you to deliver the highest level of care and improve patient survival and quality of life.
-              </p>
-            </article>
-            <article>
-              <h3 class="font-medium flex items-center space-x-2 mb-2">
-                <svg class="fill-blue-500"
-                     xmlns="http://www.w3.org/2000/svg"
-                     width="16"
-                     height="16">
-                  <path d="M10.284.33a1 1 0 1 0-.574 1.917 6.049 6.049 0 0 1 2.417 1.395A1 1 0 0 0 13.5 2.188 8.034 8.034 0 0 0 10.284.33ZM6.288 2.248A1 1 0 0 0 5.718.33 8.036 8.036 0 0 0 2.5 2.187a1 1 0 0 0 1.372 1.455 6.036 6.036 0 0 1 2.415-1.395ZM1.42 5.401a1 1 0 0 1 .742 1.204 6.025 6.025 0 0 0 0 2.79 1 1 0 0 1-1.946.462 8.026 8.026 0 0 1 0-3.714A1 1 0 0 1 1.421 5.4Zm2.452 6.957A1 1 0 0 0 2.5 13.812a8.036 8.036 0 0 0 3.216 1.857 1 1 0 0 0 .574-1.916 6.044 6.044 0 0 1-2.417-1.395Zm9.668.04a1 1 0 0 1-.041 1.414 8.033 8.033 0 0 1-3.217 1.857 1 1 0 1 1-.571-1.917 6.035 6.035 0 0 0 2.415-1.395 1 1 0 0 1 1.414.042Zm2.242-6.255a1 1 0 1 0-1.946.462 6.03 6.03 0 0 1 0 2.79 1 1 0 1 0 1.946.462 8.022 8.022 0 0 0 0-3.714Z" />
-                </svg>
-                <span>Immuno-oncology</span>
-              </h3>
-              <p class="text-[15px]">
-                Gain deep insights into the world of rare diseases, exploring the challenges of diagnosis and the latest advancements in treatment options. Stay informed on emerging research and therapeutic approaches that can make a difference in the lives of patients with rare conditions.
-              </p>
-            </article>
-            <article>
-              <h3 class="font-medium flex items-center space-x-2 mb-2">
-                <svg class="fill-blue-500"
-                     xmlns="http://www.w3.org/2000/svg"
-                     width="16"
-                     height="16">
-                  <path d="M10.284.33a1 1 0 1 0-.574 1.917 6.049 6.049 0 0 1 2.417 1.395A1 1 0 0 0 13.5 2.188 8.034 8.034 0 0 0 10.284.33ZM6.288 2.248A1 1 0 0 0 5.718.33 8.036 8.036 0 0 0 2.5 2.187a1 1 0 0 0 1.372 1.455 6.036 6.036 0 0 1 2.415-1.395ZM1.42 5.401a1 1 0 0 1 .742 1.204 6.025 6.025 0 0 0 0 2.79 1 1 0 0 1-1.946.462 8.026 8.026 0 0 1 0-3.714A1 1 0 0 1 1.421 5.4Zm2.452 6.957A1 1 0 0 0 2.5 13.812a8.036 8.036 0 0 0 3.216 1.857 1 1 0 0 0 .574-1.916 6.044 6.044 0 0 1-2.417-1.395Zm9.668.04a1 1 0 0 1-.041 1.414 8.033 8.033 0 0 1-3.217 1.857 1 1 0 1 1-.571-1.917 6.035 6.035 0 0 0 2.415-1.395 1 1 0 0 1 1.414.042Zm2.242-6.255a1 1 0 1 0-1.946.462 6.03 6.03 0 0 1 0 2.79 1 1 0 1 0 1.946.462 8.022 8.022 0 0 0 0-3.714Z" />
-                </svg>
-                <span>Oncology</span>
-              </h3>
-              <p class="text-[15px]">
-                Explore the revolutionary field of cell and gene therapy, where cutting-edge treatments are transforming the future of medicine. Stay informed on the latest advancements, clinical trials, and therapeutic applications that are redefining possibilities in personalized medicine and offering new hope for patients with complex conditions.
-              </p>
-            </article>
-            <article>
-              <h3 class="font-medium flex items-center space-x-2 mb-2">
+              <h3 class="font-medium text-gray-200 flex items-center space-x-2 mb-2">
                 <svg class="fill-blue-500"
                      xmlns="http://www.w3.org/2000/svg"
                      width="16"
                      height="16">
                   <path d="M9 1a1 1 0 1 0-2 0v6a1 1 0 0 0 2 0V1ZM4.572 3.08a1 1 0 0 0-1.144-1.64A7.987 7.987 0 0 0 0 8a8 8 0 0 0 16 0c0-2.72-1.36-5.117-3.428-6.56a1 1 0 1 0-1.144 1.64A5.987 5.987 0 0 1 14 8 6 6 0 1 1 2 8a5.987 5.987 0 0 1 2.572-4.92Z" />
                 </svg>
-                <span>Payers/PBM news</span>
+                <span>Documents & Collections</span>
               </h3>
-              <p class="text-[15px">
-                Stay ahead with the latest updates and analysis in the payer and Pharmacy Benefit Manager (PBM) landscape. Understand evolving policies, reimbursement trends, and the impact of regulatory changes on healthcare costs and patient access to medications, helping you navigate the complexities of the healthcare system with confidence.
+              <p class="text-[15px] text-gray-400">
+                A user can have multiple collections. For example, a user can have a collection for research papers and another for books. Allowing for efficient retrieval and organization of documents. Each collection can have multiple documents with unlimited and user-defined metadata.
               </p>
             </article>
           </div>
         </div>
       </div>
     </section>
+
+    
     <!-- Pricing -->
-    <section class="bg-gray-100 flex justify-center items-center h-screen">
-      <div class="bg-white rounded-3xl shadow-lg p-8 w-3/4 max-w-screen-md">
-        <h1 class="text-4xl font-bold text-center mb-8">API Pricing</h1>
-        <div class="flex justify-between space-x-8">
-          <div class="w-1/2">
-            <h2 class="text-2xl font-semibold mb-2">Individual</h2>
-            <p class="text-4xl font-bold mb-2">
-              $25<span class="text-lg font-normal">/mo</span>
-            </p>
-            {% if request.user.is_authenticated and request.user.tier == "free" %}
-              <p class="text-gray-500 mb-6">You're currently on this plan</p>
-            {% endif %}
-            <p class="font-medium mb-4">Features include:</p>
-            <ul class="space-y-2 mb-12">
-              <li class="flex items-center">
-                <i class="fas fa-check text-green-500 mr-2"></i>
-                <span class="text-gray-600">Credit based - 1 credit per page or query</span>
-              </li>
-              <li class="flex items-center">
-                <i class="fas fa-check text-green-500 mr-2"></i>
-                <span class="text-gray-600">Free 1000 credits on signup, no CC required</span>
-              </li>
-              <li class="flex items-center">
-                <i class="fas fa-check text-green-500 mr-2"></i>
-                <span class="text-gray-600">$25 in credit monthly, then pay as you go</span>
-              </li>
-            </ul>
-            {% if request.user.is_authenticated %}
-              {% if request.user.tier == 'free' %}
-                <a href="{% url 'stripe_checkout' %}"
-                   class="w-3/4 bg-brown-500 hover:bg-brown-600 text-black font-semibold py-3 rounded-lg transition duration-300 block text-center">
-                  Upgrade to pro
-                </a>
-              {% else %}
-                <p class="text-center text-gray-500">You're already on the Pro plan</p>
-              {% endif %}
-            {% else %}
-              <button hx-get="{% url 'account_signup' %}"
-                      hx-target="body"
-                      hx-push-url="true"
-                      class="w-full bg-brown-500 hover:bg-brown-600 text-black font-semibold py-3 rounded-lg transition duration-300">
-                Sign up
-              </button>
-            {% endif %}
-          </div>
-          <div class="w-1/2">
-            <h2 class="text-2xl font-semibold mb-2">Team</h2>
-            <p class="text-4xl font-bold mb-2">
-              $250<span class="text-lg font-normal">/mo</span>
-            </p>
-            <p class="font-medium mb-4">Features include:</p>
-            <ul class="space-y-2 mb-4">
-              <li class="flex items-center">
-                <i class="fas fa-check text-green-500 mr-2"></i>
-                <span class="text-gray-600">Credit based - 1 credit per page or query</span>
-              </li>
-              <li class="flex items-center">
-                <i class="fas fa-check text-green-500 mr-2"></i>
-                <span class="text-gray-600">Free 1000 credits on signup, no CC required</span>
-              </li>
-              <li class="flex items-center">
-                <i class="fas fa-check text-green-500 mr-2"></i>
-                <span class="text-gray-600">$250 in credit monthly, then pay as you go</span>
-              </li>
-              <li class="flex items-center">
-                <i class="fas fa-check text-green-500 mr-2"></i>
-                <span class="text-gray-600">Multiple API keys/Accounts, but one bill</span>
-              </li>
-            </ul>
-            {% if request.user.is_authenticated %}
-              {% if request.user.tier == 'free' %}
-                <a href="{% url 'stripe_checkout' %}"
-                   class="w-3/4 bg-brown-500 hover:bg-brown-600 text-black font-semibold py-3 rounded-lg transition duration-300 block text-center">
-                  Upgrade to pro
-                </a>
-              {% else %}
-                <p class="text-center text-gray-500">You're already on the Pro plan</p>
-              {% endif %}
-            {% else %}
-              <button hx-get="{% url 'account_signup' %}"
-                      hx-target="body"
-                      hx-push-url="true"
-                      class="w-full bg-brown-500 hover:bg-brown-600 text-black font-semibold py-3 rounded-lg transition duration-300">
-                Sign up
-              </button>
-            {% endif %}
-          </div>
+    <section id="pricing">
+      <div class="pt-32 pb-12 md:pt-40 md:pb-20">
+
+        <!-- Section header -->
+        <div class="text-center pb-12">
+            <h1
+                class="text-5xl md:text-6xl font-bold mb-6 border-y [border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1]">
+                Plans that match your needs</h1>
+            <div class="max-w-3xl mx-auto">
+                <p class="text-lg text-gray-700">No matter
+                    how many documents you have - our pricing is simple, transparent and adapts to
+                    the size of your usage.</p>
+            </div>
         </div>
-        {% if request.user.is_authenticated and request.user.tier == "free" and dashboard %}
-          <a href="{% url 'dashboard' %}"
-             class="block mt-5 text-center underline decoration-red-500 text-gray-600 hover:text-gray-900">Skip for now</a>
-        {% endif %}
-      </div>
-    </section>
-    <!-- Testimonials -->
-    <section class="bg-brown-50">
-      <div class="mx-auto max-w-screen-xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <h2 class="text-center text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">What our customers have to say</h2>
-        <div class="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-8">
-          <blockquote class="rounded-lg bg-gray-50 p-6 shadow-sm sm:p-8">
-            <div class="flex items-center gap-4">
-              <img alt=""
-                   height="40"
-                   width="40"
-                   src="https://images.unsplash.com/photo-1595152772835-219674b2a8a6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80"
-                   class="size-14 rounded-full object-cover" />
-              <div>
-                <div class="flex justify-center gap-0.5 text-green-500">
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                       class="size-5"
-                       viewBox="0 0 20 20"
-                       fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                       class="size-5"
-                       viewBox="0 0 20 20"
-                       fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                       class="size-5"
-                       viewBox="0 0 20 20"
-                       fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                       class="size-5"
-                       viewBox="0 0 20 20"
-                       fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                       class="size-5"
-                       viewBox="0 0 20 20"
-                       fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
+
+        <!-- Pricing tables -->
+        <div x-data="{ isCloud: true }">
+
+            <!-- Pricing toggle -->
+            <div class="flex justify-center max-w-xs m-auto mb-16">
+                <div class="relative flex w-full mx-6 p-1 bg-gray-200 rounded-lg">
+                    <span class="absolute inset-0 m-1 pointer-events-none" aria-hidden="true">
+                        <span
+                            class="absolute inset-0 w-1/2 bg-white rounded shadow transform transition"
+                            :class="isCloud ? 'translate-x-0' : 'translate-x-full'"></span>
+                    </span>
+                    <button class="relative flex-1 text-sm font-medium p-1 transition"
+                        :class="{'text-gray-500':isCloud}" @click="isCloud = true"
+                        :aria-pressed="!isCloud">API</button>
+
+                    <button class="relative flex-1 text-sm font-medium p-1 transition"
+                        :class="{'text-gray-500':!isCloud}" @click="isCloud = false"
+                        :aria-pressed="isCloud">On-Prem
+                   
+                    </button>
+                    
                 </div>
-                <p class="mt-0.5 text-lg font-medium text-gray-900">Paul Starr</p>
-              </div>
             </div>
-            <p class="mt-4 text-gray-700">
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Culpa sit rerum incidunt, a
-              consequuntur recusandae ab saepe illo est quia obcaecati neque quibusdam eius accusamus
-              error officiis atque voluptates magnam!
-            </p>
-          </blockquote>
-          <blockquote class="rounded-lg bg-gray-50 p-6 shadow-sm sm:p-8">
-            <div class="flex items-center gap-4">
-              <img alt=""
-                   height="40"
-                   width="40"
-                   src="https://images.unsplash.com/photo-1595152772835-219674b2a8a6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80"
-                   class="size-14 rounded-full object-cover" />
-              <div>
-                <div class="flex justify-center gap-0.5 text-green-500">
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                       class="size-5"
-                       viewBox="0 0 20 20"
-                       fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                       class="size-5"
-                       viewBox="0 0 20 20"
-                       fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                       class="size-5"
-                       viewBox="0 0 20 20"
-                       fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                       class="size-5"
-                       viewBox="0 0 20 20"
-                       fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                       class="size-5"
-                       viewBox="0 0 20 20"
-                       fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
+
+            <div
+                class="max-w-sm md:max-w-2xl xl:max-w-none mx-auto grid gap-8 md:grid-cols-2 xl:grid-cols-2 xl:gap-6 items-start">
+
+                <!-- Pricing table 1 -->
+                <div
+                    class="relative flex flex-col h-full p-5 rounded-2xl backdrop-blur-sm bg-white/70 shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-transparent before:[background:linear-gradient(theme(colors.gray.100),theme(colors.gray.200))_border-box] before:[mask:linear-gradient(white_0_0)_padding-box,_linear-gradient(white_0_0)] before:[mask-composite:exclude_!important] before:pointer-events-none">
+                    <div class="mb-4">
+                        <div class="font-medium underline underline-offset-4 decoration-gray-300 mb-1">
+                          <span x-text="isCloud ? 'Developer' : 'Team'"></span>
+                        </div>
+                        <div
+                            class="flex items-baseline pb-4 mb-4 border-b border-gray-200 border-dashed">
+                            <span class="text-2xl font-bold">$</span>
+                            <span x-text="isCloud ? 25 : 5000"
+                                class="text-4xl font-bold tabular-nums"></span>
+                            <span class="text-sm text-gray-500 pl-1">/month</span>
+                        </div>
+                        <div class="grow text-sm text-gray-700"
+                        x-text="isCloud ? 'For starting out, staging sites, and solo developers.' : 'For small teams and startups.'">
+                        </div>
+                    </div>
+                    <ul class="text-sm text-gray-500 space-y-2 grow">
+                        <li class="flex items-center">
+                            <svg class="w-3 h-3 fill-current text-emerald-500 mr-2 shrink-0"
+                                viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
+                            </svg>
+                            <span
+                            x-text="isCloud ? 'Credit based - 1 credit per page or query' : 'Up to 2M queries per month'"> </span>
+                      
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-3 h-3 fill-current text-emerald-500 mr-2 shrink-0"
+                                viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
+                            </svg>
+                            <span
+                            x-text="isCloud ? 'Free 1000 credits on signup, no CC required' : ' Priority support'"> </span>
+                       
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-3 h-3 fill-current text-emerald-500 mr-2 shrink-0"
+                                viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
+                            </svg>
+                            <span
+                            x-text="isCloud ? '$25 in credit monthly, then pay as you go' : 'Support SLA'"> </span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-3 h-3 fill-current text-emerald-500 mr-2 shrink-0"
+                                viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
+                            </svg>
+                            <span
+                            x-text="isCloud ? 'Hosted API' : 'Self-hosted'"> </span>
+                        </li>
+                    </ul>
+                    <div class="mt-6">
+                      <a 
+                      class="btn-sm py-1.5 rounded-lg text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
+                      :href="isCloud ? '{% url 'account_signup' %}' : 'mailto:founders@tjmlabs.com'" 
+                      x-text="isCloud ? 'Try for free' : 'Contact us'"></a>
+                
+                    </div>
                 </div>
-                <p class="mt-0.5 text-lg font-medium text-gray-900">Paul Starr</p>
-              </div>
-            </div>
-            <p class="mt-4 text-gray-700">
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Culpa sit rerum incidunt, a
-              consequuntur recusandae ab saepe illo est quia obcaecati neque quibusdam eius accusamus
-              error officiis atque voluptates magnam!
-            </p>
-          </blockquote>
-          <blockquote class="rounded-lg bg-gray-50 p-6 shadow-sm sm:p-8">
-            <div class="flex items-center gap-4">
-              <img alt=""
-                   height="40"
-                   width="40"
-                   src="https://images.unsplash.com/photo-1595152772835-219674b2a8a6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1180&q=80"
-                   class="size-14 rounded-full object-cover" />
-              <div>
-                <div class="flex justify-center gap-0.5 text-green-500">
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                       class="size-5"
-                       viewBox="0 0 20 20"
-                       fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                       class="size-5"
-                       viewBox="0 0 20 20"
-                       fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                       class="size-5"
-                       viewBox="0 0 20 20"
-                       fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                       class="size-5"
-                       viewBox="0 0 20 20"
-                       fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                       class="size-5"
-                       viewBox="0 0 20 20"
-                       fill="currentColor">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
+
+                <!-- Pricing table 2 -->
+                <div
+                    class="relative flex flex-col h-full p-5 rounded-2xl backdrop-blur-sm bg-white/70 shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-transparent before:[background:linear-gradient(theme(colors.gray.100),theme(colors.gray.200))_border-box] before:[mask:linear-gradient(white_0_0)_padding-box,_linear-gradient(white_0_0)] before:[mask-composite:exclude_!important] before:pointer-events-none">
+                    <div class="mb-4">
+                        <div class="font-medium underline underline-offset-4 decoration-gray-300 mb-1">
+                        <span x-text="isCloud? 'Team' : 'Enterprise'"> </span>    
+                        </div>
+                        <div
+                            class="flex items-baseline pb-4 mb-4 border-b border-gray-200 border-dashed">
+                            <span class="text-2xl font-bold"
+                            x-text="isCloud ? '$' : ''"> </span>
+                            <span x-text="isCloud ? 250 : 'Custom'"
+                                class="text-4xl font-bold tabular-nums"></span>
+                            <span class="text-sm text-gray-500 pl-1"
+                            x-text="isCloud ? '/month' : ''"> </span>
+                        </div>
+                        <div class="grow text-sm text-gray-700"
+                        x-text="isCloud ? 'For small teams and startups.' : 'For large teams and enterprises.'"> </div>
+                    
+                    </div>
+                    <ul class="text-sm text-gray-500 space-y-2 grow">
+                        <li class="flex items-center">
+                            <svg class="w-3 h-3 fill-current text-emerald-500 mr-2 shrink-0"
+                                viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
+                            </svg>
+                            <span
+                            x-text="isCloud ? 'Credit based - 1 credit per page or query' : 'Unlimited queries'"> </span>
+                           
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-3 h-3 fill-current text-emerald-500 mr-2 shrink-0"
+                                viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
+                            </svg>
+                            <span
+                            x-text="isCloud ? 'Free 1000 credits on signup, no CC required' : 'Dedicated account manager'"> </span>
+                           
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-3 h-3 fill-current text-emerald-500 mr-2 shrink-0"
+                                viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
+                            </svg>
+                            <span
+                            x-text="isCloud ? '$250 in credit monthly, then pay as you go' : 'Custom SLA'"> </span>
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-3 h-3 fill-current text-emerald-500 mr-2 shrink-0"
+                                viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
+                            </svg>
+                            <span
+                            x-text="isCloud ? 'Hosted API' : 'Self-hosted'"> </span>
+                        </li>
+                    </ul>
+                    <div class="mt-6">
+                      <a 
+                      class="btn-sm py-1.5 rounded-lg text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
+                      :href="isCloud ? '{% url 'account_signup' %}' : 'mailto:founders@tjmlabs.com'" 
+                      x-text="isCloud ? 'Try for free' : 'Contact us'"></a>
+                    </div>
                 </div>
-                <p class="mt-0.5 text-lg font-medium text-gray-900">Paul Starr</p>
-              </div>
+
             </div>
-            <p class="mt-4 text-gray-700">
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Culpa sit rerum incidunt, a
-              consequuntur recusandae ab saepe illo est quia obcaecati neque quibusdam eius accusamus
-              error officiis atque voluptates magnam!
-            </p>
-          </blockquote>
+
         </div>
-      </div>
+
+    </div>
     </section>
-    <section class="p-8">
+
+    <section>                    
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
-        <div class="rounded-2xl text-center relative overflow-hidden shadow-xl before:absolute before:inset-0 before:rounded-2xl before:bg-brown-50 before:pointer-events-none before:-z-10">
-          <div class="py-12 md:py-20 px-4 md:px-12">
-            <h2 class="text-3xl md:text-4xl font-bold mb-6 md:mb-12 border-y [border-image:linear-gradient(to_right,transparent,theme(colors.slate.400/.7),transparent)1]">
-              Get caught up today with ColiVara
-            </h2>
-            <div class="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center">
-              <a class="btn bg-brown-500 hover:bg-brown-600 shadow w-full mb-4 sm:w-auto sm:mb-0 group"
-                 href="{% url 'account_signup' %}">
-                <span class="relative inline-flex items-center">Subscribe now</span>
-              </a>
-            </div>
+          <div class="rounded-2xl text-center relative overflow-hidden shadow-xl before:absolute before:inset-0 before:rounded-2xl before:bg-gray-900 before:pointer-events-none before:-z-10" data-aos="zoom-y-out">
+              <!-- Glow -->
+              <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 -z-10" aria-hidden="true">
+                  <div class="w-[480px] h-56 rounded-full border-[20px] border-blue-500 blur-3xl"></div>
+              </div>                      
+              <!-- Stripes illustration -->
+              <div class="absolute left-1/2 transform -translate-x-1/2 top-0 pointer-events-none -z-10" aria-hidden="true">
+                  <img class="max-w-none" src="{% static 'images/stripes-dark.svg' %}" width="768" height="432" alt="Stripes" />
+              </div>                         
+              <div class="py-12 md:py-20 px-4 md:px-12">
+                  <h2 class="text-3xl md:text-4xl text-gray-200 font-bold mb-6 md:mb-12 border-y [border-image:linear-gradient(to_right,transparent,theme(colors.slate.700/.7),transparent)1]">Create your next project with ColiVara</h2>
+                  <div class="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center">
+                      <a class="btn text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full mb-4 sm:w-auto sm:mb-0 group" href="{% url 'account_signup' %}">
+                          <span class="relative inline-flex items-center">
+                              Start Free Trial <span class="tracking-normal text-blue-300 group-hover:translate-x-0.5 transition-transform ml-1">-&gt;</span>
+                          </span>
+                      </a>
+                  </div>                            
+              </div>
           </div>
-        </div>
       </div>
-    </section>
+  </section>
+  
   </main>
 {% endblock content %}

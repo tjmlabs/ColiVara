@@ -35,7 +35,7 @@
                     {% else %}
                         <li class="px-3 py-1">
                             <a class="text-gray-700 hover:text-gray-900 flex items-center transition"
-                               href="{% url 'pricing' %}">Pricing</a>
+                               href="#pricing">Pricing</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -45,7 +45,7 @@
                 {% if request.user.is_authenticated %}
                     {% if request.user.tier == "free" %}
                         <li>
-                            <a class="btn-sm bg-brown-500 hover:bg-brown-600 shadow"
+                            <a class="btn-sm text-gray-200 bg-gray-800 hover:bg-gray-900 shadow"
                                href="{% url 'stripe_checkout' %}">Upgrade to Pro</a>
                         </li>
                         <span class="h-6 w-px bg-gray-300"></span>
@@ -71,7 +71,7 @@
                            href="{% url 'account_login' %}">Login</a>
                     </li>
                     <li>
-                        <a class="btn-sm bg-brown-500 hover:bg-brown-600 shadow"
+                        <a class="btn-sm text-gray-200 bg-gray-800 hover:bg-gray-900 shadow"
                            href="{% url 'account_signup' %}">Sign Up</a>
                     </li>
                 {% endif %}
@@ -124,7 +124,7 @@
                         {% else %}
                             <li>
                                 <a class="flex text-gray-700 hover:bg-gray-100 rounded-lg py-1.5 px-2"
-                                   href="{% url 'pricing' %}">Pricing</a>
+                                   href="#pricing">Pricing</a>
                             </li>
                         {% endif %}
                     </ul>

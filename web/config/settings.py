@@ -46,8 +46,6 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.github",
-    # tailwind
-    "django_tailwind_cli",
     # corsheaders
     "corsheaders",
     # local
@@ -279,5 +277,3 @@ if SENTRY_DSN:
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
-
-TAILWIND_CLI_SRC_CSS = "static/css/style.css"

@@ -1,55 +1,72 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
-  <section class="relative w-full h-screen overflow-hidden">
-    <div class="relative flex justify-center items-center h-full">
-      <div class="bg-white p-8 rounded-3xl shadow-lg max-w-md text-center w-full md:w-1/2">
-        <h1 class="text-2xl font-bold text-slate-900">Sign in to your account</h1>
-        <form id="loginForm"
-              action="{% url 'account_request_login_code' %}"
-              method="post">
-          {% csrf_token %}
-          {% if form.errors %}
-            {% include "partials/form_errors.html" %}
-          {% endif %}
-          <div class="pt-8 col-span-6 sm:col-span-3 text-left">
-            <label for="id_login" class="block text-sm font-medium text-slate-700">Email</label>
-            <input type="email"
-                   id="Email"
-                   name="email"
-                   placeholder="corybarker@email.com"
-                   required
-                   maxlength="320"
-                   autocomplete="email"
-                   class="mt-1 w-full rounded-md border-slate-200 shadow-sm sm:text-sm" />
+<main class="relative grow flex">
+
+  <div class="absolute left-0 -translate-x-1/3 bottom-0 pointer-events-none" aria-hidden="true">
+      <div class="w-80 h-80 rounded-full bg-gradient-to-tr from-blue-500 opacity-70 blur-[160px]"></div>
+  </div>
+
+  <!-- Content -->
+  <div class="w-full">
+
+      <div class="h-full flex flex-col justify-center before:min-h-[4rem] md:before:min-h-[5rem] before:flex-1 after:flex-1">
+
+          <div class="px-4 sm:px-6">
+              <div class="w-full max-w-sm mx-auto">
+                  <div class="py-16 md:py-20">
+
+                      <div class="mb-10">
+                          <h1 class="text-4xl font-bold">Sign in to your account</h1>
+                      </div>
+                      
+                      <!-- Form -->
+                      <form id="loginForm" action="{% url 'account_request_login_code' %}" method="post">
+                        {% csrf_token %}
+                        {% if form.errors %}
+                          {% include "partials/form_errors.html" %}
+                        {% endif %}
+                          <div class="space-y-4">
+                              <div>
+                                  <label class="block text-sm text-gray-700 font-medium mb-1" for="Email">Email</label>
+                                  <input id="Email" name="email" class="form-input py-2 w-full" type="email" placeholder="corybarker@email.com" required />
+                              </div>
+                          </div>
+                          <div class="mt-6">
+                              <button class="btn text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full">Continue</button>
+                          </div>
+                          <p class="mt-2 text-sm text-slate-500" id="code-description">
+                            You will receive an email containing a special code for a password-free sign-in.
+                          </p>
+                      </form>
+                      
+                      <div class="text-center mt-6">
+                        <a class="text-sm text-gray-700 underline hover:no-underline" href="{% url 'account_signup' %}">Need an account? Sign up</a>.
+                      </div>
+                      <!-- log out to cancel-->
+                      <div class="text-center">
+                        <a class="text-sm text-gray-700 underline hover:no-underline" href="{% url 'account_logout' %}">Cancel</a>
+                      </div>
+                  </div>
+              </div>
           </div>
-          <div class="pt-8">
-            <input type="submit"
-                   value="Continue"
-                   class="w-full bg-brown-500 hover:bg-brown-600 text-black py-2 rounded-md font-medium" />
-            <p class="mt-2 text-sm">
-              <a class="underline" href="{% url 'account_login' %}">Sign in with password</a>
-            </p>
-          </div>
-          <div class="col-span-6 sm:items-center sm:gap-4">
-            <p class="mt-2 text-sm text-slate-500" id="code-description">
-              You will receive an email containing a special code for a password-free sign-in.
-            </p>
-            <p class="mt-4 text-sm text-slate-500 sm:mt-0">
-              Need an account?
-              <a href="{% url 'account_signup' %}" class="text-slate-700 underline">Sign up</a>.
-            </p>
-          </div>
-        </form>
+
       </div>
-    </div>
-    <!-- Wavy SVG Background -->
-    <div class="fixed bottom-0 w-full h-11/12 -z-10">
-      <svg class="w-full h-full"
-           viewBox="0 0 1440 464"
-           fill="none"
-           xmlns="http://www.w3.org/2000/svg">
-        <path d="M864 160C688.291 241.356 563.242 55.5988 282 96.5C203.734 119.405 162.635 147.912 97.5 233.5C42.1525 319.506 7.60938 369.622 -15.5 460C36.1 537.2 837.833 575.5 1223.5 585L1444 460V56.5C1448 43 1362.56 -8.87052 1270.5 1.49996C1178.44 11.8704 1039.71 78.6435 864 160Z" fill="#FFEDD5" />
-      </svg>
-    </div>
-  </section>
+
+  </div>
+
+  <!-- Right side -->
+  <div class="hidden relative lg:block shrink-0 w-[572px] my-6 mr-6 rounded-2xl overflow-hidden">
+      <!-- Background -->
+      <div class="bg-blue-50 absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 -ml-24 pointer-events-none -z-10" aria-hidden="true">
+          <img src="{% static 'images/auth-bg.svg' %}" class="max-w-none"width="1285" height="1684" alt="Auth bg">
+      </div>                
+      <!-- Illustration -->
+      <div class="absolute top-1/2 -translate-y-1/2 left-32 w-[500px]">
+          {% include "partials/code_snippet.html" %}
+      </div>
+  </div>
+
+</main>
+
 {% endblock content %}

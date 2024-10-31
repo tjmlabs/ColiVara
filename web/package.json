@@ -1,0 +1,17 @@
+{
+  "name": "colivara-frontend",
+  "description": "Simple HTML template - colivara.com",
+  "version": "1.0.0",
+  "homepage": "https://colivara.com",
+  "scripts": {
+    "dev": "npx tailwindcss -i ./static/css/style.css -o ./static/css/tailwind.css --watch",
+    "build": "npx tailwindcss -i ./static/css/style.css -o /static/css/tailwind.css --minify"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.7",
+    "tailwindcss": "^3.3.6"
+  },
+  "dependencies": {
+    "@tailwindcss/typography": "^0.5.13"
+  }
+}
