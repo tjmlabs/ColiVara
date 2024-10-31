@@ -46,7 +46,7 @@
                     {% if request.user.tier == "free" %}
                         <li>
                             <a class="btn-sm text-gray-200 bg-gray-800 hover:bg-gray-900 shadow"
-                               href="{% url 'stripe_checkout' %}">Upgrade to Pro</a>
+                               href="{% url 'stripe_checkout' %}">Upgrade</a>
                         </li>
                         <span class="h-6 w-px bg-gray-300"></span>
                     {% endif %}
