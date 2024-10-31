@@ -10,3 +10,4 @@ __pycache__/
 .env.prod
 .ruff_cache/
 coverage.xml
+node_modules/
