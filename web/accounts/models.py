@@ -77,10 +77,11 @@ class CustomUser(AbstractUser):
     def get_credit_usage(self):
         stripe.api_key = settings.STRIPE_SECRET_KEY
         customer_id = self.stripe_customer_id
-        if not customer_id:
-            return []
         if self.tier == "team":
             customer_id = self.team.owner.stripe_customer_id
+
+        if not customer_id:
+            return []
 
         now = datetime.datetime.utcnow().replace(
             hour=0, minute=0, second=0, microsecond=0

@@ -192,7 +192,11 @@
                                             <!-- The data-scrollspy-target attribute makes the scrollspy work -->
                                             <h2 data-scrollspy-target id="usage">API Usage</h2>
                                             <p>
-                                                {{ credits_used }} credits used out of {{ request.user.available_credits }} credits in the past 30 days.
+                                                {% if request.user.tier == "free" %}
+                                                You have {{ request.user.available_credit }} remaining credits before you need to upgrade to a paid plan.
+                                                {% else %}
+                                                {{ credits_used }} credits used out of {{ starting_credits }} credits in the past 30 days. Additional usage will be billed at 0.01 $ per credit
+                                                {% endif %}
                                             </p>
                                             
 
@@ -277,38 +281,14 @@
                                             </p>
 
                                             <h2 data-scrollspy-target id="settings">Settings</h2>
-                                            <form action="{% url 'edit_account' %}" method="post">
-                                                {% csrf_token %}
-                                                {% if form.errors %}
-                                                  {% include "partials/form_errors.html" %}
-                                                {% endif %}
-                                                <div class="space-y-4">
-                                                    <div>
-                                                        <label class="block text-sm text-gray-700 font-medium mb-1" for="name">First Name</label>
-                                                        <input id="first_name" name="first_name" class="form-input py-2 w-full" type="text" value="{{ request.user.first_name }}" />
+                                                <div>
+                                                    <h3 class="text-xl leading-snug text-black font-bold mb-1">Password</h3>
+                                                    <div class="mt-5">
+                                                        <a href="{% url 'account_change_password' %}"> Set New Password</a>
                                                     </div>
-                                                    <div>
-                                                        <label class="block text-sm text-gray-700 font-medium mb-1" for="business-id">Last Name</label>
-                                                        <input id="last_name" name="last_name" class="form-input py-2 w-full" type="text" value="{{ request.user.last_name }}" />
-                                                    </div>
-                                                    
-                                                    <div>
-                                                        <label class="block text-sm text-gray-700 font-medium mb-1" for="email">Email</label>
-                                                        <input id="email" name="email" class="form-input py-2 w-full" type="email" value="{{ request.user.email }}" readonly />  
-                                                    </div>
-
-                                                    <div>
-                                                        <h3 class="text-xl leading-snug text-black font-bold mb-1">Password</h3>
-                                                        <div class="mt-5">
-                                                            <a href="{% url 'account_change_password' %}"> Set New Password</a>
-                                                        </div>
-                                                    </div>
-
-                                                    <button class="btn text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full">
-                                                        Save Changes
-                                                    </button>
                                                 </div>
-                                            </form>
+
+                                            
                                             
                                             <h2 data-scrollspy-target id="team">Team</h2>
                                             {% if request.user.tier == "team" and request.user.team.owner == request.user %}
