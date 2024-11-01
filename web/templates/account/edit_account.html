@@ -1,184 +1,363 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
-<!-- Content area -->
-    <div class="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">            
-        <main class="grow">
-            <div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
-                <!-- Page header -->
-                <div class="pl-40 mb-4">
-                    <!-- Title -->
-                    <h1 class="text-2xl md:text-3xl text-black font-bold mb-8">Account Settings</h1>
-                    <div class="flex items-center space-x-4">
-                        {% if request.user.tier == "individual" %}
-                            <h2 class="text-2xl text-black font-bold">Current Plan: Individual</h2>
-                        {% else %}
-                            <h2 class="text-2xl text-black font-bold">Current Plan: Team</h2>
-                        {% endif %}
+<main class="grow">
+        
+    <section class="relative">
+
+        <!-- Stripes illustration -->
+        <div class="absolute left-1/2 transform -translate-x-1/2 top-0 pointer-events-none -z-10" aria-hidden="true">
+            <img class="max-w-none" src="{% static 'images/stripes.svg' %}" width="768" height="432" alt="Stripes" />
+        </div>
+
+        <!-- Circles -->
+        <div class="absolute left-1/2 -translate-x-1/2 -top-32 ml-[580px] pointer-events-none" aria-hidden="true">
+            <div class="w-80 h-80 rounded-full bg-gradient-to-tr from-blue-500 opacity-50 blur-[160px]"></div>
+        </div>
+        <div class="absolute left-1/2 -translate-x-1/2 top-[420px] ml-[380px] pointer-events-none" aria-hidden="true">
+            <div
+                class="w-80 h-80 rounded-full bg-gradient-to-tr from-blue-500 to-gray-900 opacity-50 blur-[160px]">
+            </div>
+        </div>        
+
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+
+            <!-- Main content -->
+            <div class="flex justify-between pt-32 pb-12 md:pt-40 md:pb-20" x-data="{ sidebarExpanded: false }">
+
+                <!-- Backdrop -->
+                <div
+                    class="md:hidden fixed inset-0 z-50 bg-gray-900 bg-opacity-20 transition-opacity"
+                    x-show="sidebarExpanded"
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition ease-out duration-100"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    x-cloak
+                    aria-hidden="true"
+                ></div>                        
+
+                <!-- Sidebar -->
+                <aside
+                    id="sidebar"
+                    class="max-md:fixed max-md:left-0 max-md:inset-y-0 max-md:z-50 w-[268px] max-md:h-screen max-md:bg-gray-50 md:border-r [border-image:linear-gradient(to_bottom,theme(colors.slate.200),theme(colors.slate.300),transparent)1] md:shrink-0 md:!opacity-100 md:!block"
+                    @click.outside="sidebarExpanded = false"
+                    @keydown.escape.window="sidebarExpanded = false"
+                    x-show="sidebarExpanded"
+                    x-transition:enter="transition ease-out duration-200 transform"
+                    x-transition:enter-start="opacity-0 -translate-x-full"
+                    x-transition:enter-end="opacity-100 translate-x-0"
+                    x-transition:leave="transition ease-out duration-200"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    x-cloak                                         
+                >
+
+                    <div class="sticky top-24 max-md:fixed max-md:inset-y-0 max-md:w-[268px] overflow-y-auto no-scrollbar px-8 py-4 md:py-2">
+                        <!-- Docs nav -->
+                        <nav class="md:block space-y-8">
+                            <!-- Documentation -->
+                            <div>
+                                <div class="font-bold mb-3">Dashboard</div>
+                                <ul class="text-sm space-y-2">
+                                    <li>
+                                        <a class="relative flex items-center text-gray-700 hover:text-gray-900 group gap-x-3" href="#usage">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                                              </svg>
+                                            Usage</a>
+                                    </li>
+                                    <li>
+                                        <a class="relative flex items-center text-gray-700 hover:text-gray-900 group gap-x-3" href="#api-keys">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
+                                              </svg>
+                                            API Keys</a>
+                                    </li>
+                                    <li>
+                                        <a class="relative flex items-center text-gray-700 hover:text-gray-900 group gap-x-3" href="#plans">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                              </svg>
+                          
+                                            Plans</a>
+                                    </li>
+                                    <li>
+                                        <a class="relative flex items-center text-gray-700 hover:text-gray-900 group gap-x-3" href="#subscription">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />
+                                              </svg>
+                                            
+                                            Subscription</a>
+                                    </li>            
+                                    <li>
+                                        <a class="relative flex items-center text-gray-700 hover:text-gray-900 group gap-x-3" href="#documentation">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                                              </svg>
+                                              Documentation</a>
+                                    </li>
+                                    
+                                    <li>
+                                        <a class="relative flex items-center text-gray-700 hover:text-gray-900 group gap-x-3" href="#api-reference">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                                              </svg>
+                                              API Reference</a>
+                                    </li>
+                                    <li>
+                                        <a class="relative flex items-center text-gray-700 hover:text-gray-900 group gap-x-3" href="#settings">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                              </svg>
+                                            Settings</a>
+                                    </li>
+
+                                    <li>
+                                        <a class="relative flex items-center text-gray-700 hover:text-gray-900 group gap-x-3" href="#team">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                              </svg>
+                                            Team </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="relative flex items-center text-gray-700 hover:text-gray-900 group gap-x-3" href="#support">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                                              </svg>
+                                              Support</a>
+                                    </li>
+                                    
+                                </ul>
+                            </div>
+                        </nav>
                     </div>
-                </div>
 
-                <div class="shadow-sm rounded-xl mb-4">
-                    <div class="flex flex-col md:flex-row md:-mr-px">
-                        <!-- Panel -->
-                        <div class="grow">
-                            <form action="{% url 'edit_account' %}" method="post">
-                            {% csrf_token %}
-                            {% if form.errors %}
-                                {% include "partials/form_errors.html" %}
-                            {% endif %}
-                                <!-- Panel body -->
-                                <div class="pb-6 pl-40 space-y-6">
-                                    <!-- Profile -->
-                                    <section>
-                                        <h3 class="text-xl leading-snug text-black font-bold mb-1">Profile</h3>
-                                        <div class="sm:flex sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 mt-5">
-                                            <div class="sm:w-1/3">
-                                                <label class="block text-sm font-medium mb-1" for="name">First Name</label>
-                                                <input id="first_name" name="first_name" class="form-input w-full" type="text" value="{{ request.user.first_name }}" />
-                                            </div>
-                                            <div class="sm:w-1/3">
-                                                <label class="block text-sm font-medium mb-1" for="business-id">Last Name</label>
-                                                <input id="last_name" name="last_name" class="form-input w-full" type="text" value="{{ request.user.last_name }}" />
-                                            </div>
-                                        </div>
-                                    </section>
+                </aside>
 
-                                    <!-- Email -->
-                                    <section>
-                                        <h3 class="text-xl leading-snug text-black font-bold mb-1">Email</h3>
-                                        <div class="flex flex-wrap mt-5">
-                                            <div class="mr-2 w-1/3">
-                                                <label class="sr-only" for="email">Email</label>
-                                                <input id="email" name="email" class="form-input w-full" type="email" value="{{ request.user.email }}" />
-                                            </div>
-                                        </div>
-                                    </section>
+                <!-- Page container -->
+                <div class="grow w-full">
+                    <div class="md:pl-6 lg:pl-12">
+                        <div class="max-w-[740px] ml-auto">                            
 
-                                    <!-- Password -->
-                                    <section>
-                                        <h3 class="text-xl leading-snug text-black font-bold mb-1">Password</h3>
-                                        <div class="mt-5">
-                                            <a href="{% url 'account_change_password' %}">
-                                                <button class="btn bg-white text-black border-gray-200 dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600">Set New Password</button>
-                                            </a>
-                                        </div>
-                                    </section>
+                            <article class="pb-10 border-b border-gray-200">
 
-                                    <!-- Token -->
-                                    <section>
-                                        <h3 class="text-xl leading-snug text-black font-bold mb-1">Token</h3>
-                                        <div class="flex flex-wrap mt-5">
-                                            <div class="mr-2 w-1/3">
-                                                <label class="sr-only" for="token">Token</label>
-                                                <input id="token" name="token" class="form-input w-full" type="text" value="{{ request.user.token }}" readonly />
-                                            </div>
+                                <!-- Main area -->
+                                <div class="min-w-0">
+
+                                    <!-- Mobile hamburger + breadcrumbs -->
+                                    <div class="md:hidden flex items-center mb-8">
+                                        <!-- Hamburger button -->
+                                        <button
+                                            class="group inline-flex w-8 h-8 bg-white hover:bg-gray-50 shadow rounded-lg text-center items-center justify-center transition"
+                                            @click.stop="sidebarExpanded = !sidebarExpanded"
+                                            aria-controls="sidebar"
+                                            :aria-expanded="sidebarExpanded"
+                                        >
+                                            <span class="sr-only">Menu</span>
+                                            <svg class="w-4 h-4 fill-current pointer-events-none" viewBox="0 0 16 16"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <rect
+                                                    class="origin-center group-[[aria-expanded=true]]:rotate-[315deg] group-[[aria-expanded=true]]:[y:7] group-[[aria-expanded=true]]:[x:0] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)]"
+                                                    y="2" x="7" width="9" height="2" rx="1"></rect>
+                                                <rect
+                                                    class="origin-center group-[[aria-expanded=true]]:rotate-45 transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.8)]"
+                                                    y="7" width="16" height="2" rx="1"></rect>
+                                                <rect
+                                                    class="origin-center group-[[aria-expanded=true]]:rotate-[135deg] group-[[aria-expanded=true]]:[y:7] group-[[aria-expanded=true]]:[x:0] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)]"
+                                                    y="12" width="9" height="2" rx="1"></rect>
+                                            </svg>
+                                        </button>                                                
+                                        <!-- Breadcrumbs -->
+                                        <div class="flex items-center text-sm whitespace-nowrap min-w-0 ml-3">
+                                            <span class="text-gray-600">Dashboard</span>
+                                            <svg class="fill-gray-400 shrink-0 !mx-2 -rotate-90" width="11" height="7" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="m2 .94 3.5 3.5L9 .94 10.06 2 5.5 6.56.94 2 2 .94Z" />
+                                            </svg>
+                                            <span class="font-medium truncate">Usage</span>
                                         </div>
-                                    </section>
+                                    </div>                                        
+
+                                    <!-- Article content -->
+                                    <div>
+                                        <header class="mb-10">
+                                            <h1 class="text-3xl font-bold mb-3">Account Dashboard</h1>
+                                            <p class="text-lg text-gray-700">You are on {{ request.user.get_tier_display|lower }} plan</p>
+                                        </header>
+                                        <div class="prose text-gray-700 max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-a:font-medium prose-a:text-blue-500 prose-a:no-underline hover:prose-a:underline prose-strong:font-medium prose-strong:text-gray-900 prose-code:font-mono prose-code:text-gray-900 prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-[''] prose-code:after:content-[''] prose-pre:bg-gray-900 prose-pre:border prose-pre:border-gray-700 prose-headings:scroll-mt-24">
+                                            <!-- The data-scrollspy-target attribute makes the scrollspy work -->
+                                            <h2 data-scrollspy-target id="usage">API Usage</h2>
+                                            <p>
+                                                {{ credits_used }} credits used out of {{ request.user.available_credits }} credits in the past 30 days.
+                                            </p>
+                                            
+
+                                            <!-- The data-scrollspy-target attribute makes the scrollspy work -->
+                                            <h2 data-scrollspy-target id="api-keys">Your API keys</h2>
+                                            <div x-data="{ copyText: '{{ request.user.token }}', copied: false }" class="flex">
+                                                <pre class="inline-block">{{ request.user.token }}</pre>
+                                                <button
+                                                    @click="navigator.clipboard.writeText(copyText); copied = true; setTimeout(() => copied = false, 300);"
+                                                    class="inline-block ps-4"
+                                                >
+                                                <template x-if="!copied">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 transition-transform duration-100" :class="{ 'scale-110': copied }">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+                                                  </svg>
+                                                </template>
+                                                <template x-if="copied">
+                                                    <span> Copied! </span>
+                                                </template>
+                                                </button>
+                        
+                                            </div>
+                                            <h2 data-scrollspy-target id="plans">API Pricing</h2>
+                                            <p>
+                                                We offer the state of the art open source retrieval API for hosted inference.
+                                            </p>
+                                            <div class="mb-6 relative p-5 rounded-2xl bg-white shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-transparent before:[background:linear-gradient(theme(colors.gray.100),theme(colors.gray.200))_border-box] before:[mask:linear-gradient(white_0_0)_padding-box,_linear-gradient(white_0_0)] before:[mask-composite:exclude_!important] before:pointer-events-none">
+                                                <div class="flex items-center mb-2">
+                                                    <svg class="fill-blue-500 shrink-0 mr-3" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8Zm0 12c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1Zm1-3H7V4h2v5Z" />
+                                                    </svg>
+                                                    <div class="font-medium">What you will get.</div>
+                                                </div>
+                                                <div class="text-sm">
+                                                    <ul>
+                                                        <li><strong> Reliable </strong>: We take reliability seriously, and our uptime is around 99.99% </li>
+                                                        <li><strong> Fast </strong>: ColiVara averages .25 seconds per page on a test set of 50 page documents.</li>
+                                                        <li><strong>Low cost </strong>: We have the lowest costs among comparable competitors.</li>
+                                                        <li> <strong> High quality </strong>: We have extremely high output quality, as our benchmarks show. </li>
+                                                        <li> <strong> Open source </strong>: ColiVara is open source, so you don't have to worry about vendor lock-in. </li>
+                                                    </ul>
+                                                </div>     
+                                            </div>
+                                            <div>
+                                            {% include "partials/pricing.html" %}
+                                            </div>
+                                 
+                                            <h2 data-scrollspy-target id="subscription">Subscription</h2>
+                                            <p>
+                                                This section has information on your current ColiVara subscription status.
+                                            </p>
+                                            <div>
+                                                {% if request.user.tier == "free" %}
+                                                <p> You are on the free tier. You have no available subscriptions </p>
+                                                {% else %}
+                                                <p> You can mange your subscription or cancel via our <a href="{% url 'stripe_portal' %}"> Stripe portal </a> </p>
+                                                {% endif %}
+                                            </div>
+
+                                 
+                                            <h2 data-scrollspy-target id="documentation">Documenation</h2>
+                                            <p>
+                                                You can find detailed documentation for the ColiVara API in our <a href="https://docs.colivara.com" target="_blank"> developer portal. </a>
+                                            </p>
+                                            <h3>Example Request</h3>
+                                            <p>
+                                                You can use our API in your preferred programming language. Here is an example request in curl. We currently have a <a href="https://pypi.org/project/colivara-py/" target="_blank"> Python SDK </a>, and are working on SDKs for other languages.
+                                            </p>
+                                            <pre class="overflow-x-auto text-sm text-gray-500 bg-gray-900 p-5 rounded-2xl shadow-lg shadow-black/[0.03] not-prose">
+                                            <code class="font-mono">
+                                            <span class="text-purple-500">curl</span> <span class="text-blue-500">-L</span> \
+                                            <span class="text-purple-500">-X POST</span> \
+                                            <span class="text-purple-500">-H</span> <span class="text-blue-500">'Authorization: Bearer &lt;token&gt;'</span> \
+                                            <span class="text-purple-500">-H</span> <span class="text-blue-500">'Content-Type: application/json'</span> \
+                                            <span class="text-purple-500">'https://api.colivara.com/v1/search/'</span> \
+                                            <span class="text-purple-500">-d</span> <span class="text-blue-500">'{"query": "What is 1 + 1?"}'</span>        
+                                            </code></pre>
+
+                                            <h2 data-scrollspy-target id="api-reference" >Accessing the APIs</h2>
+                                            <p>
+                                                Our API have Swagger and OpenAPI schema available at <a href="https://api.colivara.com/v1/docs" target="_blank"> https://api.colivara.com/v1/docs </a>
+                                            </p>
+
+                                            <h2 data-scrollspy-target id="settings">Settings</h2>
+                                            <form action="{% url 'edit_account' %}" method="post">
+                                                {% csrf_token %}
+                                                {% if form.errors %}
+                                                  {% include "partials/form_errors.html" %}
+                                                {% endif %}
+                                                <div class="space-y-4">
+                                                    <div>
+                                                        <label class="block text-sm text-gray-700 font-medium mb-1" for="name">First Name</label>
+                                                        <input id="first_name" name="first_name" class="form-input py-2 w-full" type="text" value="{{ request.user.first_name }}" />
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-sm text-gray-700 font-medium mb-1" for="business-id">Last Name</label>
+                                                        <input id="last_name" name="last_name" class="form-input py-2 w-full" type="text" value="{{ request.user.last_name }}" />
+                                                    </div>
+                                                    
+                                                    <div>
+                                                        <label class="block text-sm text-gray-700 font-medium mb-1" for="email">Email</label>
+                                                        <input id="email" name="email" class="form-input py-2 w-full" type="email" value="{{ request.user.email }}" readonly />  
+                                                    </div>
+
+                                                    <div>
+                                                        <h3 class="text-xl leading-snug text-black font-bold mb-1">Password</h3>
+                                                        <div class="mt-5">
+                                                            <a href="{% url 'account_change_password' %}"> Set New Password</a>
+                                                        </div>
+                                                    </div>
+
+                                                    <button class="btn text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full">
+                                                        Save Changes
+                                                    </button>
+                                                </div>
+                                            </form>
+                                            
+                                            <h2 data-scrollspy-target id="team">Team</h2>
+                                            {% if request.user.tier == "team" and request.user.team.owner == request.user %}
+                                            <p> 
+                                                You are the owner of the team. You can invite team members by entering their email below. We will send them an email with an invitation to join your team.
+                                            </p>
+                                            <form action="{% url 'invite_team_member' %}" method="post">
+                                                    {% csrf_token %}
+                                                    {% if form.errors %}
+                                                        {% include "partials/form_errors.html" %}
+                                                    {% endif %}
+                                                <div class="space-y-4">
+                                                    <div>
+                                                        <label class="sr-only" for="invite_email">Email</label>
+                                                        <input id="invite_email" name="email" class="form-input py-2 w-full" type="email" placeholder="Enter team member's email" />
+                                                    </div>
+                                                    <div>
+                                                        <input type="submit" value="Invite Team Member" class="btn text-gray-200 bg-gray-800 hover:bg-black bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full" />
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            {% else %}
+                                            <p>
+                                                You are not part of a team. You can create a team by upgrading to the team plan.
+                                            </p>
+                                            {% endif %}
+
+                                            <h2 data-scrollspy-target id="support">Support</h2>
+                                            <p>
+                                                If you have any questions or need help, please contact us at <a href="mailto:founders@tjmlabs.com"> founders@tjmlabs.com </a>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                     
+
                                 </div>
 
-                                <!-- Panel footer -->
-                                <footer>
-                                    <div class="flex flex-col px-6 py-5">
-                                        <div class="flex self-end">
-                                            <a href="{% url 'home' %}">
-                                                <button class="btn bg-white text-black dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600">Cancel</button>
-                                            </a>
-                                            <input type="submit"
-                                                value="Save Changes"
-                                                class="btn bg-brown-500 hover:bg-brown-600 shadow ml-3" />
-                                        </div>
-                                    </div>
-                                </footer>
-                            </form>
+                            </article>
 
-                            <!-- Invite Team Member Form -->
-                            {% if request.user.tier == "team" and request.user.team.owner == request.user %}
-                                <form action="{% url 'invite_team_member' %}" method="post">
-                                    {% csrf_token %}
-                                    {% if form.errors %}
-                                        {% include "partials/form_errors.html" %}
-                                    {% endif %}
-                                    <!-- Panel body -->
-                                    <div class="pb-6 pl-40 space-y-6">
-                                        <!-- Invite Team Member -->
-                                        <section>
-                                            <h3 class="text-xl leading-snug text-black font-bold mb-1">Invite Team Member</h3>
-                                            <div class="flex flex-wrap mt-5">
-                                                <div class="mr-2 w-1/3">
-                                                    <label class="sr-only" for="invite_email">Email</label>
-                                                    <input id="invite_email" name="email" class="form-input w-full" type="email" placeholder="Enter team member's email" />
-                                                </div>
-                                            </div>
-                                        </section>
-                                    </div>
-
-                                    <!-- Panel footer -->
-                                    <footer>
-                                        <div class="flex flex-col px-6 py-5">
-                                            <div class="flex self-end">
-                                                <input type="submit" value="Invite Team Member" class="btn bg-brown-500 hover:bg-brown-600 shadow ml-3" />
-                                            </div>
-                                        </div>
-                                    </footer>
-                                </form>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
+
             </div>
-        </main>
-    </div>
-    <!-- Wavy SVG Background -->
-    <div class="fixed bottom-0 w-full h-11/12 -z-10">
-        <svg class="w-full h-full"
-             viewBox="0 0 1440 464"
-             fill="none"
-             xmlns="http://www.w3.org/2000/svg">
-            <path d="M864 160C688.291 241.356 563.242 55.5988 282 96.5C203.734 119.405 162.635 147.912 97.5 233.5C42.1525 319.506 7.60938 369.622 -15.5 460C36.1 537.2 837.833 575.5 1223.5 585L1444 460V56.5C1448 43 1362.56 -8.87052 1270.5 1.49996C1178.44 11.8704 1039.71 78.6435 864 160Z" fill="#FFEDD5" />
-        </svg>
-    </div>
-    <script>
-        const isNumericInput = (event) => {
-            const key = event.keyCode;
-            return ((key >= 48 && key <= 57) || // Allow number line
-                (key >= 96 && key <= 105) // Allow number pad
-            );
-        };
+
+        </div>
         
-        const isModifierKey = (event) => {
-            const key = event.keyCode;
-            return (event.shiftKey === true || key === 35 || key === 36) || // Allow Shift, Home, End
-                (key === 8 || key === 9 || key === 13 || key === 46) || // Allow Backspace, Tab, Enter, Delete
-                (key > 36 && key < 41) || // Allow left, up, right, down
-                (
-                    // Allow Ctrl/Command + A,C,V,X,Z
-                    (event.ctrlKey === true || event.metaKey === true) &&
-                    (key === 65 || key === 67 || key === 86 || key === 88 || key === 90)
-                )
-        };
-        
-        const enforceFormat = (event) => {
-            // Input must be of a valid number format or a modifier key, and not longer than ten digits
-            if(!isNumericInput(event) && !isModifierKey(event)){
-                event.preventDefault();
-            }
-        };
-        
-        const formatToPhone = (event) => {
-            if(isModifierKey(event)) {return;}
-        
-            const input = event.target.value.replace(/\D/g,'').substring(0,10); // First ten digits of input only
-            const areaCode = input.substring(0,3);
-            const middle = input.substring(3,6);
-            const last = input.substring(6,10);
-        
-            if(input.length > 6){event.target.value = `(${areaCode}) ${middle} - ${last}`;}
-            else if(input.length > 3){event.target.value = `(${areaCode}) ${middle}`;}
-            else if(input.length > 0){event.target.value = `(${areaCode}`;}
-        };
-        
-        const inputElement = document.getElementById('phone');
-        inputElement.addEventListener('keydown',enforceFormat);
-        inputElement.addEventListener('keyup',formatToPhone);
-    </script>
+    </section>
+
+</main>
 {% endblock content %}

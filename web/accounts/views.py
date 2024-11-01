@@ -14,7 +14,13 @@ from .models import CustomUser
 @login_required
 def edit_account(request):
     if request.method == "GET":
-        return render(request, "account/edit_account.html", {"user": request.user})
+        usage = request.user.get_credit_usage()
+        credits_used = sum(event["aggregated_value"] for event in usage)
+        return render(
+            request,
+            "account/edit_account.html",
+            {"user": request.user, "credits_used": credits_used},
+        )
 
     error = None
 
