@@ -103,16 +103,16 @@ Cases:
                     <!-- Show manage subscription button -->
                     <a 
                     class="btn-sm py-1.5 rounded-lg !text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
-                    :href="isCloud ? '{% url 'stripe_portal' %}' : 'mailto:founders@tjmlabs.com'" 
+                    :href="isCloud ? '{% url 'stripe-portal' %}' : 'mailto:founders@tjmlabs.com'" 
                     x-text="isCloud ? 'Manage your subscription' : 'Contact us'"></a>
                     {% endif %}
                 
                 {% else %}
-                <!-- Show sign up button -->
-                <a 
-                class="btn-sm py-1.5 rounded-lg !text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
-                :href="isCloud ? '{% url 'account_signup' %}' : 'mailto:founders@tjmlabs.com'" 
-                x-text="isCloud ? 'Try for free' : 'Contact us'"></a>
+                    <!-- Show sign up button -->
+                    <a 
+                    class="btn-sm py-1.5 rounded-lg !text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
+                    :href="isCloud ? '{% url 'account_signup' %}' : 'mailto:founders@tjmlabs.com'" 
+                    x-text="isCloud ? 'Try for free' : 'Contact us'"></a>
           
                 {% endif %}
 
@@ -192,7 +192,7 @@ Cases:
                         {% else %}
                         <a 
                         class="btn-sm py-1.5 rounded-lg !text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
-                        :href="isCloud ? '{% url 'stripe_portal' %}' : 'mailto:founders@tjmlabs.com'" 
+                        :href="isCloud ? '{% url 'stripe-portal' %}' : 'mailto:founders@tjmlabs.com'" 
                         x-text="isCloud ? 'Manage your subscription' : 'Contact us'"></a>
 
                         {% endif %}
