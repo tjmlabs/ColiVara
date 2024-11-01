@@ -193,7 +193,7 @@
                                             <h2 data-scrollspy-target id="usage">API Usage</h2>
                                             <p>
                                                 {% if request.user.tier == "free" %}
-                                                You have {{ request.user.available_credit }} remaining credits before you need to upgrade to a paid plan.
+                                                You have {{ request.user.available_credits }} remaining credits before you need to upgrade to a paid plan.
                                                 {% else %}
                                                 {{ credits_used }} credits used out of {{ starting_credits }} credits in the past 30 days. Additional usage will be billed at 0.01 $ per credit
                                                 {% endif %}
@@ -266,13 +266,13 @@
                                                 You can use our API in your preferred programming language. Here is an example request in curl. We currently have a <a href="https://pypi.org/project/colivara-py/" target="_blank"> Python SDK </a>, and are working on SDKs for other languages.
                                             </p>
                                             <pre class="overflow-x-auto text-sm text-gray-500 bg-gray-900 p-5 rounded-2xl shadow-lg shadow-black/[0.03] not-prose">
-                                            <code class="font-mono">
-                                            <span class="text-purple-500">curl</span> <span class="text-blue-500">-L</span> \
-                                            <span class="text-purple-500">-X POST</span> \
-                                            <span class="text-purple-500">-H</span> <span class="text-blue-500">'Authorization: Bearer &lt;token&gt;'</span> \
-                                            <span class="text-purple-500">-H</span> <span class="text-blue-500">'Content-Type: application/json'</span> \
-                                            <span class="text-purple-500">'https://api.colivara.com/v1/search/'</span> \
-                                            <span class="text-purple-500">-d</span> <span class="text-blue-500">'{"query": "What is 1 + 1?"}'</span>        
+<code class="font-mono">
+<span class="text-purple-500">curl</span> <span class="text-blue-500">-L</span> \
+<span class="text-purple-500">-X POST</span> \
+<span class="text-purple-500">-H</span> <span class="text-blue-500">'Authorization: Bearer &lt;token&gt;'</span> \
+<span class="text-purple-500">-H</span> <span class="text-blue-500">'Content-Type: application/json'</span> \
+<span class="text-purple-500">'https://api.colivara.com/v1/search/'</span> \
+<span class="text-purple-500">-d</span> <span class="text-blue-500">'{"query": "What is 1 + 1?"}'</span>        
                                             </code></pre>
 
                                             <h2 data-scrollspy-target id="api-reference" >Accessing the APIs</h2>
