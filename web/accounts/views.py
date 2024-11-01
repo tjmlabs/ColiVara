@@ -13,29 +13,20 @@ from .models import CustomUser
 
 @login_required
 def edit_account(request):
-    if request.method == "GET":
-        return render(request, "account/edit_account.html", {"user": request.user})
-
-    error = None
-
-    first_name = request.POST.get("first_name", None)
-    last_name = request.POST.get("last_name", None)
-    email = request.POST.get("email", None)
-
-    try:
-        user = CustomUser.objects.get(pk=request.user.pk)
-        user.first_name = first_name
-        user.last_name = last_name
-        user.email = email
-        user.save()
-        messages.success(request, "Account updated successfully")
-    except CustomUser.DoesNotExist:
-        error = "User does not exist"
-
-    if error:
-        messages.error(request, error)
-
-    return redirect("home")
+    usage = request.user.get_credit_usage()
+    credits_used = sum(event["aggregated_value"] for event in usage)
+    starting_credits = 2500
+    if request.user.tier == "team":
+        starting_credits = 25000
+    return render(
+        request,
+        "account/edit_account.html",
+        {
+            "user": request.user,
+            "credits_used": credits_used,
+            "starting_credits": starting_credits,
+        },
+    )
 
 
 def post_signup(request):

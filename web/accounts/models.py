@@ -1,3 +1,5 @@
+import datetime
+
 import stripe
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
@@ -71,3 +73,27 @@ class CustomUser(AbstractUser):
             event_name=settings.STRIPE_METER_EVENT,
             payload={"value": credits, "stripe_customer_id": customer_id},
         )
+
+    def get_credit_usage(self):
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        customer_id = self.stripe_customer_id
+        if self.tier == "team":
+            customer_id = self.team.owner.stripe_customer_id
+
+        if not customer_id:
+            return []
+
+        now = datetime.datetime.utcnow().replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        last_month = now - datetime.timedelta(days=30)
+
+        usage = stripe.billing.Meter.list_event_summaries(
+            settings.STRIPE_METER_ID,
+            customer=customer_id,
+            start_time=int(last_month.timestamp()),
+            end_time=int(now.timestamp()),
+            value_grouping_window="day",
+        )
+        results = usage.data
+        return results

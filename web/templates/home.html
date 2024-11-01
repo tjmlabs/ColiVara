@@ -3,8 +3,7 @@
 {% block content %}
   <!-- Page content -->
   <main class="grow">
-    <!-- Hero -->
-    <!-- Hero -->
+
     <section class="relative">
       <!-- Stripes illustration -->
       <div class="absolute left-1/2 transform -translate-x-1/2 top-0 pointer-events-none -z-10"
@@ -74,37 +73,77 @@
         </div>
       </div>
     </section>
+    
+    
     <section>
-      <div class="max-w-3xl mx-auto pt-16 pb-12 md:pt-20 md:pb-20">
-        <div class="space-y-10 border-l [border-image:linear-gradient(to_bottom,theme(colors.slate.200),theme(colors.slate.300),transparent)1]">
+      <div class="max-w-6xl mx-auto pt-16 pb-12 md:pt-20 md:pb-20">
+        <div class="space-y-10">
           <article class="pl-6 sm:pl-10">
             <header class="mb-2">
               <h2 class="text-2xl font-bold">
-                <a class="hover:unde  rline" href="https://docs.colivara.com/">About ColiVara</a>
+               About ColiVara
               </h2>
             </header>
             <p class="text-gray-700 mb-4">
-              Retrieval Augmented Generation (RAG) is a powerful technique that allows us to enhance LLMs (Language Models) output with private documents and proprietary knowledge that is not available elsewhere. For example, a company's internal documents or a researcher's notes.
-              However, it is limited by the quality of the text extraction pipeline. With limited ability to extract visual cues and other non-textual information, RAG can be sub-optimal for documents that are visually rich.
-              ColiVara uses vision models to generate embeddings for documents, allowing you to retrieve documents based on their visual content.
-              From the ColiPali paper:
+              Colivara is a state of the art retrieval API that allows you to store, search, and retrieve documents based on their visual embeddings.
             </p>
-            <blockquote class="text-xl italic font-semibold text-gray-900 dark:text-white">
-              <p>
-                Documents are visually rich structures that convey information through text, as well as tables, figures, page layouts, or fonts. While modern document retrieval systems exhibit strong performance on query-to-text matching, they struggle to exploit visual cues efficiently, hindering their performance on practical document retrieval applications such as Retrieval Augmented Generation.
+              <div x-data="{ expanded: false }" class="relative bg-white/70 shadow-lg shadow-black/[0.03] rounded-lg before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-transparent before:[background:linear-gradient(theme(colors.gray.100),theme(colors.gray.200))_border-box] before:[mask:linear-gradient(white_0_0)_padding-box,_linear-gradient(white_0_0)] before:[mask-composite:exclude_!important] before:pointer-events-none">
+                <h2>
+                    <button
+                        id="faqs-title-11"
+                        class="flex items-center justify-between w-full font-semibold text-left px-4 py-3"
+                        @click="expanded = !expanded"
+                        :aria-expanded="expanded"
+                        aria-controls="faqs-text-11"
+                    >
+                        <span>Why visual embeddings?</span>
+                        <span class="flex items-center justify-center h-5 w-5 rounded-full bg-white shadow-sm shrink-0 ml-8">
+                            <svg class="fill-gray-400 transform origin-center transition duration-200 ease-out" :class="{'!rotate-180': expanded}" xmlns="http://www.w3.org/2000/svg" width="10" height="6" fill="none">
+                                <path d="m2 .586 3 3 3-3L9.414 2 5.707 5.707a1 1 0 0 1-1.414 0L.586 2 2 .586Z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                    </button>
+                </h2>
+                <div
+                    id="faqs-text-01"
+                    role="region"
+                    aria-labelledby="faqs-title-01"
+                    class="grid text-sm text-gray-600 overflow-hidden transition-all duration-300 ease-in-out"
+                    :class="expanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'"
+                    >
+                    <div class="overflow-hidden">
+                        <p class="px-4 pb-3">
+                          Documents are visually rich structures that convey information through text, as well as tables, figures, page layouts, and charts. While legacy document retrieval systems exhibit good performance on query-to-text matching, they struggle to pass visual cues efficiently to large language models, hindering their performance on practical document retrieval applications such as Retrieval Augmented Generation.
+                        </p>
+                    </div>
+                </div>
+              </div>
+              <p class="text-gray-700 my-4">
+                It is a web-first implementation of the ColiPali paper using ColQwen2 as the LLM model. It works exactly like RAG from the end-user standpoint - but using vision models instead of chunking and text-processing for documents.
               </p>
-            </blockquote>
-            <footer>
-              <a class="text-sm font-medium text-blue-500 hover:text-blue-600 transition-colors"
-                 href="https://arxiv.org/abs/2407.01449"
-                 target="_blank">Learn more in the ColiPali Paper <span class="tracking-normal text-blue-300">-&gt;</span></a>
-            </footer>
+          
+              <p class="text-gray-700 my-4">
+                Retrieval Augmented Generation (RAG) is a powerful technique that allows us to enhance LLMs (Language Models) output with private documents and proprietary knowledge that is not available elsewhere. For example, a company's internal documents or a researcher's notes.
+                However, it is limited by the quality of the text extraction pipeline. With limited ability to extract visual cues and other non-textual information, RAG can be sub-optimal for documents that are visually rich.
+                ColiVara uses vision models to generate embeddings for documents, allowing you to retrieve documents based on their visual content.
+              </p>
+        
+              <footer>
+                <a class="text-sm font-medium text-blue-500 hover:text-blue-600 transition-colors"
+                   href="https://arxiv.org/abs/2407.01449"
+                   target="_blank">Learn more in the ColiPali Paper <span class="tracking-normal text-blue-300">-&gt;</span></a>
+              </footer>
           </article>
         </div>
       </div>
     </section>
     <section>
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="max-w-3xl mx-auto text-center pb-16 md:pb-20">
+          <h2 class="text-3xl md:text-4xl font-bold">
+            ColiVara Use Cases
+          </h2>
+        </div>
         <div>
           <!-- Tabs component -->
           <div x-data="{ activeTab: 1 }">
@@ -186,7 +225,7 @@
                        height="16">
                     <path d="M.06 10.003a1 1 0 0 1 1.947.455c-.019.08.01.152.078.19l5.83 3.333c.052.03.115.03.168 0l5.83-3.333a.163.163 0 0 0 .078-.188 1 1 0 1 1 1.947-.459 2.161 2.161 0 0 1-1.032 2.384l-5.83 3.331a2.168 2.168 0 0 1-2.154 0l-5.83-3.331A2.162 2.162 0 0 1 .06 10.003Zm7.855-7.981-5.83 3.332a.17.17 0 0 0 0 .295l5.828 3.33a.172.172 0 0 0 .17.002l5.83-3.333a.17.17 0 0 0 0-.294L8.084 2.023a.172.172 0 0 0-.17-.001h.001ZM9.075.285l5.83 3.332c1.458.833 1.458 2.935 0 3.768l-5.83 3.333c-.667.38-1.485.38-2.153-.001l-5.83-3.332c-1.457-.833-1.457-2.935 0-3.767L6.924.285a2.173 2.173 0 0 1 2.15 0h.001Z" />
                   </svg>
-                  <span>Enteprise</span>
+                  <span>Integrations</span>
                 </button>
               </div>
             </div>
@@ -270,7 +309,7 @@
                 <div class="animate-[breath_8s_ease-in-out_infinite_both]">
                   <div class="flex items-center justify-center w-24 h-24 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
                     <img class="relative"
-                         src="{% static 'images/logo-01.svg' %}"
+                         src="{% static 'images/logo.png' %}"
                          width="32"
                          height="32"
                          alt="Logo 01" />
@@ -293,88 +332,56 @@
                 <div class="absolute -translate-x-[136px]">
                   <div class="animate-[breath_7s_ease-in-out_3s_infinite_both]">
                     <div class="flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-02.svg' %}"
-                           width="23"
-                           height="22"
-                           alt="Logo 02" />
+                      <p class="text-sm text-gray-800"> Query </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute translate-x-[136px]">
                   <div class="animate-[breath_7s_ease-in-out_3.5s_infinite_both]">
                     <div class="flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-03.svg' %}"
-                           width="22"
-                           height="22"
-                           alt="Logo 03" />
+                      <p class="text-sm text-gray-800"> Results </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute -translate-x-[216px] -translate-y-[82px]">
                   <div class="animate-[breath_6s_ease-in-out_3.5s_infinite_both]">
                     <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-04.svg' %}"
-                           width="24"
-                           height="22"
-                           alt="Logo 04" />
+                      <p class="text-xs text-gray-800"> Embeddings </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute translate-x-[216px] -translate-y-[82px]">
                   <div class="animate-[breath_6s_ease-in-out_1.5s_infinite_both]">
                     <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-05.svg' %}"
-                           width="25"
-                           height="25"
-                           alt="Logo 05" />
+                      <p class="text-sm text-gray-800"> LLM </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute translate-x-[216px] translate-y-[82px]">
                   <div class="animate-[breath_6s_ease-in-out_2s_infinite_both]">
                     <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-06.svg' %}"
-                           width="20"
-                           height="18"
-                           alt="Logo 06" />
+                      <p class="text-sm text-gray-800"> Guardrails </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute -translate-x-[216px] translate-y-[82px]">
                   <div class="animate-[breath_6s_ease-in-out_2.5s_infinite_both]">
                     <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-07.svg' %}"
-                           width="25"
-                           height="25"
-                           alt="Logo 07" />
+                      <p class="text-[0.5rem] text-gray-800"> Metadata filtering </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute -translate-x-[292px] opacity-40">
                   <div class="animate-[breath_6s_ease-in-out_2s_infinite_both]">
                     <div class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200/60">
-                      <img class="relative"
-                           src="{% static 'images/logo-08.svg' %}"
-                           width="20"
-                           height="20"
-                           alt="Logo 08" />
+                      <p class="text-sm text-gray-800"> User </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute translate-x-[292px] opacity-40">
                   <div class="animate-[breath_6s_ease-in-out_4s_infinite_both]">
                     <div class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200/60">
-                      <img class="relative"
-                           src="{% static 'images/logo-09.svg' %}"
-                           width="21"
-                           height="13"
-                           alt="Logo 09" />
+                      <p class="text-sm text-gray-800"> Answer </p>
                     </div>
                   </div>
                 </div>
@@ -395,88 +402,56 @@
                 <div class="absolute -translate-x-[136px]">
                   <div class="animate-[breath_7s_ease-in-out_3s_infinite_both]">
                     <div class="flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-03.svg' %}"
-                           width="23"
-                           height="22"
-                           alt="Logo 03" />
+                      <p class="text-sm text-gray-800"> Image </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute translate-x-[136px]">
                   <div class="animate-[breath_7s_ease-in-out_3.5s_infinite_both]">
                     <div class="flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-04.svg' %}"
-                           width="22"
-                           height="22"
-                           alt="Logo 04" />
+                      <p class="text-sm text-gray-800"> Data </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute -translate-x-[216px] -translate-y-[82px]">
                   <div class="animate-[breath_6s_ease-in-out_3.5s_infinite_both]">
                     <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-05.svg' %}"
-                           width="24"
-                           height="22"
-                           alt="Logo 05" />
+                      <p class="text-xs text-gray-800"> Embeddings </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute translate-x-[216px] -translate-y-[82px]">
                   <div class="animate-[breath_6s_ease-in-out_1.5s_infinite_both]">
                     <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-02.svg' %}"
-                           width="25"
-                           height="25"
-                           alt="Logo 02" />
+                      <p class="text-sm text-gray-800"> LLM </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute translate-x-[216px] translate-y-[82px]">
                   <div class="animate-[breath_6s_ease-in-out_2s_infinite_both]">
                     <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-07.svg' %}"
-                           width="20"
-                           height="18"
-                           alt="Logo 07" />
+                      <p class="text-sm text-gray-800"> Guardrails </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute -translate-x-[216px] translate-y-[82px]">
                   <div class="animate-[breath_6s_ease-in-out_2.5s_infinite_both]">
                     <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-06.svg' %}"
-                           width="25"
-                           height="25"
-                           alt="Logo 06" />
+                      <p class="text-[0.5rem] text-gray-800"> Metadata filtering </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute -translate-x-[292px] opacity-40">
                   <div class="animate-[breath_6s_ease-in-out_2s_infinite_both]">
                     <div class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200/60">
-                      <img class="relative"
-                           src="{% static 'images/logo-09.svg' %}"
-                           width="20"
-                           height="20"
-                           alt="Logo 09" />
+                      <p class="text-sm text-gray-800"> Document </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute translate-x-[292px] opacity-40">
                   <div class="animate-[breath_6s_ease-in-out_4s_infinite_both]">
                     <div class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200/60">
-                      <img class="relative"
-                           src="{% static 'images/logo-08.svg' %}"
-                           width="21"
-                           height="13"
-                           alt="Logo 08" />
+                      <p class="text-[0.25-rem] text-gray-800 text-nowrap"> Structured data </p>
                     </div>
                   </div>
                 </div>
@@ -497,88 +472,56 @@
                 <div class="absolute -translate-x-[136px]">
                   <div class="animate-[breath_7s_ease-in-out_3s_infinite_both]">
                     <div class="flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-02.svg' %}"
-                           width="23"
-                           height="22"
-                           alt="Logo 02" />
+                      <p class="text-sm text-gray-800"> Query </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute translate-x-[136px]">
                   <div class="animate-[breath_7s_ease-in-out_3.5s_infinite_both]">
                     <div class="flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-03.svg' %}"
-                           width="22"
-                           height="22"
-                           alt="Logo 03" />
+                      <p class="text-sm text-gray-800"> Results </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute -translate-x-[216px] -translate-y-[82px]">
                   <div class="animate-[breath_6s_ease-in-out_3.5s_infinite_both]">
                     <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-04.svg' %}"
-                           width="24"
-                           height="22"
-                           alt="Logo 04" />
+                      <p class="text-[0.5rem] text-gray-800"> Document metadata </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute translate-x-[216px] -translate-y-[82px]">
                   <div class="animate-[breath_6s_ease-in-out_1.5s_infinite_both]">
                     <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-05.svg' %}"
-                           width="25"
-                           height="25"
-                           alt="Logo 05" />
+                      <p class="text-sm text-gray-800"> LLM </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute translate-x-[216px] translate-y-[82px]">
                   <div class="animate-[breath_6s_ease-in-out_2s_infinite_both]">
                     <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-06.svg' %}"
-                           width="20"
-                           height="18"
-                           alt="Logo 06" />
+                      <p class="text-sm text-gray-800"> Guardrails </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute -translate-x-[216px] translate-y-[82px]">
                   <div class="animate-[breath_6s_ease-in-out_2.5s_infinite_both]">
                     <div class="flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg shadow-black/[0.03] before:absolute before:inset-0 before:m-[8.334%] before:bg-gray-200/60 before:border before:border-gray-700/5 before:rounded-[inherit] before:[mask-image:linear-gradient(to_bottom,black,transparent)]">
-                      <img class="relative"
-                           src="{% static 'images/logo-07.svg' %}"
-                           width="25"
-                           height="25"
-                           alt="Logo 07" />
+                      <p class="text-[0.5rem] text-gray-800"> Collection metadata </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute -translate-x-[292px] opacity-40">
                   <div class="animate-[breath_6s_ease-in-out_2s_infinite_both]">
                     <div class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200/60">
-                      <img class="relative"
-                           src="{% static 'images/logo-08.svg' %}"
-                           width="20"
-                           height="20"
-                           alt="Logo 08" />
+                      <p class="text-sm text-gray-800"> User </p>
                     </div>
                   </div>
                 </div>
                 <div class="absolute translate-x-[292px] opacity-40">
                   <div class="animate-[breath_6s_ease-in-out_4s_infinite_both]">
                     <div class="flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-200/60">
-                      <img class="relative"
-                           src="{% static 'images/logo-09.svg' %}"
-                           width="21"
-                           height="13"
-                           alt="Logo 09" />
+                      <p class="text-sm text-gray-800"> Answer </p>
                     </div>
                   </div>
                 </div>
@@ -832,32 +775,64 @@
 
     
     <!-- Pricing -->
-    {% include "partials/pricing.html" %}
-
-    <section>                    
-      <div class="max-w-6xl mx-auto px-4 sm:px-6">
-          <div class="rounded-2xl text-center relative overflow-hidden shadow-xl before:absolute before:inset-0 before:rounded-2xl before:bg-gray-900 before:pointer-events-none before:-z-10" data-aos="zoom-y-out">
-              <!-- Glow -->
-              <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 -z-10" aria-hidden="true">
-                  <div class="w-[480px] h-56 rounded-full border-[20px] border-blue-500 blur-3xl"></div>
-              </div>                      
-              <!-- Stripes illustration -->
-              <div class="absolute left-1/2 transform -translate-x-1/2 top-0 pointer-events-none -z-10" aria-hidden="true">
-                  <img class="max-w-none" src="{% static 'images/stripes-dark.svg' %}" width="768" height="432" alt="Stripes" />
-              </div>                         
-              <div class="py-12 md:py-20 px-4 md:px-12">
-                  <h2 class="text-3xl md:text-4xl text-gray-200 font-bold mb-6 md:mb-12 border-y [border-image:linear-gradient(to_right,transparent,theme(colors.slate.700/.7),transparent)1]">Create your next project with ColiVara</h2>
-                  <div class="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center">
-                      <a class="btn text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full mb-4 sm:w-auto sm:mb-0 group" href="{% url 'account_signup' %}">
-                          <span class="relative inline-flex items-center">
-                              Start Free Trial <span class="tracking-normal text-blue-300 group-hover:translate-x-0.5 transition-transform ml-1">-&gt;</span>
-                          </span>
-                      </a>
-                  </div>                            
-              </div>
-          </div>
+    <section id="pricing" class="max-w-6xl mx-auto">
+      <div class="pt-32 pb-12 md:pt-40 md:pb-20">
+  
+        <!-- Section header -->
+        <div class="text-center pb-12">
+            <h1
+                class="text-5xl md:text-6xl font-bold mb-6 border-y [border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1]">
+                Plans that match your needs</h1>
+            <div class="max-w-3xl mx-auto">
+                <p class="text-lg text-gray-700">No matter
+                    how many documents you have - our pricing is simple, transparent and adapts to
+                    the size of your usage.</p>
+            </div>
+        </div>
+          {% include "partials/pricing.html" %}
       </div>
-  </section>
+    </section>
+    
+    <section>                    
+          <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="rounded-2xl text-center relative overflow-hidden shadow-xl before:absolute before:inset-0 before:rounded-2xl before:bg-gray-900 before:pointer-events-none before:-z-10" data-aos="zoom-y-out">
+                <!-- Glow -->
+                <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 -z-10" aria-hidden="true">
+                    <div class="w-[480px] h-56 rounded-full border-[20px] border-blue-500 blur-3xl"></div>
+                </div>                      
+                <!-- Stripes illustration -->
+                <div class="absolute left-1/2 transform -translate-x-1/2 top-0 pointer-events-none -z-10" aria-hidden="true">
+                    <img class="max-w-none" src="{% static 'images/stripes-dark.svg' %}" width="768" height="432" alt="Stripes" />
+                </div> 
+                {% if request.user.is_anonymous %}
+                <div class="py-12 md:py-20 px-4 md:px-12">
+                    <h2 class="text-3xl md:text-4xl text-gray-200 font-bold mb-6 md:mb-12 border-y [border-image:linear-gradient(to_right,transparent,theme(colors.slate.700/.7),transparent)1]">Create your next project with ColiVara</h2>
+                    <div class="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center">
+                        <a class="btn text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full mb-4 sm:w-auto sm:mb-0 group" href="{% url 'account_signup' %}">
+                            <span class="relative inline-flex items-center">
+                                Start Free Trial <span class="tracking-normal text-blue-300 group-hover:translate-x-0.5 transition-transform ml-1">-&gt;</span>
+                            </span>
+                        </a>
+                    </div>                            
+                </div>
+                {% else %}
+                <div class="py-12 md:py-20 px-4 md:px-12">
+                    <h2 class="text-3xl md:text-4xl text-gray-200 font-bold mb-6 md:mb-12 border-y [border-image:linear-gradient(to_right,transparent,theme(colors.slate.700/.7),transparent)1]">Start your project with ColiVara</h2>
+                    <div class="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center">
+                      {% url 'edit_account' as edit_url %}
+                        <a class="btn text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full mb-4 sm:w-auto sm:mb-0 group" href="{{ edit_url }}#api-keys">
+                     
+                            <span class="relative inline-flex items-center">
+                               Get your API Keys <span class="tracking-normal text-blue-300 group-hover:translate-x-0.5 transition-transform ml-1">-&gt;</span>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+          </div>
+    </section>
+
   
   </main>
 {% endblock content %}

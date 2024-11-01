@@ -27,12 +27,14 @@ def stripe_checkout(request):
     email = request.user.email
 
     # Get the subscription type from the query parameter
-    subscription_type = request.GET.get('tier', 'individual')  # Default to 'individual' if not provided
+    subscription_type = request.GET.get(
+        "tier", "individual"
+    )  # Default to 'individual' if not provided
 
     price_id = settings.STRIPE_INDIVIDUAL_PRICE_ID
-    if subscription_type == 'team':
+    if subscription_type == "team":
         price_id = settings.STRIPE_TEAM_PRICE_ID
-    
+
     checkout_session = stripe.checkout.Session.create(
         line_items=[
             {
@@ -44,14 +46,12 @@ def stripe_checkout(request):
         customer_email=email,
         success_url=success_url + "payment-success/",
         cancel_url=cancel_url + "payment-cancel/",
-        metadata={
-            "subscription_type": subscription_type
-        }
+        metadata={"subscription_type": subscription_type},
     )
     return redirect(checkout_session.url, code=303)
 
 
-def customer_portal(request):
+def stripe_portal(request):
     stripe.api_key = settings.STRIPE_SECRET_KEY
     session = stripe.billing_portal.Session.create(
         customer=request.user.stripe_customer_id,

@@ -4,20 +4,7 @@ Cases:
 2. User is authenticated and has a paid tier account -> show Manage subscription button that goes to the Stripe portal
 3. User is not authenticated -> show Sign Up
 -->
-<section id="pricing">
-    <div class="pt-32 pb-12 md:pt-40 md:pb-20">
 
-      <!-- Section header -->
-      <div class="text-center pb-12">
-          <h1
-              class="text-5xl md:text-6xl font-bold mb-6 border-y [border-image:linear-gradient(to_right,transparent,theme(colors.slate.300/.8),transparent)1]">
-              Plans that match your needs</h1>
-          <div class="max-w-3xl mx-auto">
-              <p class="text-lg text-gray-700">No matter
-                  how many documents you have - our pricing is simple, transparent and adapts to
-                  the size of your usage.</p>
-          </div>
-      </div>
       <!-- Pricing tables -->
       <div x-data="{ isCloud: true }">
 
@@ -108,24 +95,24 @@ Cases:
                     {% if request.user.tier == "free" %}
                     <!-- Show upgrade button -->
                     <a 
-                    class="btn-sm py-1.5 rounded-lg text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
+                    class="btn-sm py-1.5 rounded-lg !text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
                     :href="isCloud ? '{% url 'stripe_checkout' %}?tier=individual' : 'mailto:founders@tjmlabs.com'" 
                     x-text="isCloud ? 'Upgrade' : 'Contact us'"></a>
               
                     {% else %}
                     <!-- Show manage subscription button -->
                     <a 
-                    class="btn-sm py-1.5 rounded-lg text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
-                    :href="isCloud ? '{% url 'stripe_portal' %}' : 'mailto:founders@tjmlabs.com'" 
+                    class="btn-sm py-1.5 rounded-lg !text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
+                    :href="isCloud ? '{% url 'stripe-portal' %}' : 'mailto:founders@tjmlabs.com'" 
                     x-text="isCloud ? 'Manage your subscription' : 'Contact us'"></a>
                     {% endif %}
                 
                 {% else %}
-                <!-- Show sign up button -->
-                <a 
-                class="btn-sm py-1.5 rounded-lg text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
-                :href="isCloud ? '{% url 'account_signup' %}' : 'mailto:founders@tjmlabs.com'" 
-                x-text="isCloud ? 'Try for free' : 'Contact us'"></a>
+                    <!-- Show sign up button -->
+                    <a 
+                    class="btn-sm py-1.5 rounded-lg !text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
+                    :href="isCloud ? '{% url 'account_signup' %}' : 'mailto:founders@tjmlabs.com'" 
+                    x-text="isCloud ? 'Try for free' : 'Contact us'"></a>
           
                 {% endif %}
 
@@ -198,21 +185,21 @@ Cases:
 
                         {% if request.user.tier == "free" %}
                         <a 
-                        class="btn-sm py-1.5 rounded-lg text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
+                        class="btn-sm py-1.5 rounded-lg !text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
                         :href="isCloud ? '{% url 'stripe_checkout' %}?tier=team' : 'mailto:founders@tjmlabs.com'" 
                         x-text="isCloud ? 'Upgrade' : 'Contact us'"></a>
 
                         {% else %}
                         <a 
-                        class="btn-sm py-1.5 rounded-lg text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
-                        :href="isCloud ? '{% url 'stripe_portal' %}' : 'mailto:founders@tjmlabs.com'" 
+                        class="btn-sm py-1.5 rounded-lg !text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
+                        :href="isCloud ? '{% url 'stripe-portal' %}' : 'mailto:founders@tjmlabs.com'" 
                         x-text="isCloud ? 'Manage your subscription' : 'Contact us'"></a>
 
                         {% endif %}
 
                     {% else %}
                     <a 
-                    class="btn-sm py-1.5 rounded-lg text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
+                    class="btn-sm py-1.5 rounded-lg !text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
                     :href="isCloud ? '{% url 'account_signup' %}' : 'mailto:founders@tjmlabs.com'" 
                     x-text="isCloud ? 'Try for free' : 'Contact us'"></a>
                     {% endif %}
@@ -222,5 +209,4 @@ Cases:
           </div>
 
       </div>
-  </div>
-  </section>
+
