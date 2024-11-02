@@ -1,6 +1,9 @@
+import json
+
 import stripe
 from accounts.models import CustomUser, Team
 from django.conf import settings
+from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -13,17 +16,19 @@ def home(request):
 
 
 def payment_success(request):
-    return render(request, "payment_success.html")
+    messages.success(request, "Payment successful!")
+    return redirect("edit_account")
 
 
 def payment_cancel(request):
-    return render(request, "payment_cancel.html")
+    messages.success(request, "Payment cancelled.")
+    return redirect("home")
 
 
 def stripe_checkout(request):
     stripe.api_key = settings.STRIPE_SECRET_KEY
-    success_url = request.build_absolute_uri(reverse("home"))
-    cancel_url = request.build_absolute_uri(reverse("home"))
+    success_url = request.build_absolute_uri(reverse("payment_success"))
+    cancel_url = request.build_absolute_uri(reverse("payment_cancel"))
     email = request.user.email
 
     # Get the subscription type from the query parameter
@@ -64,14 +69,17 @@ def stripe_portal(request):
 @require_POST
 def stripe_webhook(request):
     stripe.api_key = settings.STRIPE_SECRET_KEY
-
+    event = None
     # we don't care about the signature in local development
-    if not settings.LOCAL:
+    if settings.LOCAL:
+        event = stripe.Event.construct_from(json.loads(request.body), stripe.api_key)
+
+    else:
         webhook_secret = settings.STRIPE_WH_SECRET
-        signature = request.headers.get("stripe-signature")
         try:
+            sig_header = request.META["HTTP_STRIPE_SIGNATURE"]
             event = stripe.Webhook.construct_event(
-                payload=request.body, sig_header=signature, secret=webhook_secret
+                payload=request.body, sig_header=sig_header, secret=webhook_secret
             )
 
         except ValueError as e:
@@ -80,7 +88,7 @@ def stripe_webhook(request):
             return JsonResponse({"error": str(e)}, status=400)
 
     data_object = event["data"]["object"]
-    if event["type"] == "checkout.session.completed":
+    if event["type"] == "cusomter.subscription.created":
         user_id = int(data_object["client_reference_id"])
         user = CustomUser.objects.get(id=user_id)
         user.stripe_customer_id = data_object["customer"]
@@ -90,14 +98,22 @@ def stripe_webhook(request):
         subscription_type = data_object["metadata"].get("subscription_type")
         user.tier = subscription_type
         if subscription_type == "team":
-            team = Team.objects.create(name=f"{user.first_name}'s Team", owner=user)
+            team = Team.objects.create(name=f"{user.email}'s Team", owner=user)
             user.team = team
 
         user.save()
+
     elif event["type"] == "customer.subscription.deleted":
         customer_id = data_object["customer"]
         user = CustomUser.objects.get(stripe_customer_id=customer_id)
-        user.tier = "free"
-        user.save()
+        user.cancel_sub()
+
+    elif event["type"] == "customer.subscription.updated":
+        customer_id = data_object["customer"]
+        user = CustomUser.objects.get(stripe_customer_id=customer_id)
+        subscription_id = data_object["id"]
+        subscription = stripe.Subscription.retrieve(subscription_id)
+        incoming_price_id = subscription.items.data[0].price.id
+        user.update_sub(incoming_price_id)
 
     return JsonResponse({"status": "success"}, status=200)
