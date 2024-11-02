@@ -3,9 +3,13 @@ services:
     build: ./web
     ports:
       - "8001:8000"
-
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+        reservations:
+          memory: 2G
     command: sh release.sh
-
 
     volumes:
       - ./web:/code
@@ -13,10 +17,15 @@ services:
       - db
     env_file:
       - ./.env
-  
+
   gotenberg:
     image: gotenberg/gotenberg:8
-
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+        reservations:
+          memory: 1G
 
   db:
     image: pgvector/pgvector:pg16
@@ -24,6 +33,15 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     environment:
       - "POSTGRES_HOST_AUTH_METHOD=trust"
-    
+      - "POSTGRES_SHARED_BUFFERS=2GB"
+      - "POSTGRES_EFFECTIVE_CACHE_SIZE=4GB"
+      - "POSTGRES_WORK_MEM=64MB"
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+
 volumes:
   postgres_data:
