@@ -56,7 +56,7 @@ def invite_team_member(request):
 
     # TODO: force the user to reset the temp password
     # create a new user with the email
-    password = get_random_string(length=32)
+    password = get_random_string(length=8)
     data = {
         "email": member_email,
         "password1": password,

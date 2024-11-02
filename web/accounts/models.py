@@ -48,8 +48,7 @@ class CustomUser(AbstractUser):
         return self.token
 
     def save(self, *args, **kwargs) -> None:
-        if not self.token:
-            self.generate_token()
+        self.generate_token()
         super().save(*args, **kwargs)
 
     def get_available_credits(self):
