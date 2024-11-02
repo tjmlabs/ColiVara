@@ -69,6 +69,9 @@ class CustomUser(AbstractUser):
         if self.tier == "team":
             customer_id = self.team.owner.stripe_customer_id
 
+        if not customer_id:
+            return
+
         stripe.billing.MeterEvent.create(
             event_name=settings.STRIPE_METER_EVENT,
             payload={"value": credits, "stripe_customer_id": customer_id},

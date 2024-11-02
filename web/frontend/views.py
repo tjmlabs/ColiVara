@@ -64,24 +64,21 @@ def stripe_portal(request):
 @require_POST
 def stripe_webhook(request):
     stripe.api_key = settings.STRIPE_SECRET_KEY
-    webhook_secret = settings.STRIPE_WH_SECRET
-    if settings.LOCAL:
-        webhook_secret = (
-            "whsec_2b98f86c7f5931ff1393ac3e3b00c289b494c7a7c034a3cf701405f4a38bed86"
-        )
-    else:
-        webhook_secret = settings.STRIPE_WH_SECRET
-    signature = request.headers.get("stripe-signature")
-    stripe.api_key = settings.STRIPE_SECRET_KEY
-    try:
-        event = stripe.Webhook.construct_event(
-            payload=request.body, sig_header=signature, secret=webhook_secret
-        )
 
-    except ValueError as e:
-        return JsonResponse({"error": str(e)}, status=400)
-    except stripe.error.SignatureVerificationError as e:
-        return JsonResponse({"error": str(e)}, status=400)
+    # we don't care about the signature in local development
+    if not settings.LOCAL:
+        webhook_secret = settings.STRIPE_WH_SECRET
+        signature = request.headers.get("stripe-signature")
+        try:
+            event = stripe.Webhook.construct_event(
+                payload=request.body, sig_header=signature, secret=webhook_secret
+            )
+
+        except ValueError as e:
+            return JsonResponse({"error": str(e)}, status=400)
+        except stripe.error.SignatureVerificationError as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
     data_object = event["data"]["object"]
     if event["type"] == "checkout.session.completed":
         user_id = int(data_object["client_reference_id"])
@@ -102,4 +99,5 @@ def stripe_webhook(request):
         user = CustomUser.objects.get(stripe_customer_id=customer_id)
         user.tier = "free"
         user.save()
+
     return JsonResponse({"status": "success"}, status=200)
