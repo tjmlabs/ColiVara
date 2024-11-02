@@ -100,7 +100,7 @@ class Document(models.Model):
         """
         # Constants
         EMBEDDINGS_URL = settings.EMBEDDINGS_URL
-        EMBEDDINGS_BATCH_SIZE = 3
+        EMBEDDINGS_BATCH_SIZE = 6
         DELAY_BETWEEN_BATCHES = 1  # seconds
 
         # Helper function to send a batch of images to the embeddings service
