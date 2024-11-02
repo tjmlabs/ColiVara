@@ -49,6 +49,11 @@
                                href="{% url 'stripe_checkout' %}">Upgrade</a>
                         </li>
                         <span class="h-6 w-px bg-gray-300"></span>
+                    {% else %}
+                        <li>
+                            {{ request.user.email }}
+                        </li>
+                        <span class="h-6 w-px bg-gray-300"></span>
                     {% endif %}
                     <li>
                         <a class="flex items-center text-gray-800 bg-white hover:bg-gray-50 gap-2"

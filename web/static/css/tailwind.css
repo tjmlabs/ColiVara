@@ -1912,10 +1912,6 @@ input[type="search"]::-webkit-search-results-decoration {
   margin-bottom: 2.5rem;
 }
 
-.mb-12{
-  margin-bottom: 3rem;
-}
-
 .mb-16{
   margin-bottom: 4rem;
 }
@@ -2113,10 +2109,6 @@ input[type="search"]::-webkit-search-results-decoration {
   height: 1px;
 }
 
-.h-screen{
-  height: 100vh;
-}
-
 .min-h-screen{
   min-height: 100vh;
 }
@@ -2143,10 +2135,6 @@ input[type="search"]::-webkit-search-results-decoration {
 
 .w-3{
   width: 0.75rem;
-}
-
-.w-3\/4{
-  width: 75%;
 }
 
 .w-4{
@@ -2227,10 +2215,6 @@ input[type="search"]::-webkit-search-results-decoration {
 
 .max-w-none{
   max-width: none;
-}
-
-.max-w-screen-md{
-  max-width: 768px;
 }
 
 .max-w-screen-xl{
@@ -2740,10 +2724,6 @@ input[type="search"]::-webkit-search-results-decoration {
   border-radius: 1rem;
 }
 
-.rounded-3xl{
-  border-radius: 1.5rem;
-}
-
 .rounded-full{
   border-radius: 9999px;
 }
@@ -3031,10 +3011,6 @@ input[type="search"]::-webkit-search-results-decoration {
 
 .p-6{
   padding: 1.5rem;
-}
-
-.p-8{
-  padding: 2rem;
 }
 
 .px-0\.5{

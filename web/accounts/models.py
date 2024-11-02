@@ -67,7 +67,6 @@ class CustomUser(AbstractUser):
     def record_consumed_credits(self, credits):
         stripe.api_key = settings.STRIPE_SECRET_KEY
         customer_id = self.stripe_customer_id
-        # customer_id = "cus_R8JkMI5v4oBQiB"  # for testing
 
         if self.tier == "team":
             customer_id = self.team.owner.stripe_customer_id
@@ -180,17 +179,19 @@ class CustomUser(AbstractUser):
         try:
             with transaction.atomic():
                 current_tier = self.tier
-                new_tier = ""
 
                 # Map price ID to tier
-                if incoming_price_id == settings.STRIPE_INDIVIDUAL_PRICE_ID:
-                    new_tier = "individual"
-                elif incoming_price_id == settings.STRIPE_TEAM_PRICE_ID:
-                    new_tier = "team"
-                else:
-                    raise ValueError(f"Invalid price ID: {incoming_price_id}")
+                price_id_to_tier = {
+                    settings.STRIPE_INDIVIDUAL_PRICE_ID_RECURRENT: "individual",
+                    settings.STRIPE_TEAM_PRICE_ID_RECURRENT: "team",
+                    settings.STRIPE_INDIVIDUAL_PRICE_ID_USAGE: "individual",
+                    settings.STRIPE_TEAM_PRICE_ID_USAGE: "team",
+                }
+                new_tier = price_id_to_tier.get(incoming_price_id, None)
+                if not new_tier:
+                    raise ValueError(f"Invalid price ID provided: {incoming_price_id}")
 
-                if new_tier and new_tier != current_tier:
+                if new_tier != current_tier:
                     old_tier = self.tier
                     self.tier = new_tier
 

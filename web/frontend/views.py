@@ -1,4 +1,5 @@
 import json
+import logging
 
 import stripe
 from accounts.models import CustomUser, Team
@@ -9,6 +10,8 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+
+logger = logging.getLogger(__name__)
 
 
 def home(request):
@@ -36,22 +39,27 @@ def stripe_checkout(request):
         "tier", "individual"
     )  # Default to 'individual' if not provided
 
-    price_id = settings.STRIPE_INDIVIDUAL_PRICE_ID
+    price_id_recurrent = settings.STRIPE_INDIVIDUAL_PRICE_ID_RECURRENT
+    price_id_usage = settings.STRIPE_INDIVIDUAL_PRICE_ID_USAGE
     if subscription_type == "team":
-        price_id = settings.STRIPE_TEAM_PRICE_ID
+        price_id_recurrent = settings.STRIPE_TEAM_PRICE_ID_RECURRENT
+        price_id_usage = settings.STRIPE_TEAM_PRICE_ID_USAGE
 
     checkout_session = stripe.checkout.Session.create(
         line_items=[
             {
-                "price": price_id,
+                "price": price_id_recurrent,
+                "quantity": 1,
+            },
+            {
+                "price": price_id_usage,
             },
         ],
-        client_reference_id=request.user.id,
         mode="subscription",
         customer_email=email,
-        success_url=success_url + "payment-success/",
-        cancel_url=cancel_url + "payment-cancel/",
-        metadata={"subscription_type": subscription_type},
+        success_url=success_url,
+        cancel_url=cancel_url,
+        metadata={"subscription_type": subscription_type, "user_id": request.user.id},
     )
     return redirect(checkout_session.url, code=303)
 
@@ -88,32 +96,42 @@ def stripe_webhook(request):
             return JsonResponse({"error": str(e)}, status=400)
 
     data_object = event["data"]["object"]
-    if event["type"] == "cusomter.subscription.created":
-        user_id = int(data_object["client_reference_id"])
+    logger.info(f"Received event: {event['type']}")
+    if event["type"] == "checkout.session.completed":
+        logger.info("Received event: Subscription created")
+        user_id = data_object["metadata"].get("user_id")
+        logger.info(f"User ID: {user_id}")
         user = CustomUser.objects.get(id=user_id)
+        logger.info(f"User Email: {user.email}")
         user.stripe_customer_id = data_object["customer"]
         user.stripe_subscription_id = data_object["subscription"]
 
         # Check the subscription type from metadata
         subscription_type = data_object["metadata"].get("subscription_type")
+        logger.info(f"Subscription Type: {subscription_type}")
         user.tier = subscription_type
         if subscription_type == "team":
             team = Team.objects.create(name=f"{user.email}'s Team", owner=user)
             user.team = team
 
         user.save()
-
+        logger.info("User saved")
     elif event["type"] == "customer.subscription.deleted":
+        logger.info("Received event: Subscription deleted")
         customer_id = data_object["customer"]
         user = CustomUser.objects.get(stripe_customer_id=customer_id)
+        logger.info(f"User Email: {user.email}")
         user.cancel_sub()
+        logger.info("Subscription cancelled")
 
     elif event["type"] == "customer.subscription.updated":
+        logger.info("Received event: Subscription updated")
         customer_id = data_object["customer"]
         user = CustomUser.objects.get(stripe_customer_id=customer_id)
-        subscription_id = data_object["id"]
-        subscription = stripe.Subscription.retrieve(subscription_id)
-        incoming_price_id = subscription.items.data[0].price.id
+        logger.info(f"User Email: {user.email}")
+        incoming_price_id = data_object["items"]["data"][0]["plan"]["id"]
+        logger.info(f"Incoming Price ID: {incoming_price_id}")
         user.update_sub(incoming_price_id)
+        logger.info("Subscription updated")
 
     return JsonResponse({"status": "success"}, status=200)
