@@ -13,8 +13,7 @@ services:
 
     volumes:
       - ./web:/code
-    depends_on:
-      - db
+
     env_file:
       - ./.env
 
@@ -26,22 +25,6 @@ services:
           memory: 3G     
         reservations:
           memory: 1G
-
-  db:
-    image: pgvector/pgvector:pg16
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - "POSTGRES_HOST_AUTH_METHOD=trust"
-      - "POSTGRES_SHARED_BUFFERS=2GB"      
-      - "POSTGRES_EFFECTIVE_CACHE_SIZE=4GB" 
-      - "POSTGRES_WORK_MEM=64MB"         
-    deploy:
-      resources:
-        limits:
-          memory: 4G     
-        reservations:
-          memory: 2G
 
 volumes:
   postgres_data:
