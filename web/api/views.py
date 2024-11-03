@@ -6,6 +6,7 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import aiohttp
 from accounts.models import CustomUser
+from asgiref.sync import sync_to_async
 from django.conf import settings
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.mail import EmailMessage
@@ -356,6 +357,15 @@ async def process_upsert_document(
         name=payload.collection_name, owner=request.auth
     )
     try:
+        available_credits = await sync_to_async(request.auth.get_available_credits)()
+        logger.info(f"Available credits: {available_credits}")
+
+        if available_credits < 1 and request.auth.tier == "free":
+            # raise an exception so it's caught by the error handler
+            raise ValueError(
+                "You have no available credits. Please upgrade your subscription."
+            )
+
         # we look up the document by name and collection
         # if it exists, we update its metadate and embeddings (by calling embed_document)
         exists = await Document.objects.filter(
@@ -395,6 +405,23 @@ async def process_upsert_document(
             )
         )
         logger.info(f"Document {document.name} processed successfully.")
+        if available_credits >= document.num_pages:
+            await sync_to_async(request.auth.set_available_credits)(
+                available_credits - document.num_pages
+            )
+            logger.info(f"Decreased available credits by {document.num_pages}")
+        else:
+            await sync_to_async(request.auth.record_consumed_credits)(
+                document.num_pages - available_credits
+            )
+
+            if available_credits != 0:
+                await sync_to_async(request.auth.set_available_credits)(0)
+
+            logger.info(
+                f"Set available credits to 0 and recorded {document.num_pages - available_credits} consumed credits"
+            )
+
         return 201, DocumentOut(
             id=document.id,
             name=document.name,
@@ -677,6 +704,12 @@ async def partial_update_document(
         return 409, GenericError(
             detail=f"Multiple documents with the name: {document_name} exist in your collections. Please specify a collection."
         )
+    available_credits = await sync_to_async(request.auth.get_available_credits)()
+
+    if available_credits < 1 and request.auth.tier == "free":
+        return 400, GenericError(
+            detail="You have no available credits. Please upgrade your subscription."
+        )
 
     if payload.url and payload.url != document.url:
         document.url = payload.url
@@ -685,24 +718,37 @@ async def partial_update_document(
         # we want to delete the old pages, since we will re-embed the document
         await document.pages.all().adelete()
         await document.embed_document()
-
-    elif payload.base64:
-        document.metadata = payload.metadata or document.metadata
-        document.name = payload.name or document.name
-        await document.save_base64_to_s3(payload.base64)
-        await document.pages.all().adelete()
-        await document.embed_document()
+        record_usage = True
 
     else:
         document.name = payload.name or document.name
         document.metadata = payload.metadata or document.metadata
         await document.asave()
+        record_usage = False
 
     new_document = (
         await Document.objects.select_related("collection")
         .annotate(num_pages=Count("pages"))
         .aget(id=document.id)
     )
+    logger.info(f"Document {new_document.name} updated successfully.")
+    if record_usage:
+        if available_credits >= new_document.num_pages:
+            await sync_to_async(request.auth.set_available_credits)(
+                available_credits - new_document.num_pages
+            )
+            logger.info(f"Decreased available credits by {new_document.num_pages}")
+        else:
+            await sync_to_async(request.auth.record_consumed_credits)(
+                new_document.num_pages - available_credits
+            )
+
+            if available_credits != 0:
+                await sync_to_async(request.auth.set_available_credits)(0)
+
+            logger.info(
+                f"Set available credits to 0 and recorded {new_document.num_pages - available_credits} consumed credits"
+            )
     return 200, DocumentOut(
         id=new_document.id,
         name=new_document.name,
@@ -879,6 +925,12 @@ async def search(
             }
         }
     """
+    available_credits = await sync_to_async(request.auth.get_available_credits)()
+    if available_credits < 1 and request.auth.tier == "free":
+        return 400, GenericError(
+            detail="You have no available credits. Please upgrade your subscription."
+        )
+
     query_embeddings = await get_query_embeddings(payload.query)
     if not query_embeddings:
         return 503, GenericError(
@@ -942,6 +994,17 @@ async def search(
         )
         async for row in results
     ]
+
+    logger.info(f"Current available credits: {available_credits}")
+
+    # available credit is a 1000 one time grant, so, we keep using this until it runs out, without hitting stripe
+    if available_credits >= 1:
+        await sync_to_async(request.auth.set_available_credits)(available_credits - 1)
+        logger.info("Decreased available credits by 1")
+    else:
+        await sync_to_async(request.auth.record_consumed_credits)(1)
+        logger.info("Increased consumed credits by 1")
+
     return 200, QueryOut(query=payload.query, results=formatted_results)
 
 

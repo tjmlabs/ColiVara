@@ -4,7 +4,7 @@
 
 **State of the Art Retrieval - with a delightful developer experience**
 
-Colivara is a suite of services that allows you to store, search, and retrieve documents based on their **_visual_** embedding.
+ColiVara is a suite of services that allows you to store, search, and retrieve documents based on their **_visual_** embedding.
 
 It is a web-first implementation of the ColiPali paper using ColQwen2 as the LLM model. It works exactly like RAG from the end-user standpoint - but using vision models instead of chunking and text-processing for documents.
 
@@ -18,7 +18,7 @@ It is a web-first implementation of the ColiPali paper using ColQwen2 as the LLM
 pip install colivara-py
 ```
 
-3. Index a document. Colivara accepts a file url, or base64 encoded file, or a file path. We support over 100 file formats including PDF, DOCX, PPTX, and more. We will also automically take a screenshot of URLs (webpages) and index them.
+3. Index a document. ColiVara accepts a file url, or base64 encoded file, or a file path. We support over 100 file formats including PDF, DOCX, PPTX, and more. We will also automically take a screenshot of URLs (webpages) and index them.
 
 ```python
 from colivara_py import ColiVara

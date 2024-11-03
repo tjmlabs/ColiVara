@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     # local
     "accounts",
     "api",
+   "frontend",
     # file cleanup
     "django_cleanup.apps.CleanupConfig",
 ]
@@ -95,14 +96,17 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
-        "APP_DIRS": True,
+        "DIRS": [str(BASE_DIR.joinpath("templates"))],
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+            ],
+            "loaders": [
+                "django.template.loaders.filesystem.Loader",
+                "django.template.loaders.app_directories.Loader",
             ],
         },
     },
@@ -270,6 +274,7 @@ if SENTRY_DSN:
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
 
+
 # S3
 AWS_S3_ACCESS_KEY_ID = env("AWS_S3_ACCESS_KEY_ID", default="dummy_key")
 AWS_S3_SECRET_ACCESS_KEY = env("AWS_S3_SECRET_ACCESS_KEY", default="dummy_key")
@@ -290,3 +295,17 @@ STORAGES = {
         "BACKEND": "servestatic.storage.CompressedManifestStaticFilesStorage",
     },
 }
+
+# stripe
+STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", default="sk_test_dummy_key")
+STRIPE_PUBLIC_KEY = env("STRIPE_PUBLIC_KEY", default="pk_test_dummy_key")
+STRIPE_WH_SECRET = env("STRIPE_WH_SECRET", default="wh_dummy_key")
+STRIPE_TEAM_PRICE_ID = env(
+    "STRIPE_TEAM_PRICE_ID", default="price_1J5J9vG7J9J9J9J9J9J9J9J9"
+)
+STRIPE_INDIVIDUAL_PRICE_ID = env(
+    "STRIPE_INDIVIDUAL_PRICE_ID", default="price_1J5J9vG7J9J9J9J9J9J9J9J"
+)
+STRIPE_METER_EVENT = env("STRIPE_METER_EVENT", default="metering.subscription.updated")
+STRIPE_METER_ID = env("STRIPE_METER_ID", default="meter_1J5J9vG7J9J9J9J9J9J9J9J")
+
