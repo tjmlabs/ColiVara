@@ -51,7 +51,9 @@ INSTALLED_APPS = [
     # local
     "accounts",
     "api",
-    "frontend",
+   "frontend",
+    # file cleanup
+    "django_cleanup.apps.CleanupConfig",
 ]
 
 # Change in production
@@ -160,11 +162,6 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STORAGES = {
-    "staticfiles": {
-        "BACKEND": "servestatic.storage.CompressedManifestStaticFilesStorage",
-    },
-}
 
 
 # Default primary key field type
@@ -277,6 +274,28 @@ if SENTRY_DSN:
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
 
+
+# S3
+AWS_S3_ACCESS_KEY_ID = env("AWS_S3_ACCESS_KEY_ID", default="dummy_key")
+AWS_S3_SECRET_ACCESS_KEY = env("AWS_S3_SECRET_ACCESS_KEY", default="dummy_key")
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", default="dummy_bucket")
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "bucket_name": AWS_STORAGE_BUCKET_NAME,
+            "region_name": "us-east-1",  # e.g., 'us-west-1'
+            "default_acl": None,  # Makes files private by default
+            "querystring_auth": True,  # Requires signed URLs for access
+            "querystring_expire": 3600,  # Expiry time for signed URLs (1 hour)
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "servestatic.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
 # stripe
 STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", default="sk_test_dummy_key")
 STRIPE_PUBLIC_KEY = env("STRIPE_PUBLIC_KEY", default="pk_test_dummy_key")
@@ -289,3 +308,4 @@ STRIPE_INDIVIDUAL_PRICE_ID = env(
 )
 STRIPE_METER_EVENT = env("STRIPE_METER_EVENT", default="metering.subscription.updated")
 STRIPE_METER_ID = env("STRIPE_METER_ID", default="meter_1J5J9vG7J9J9J9J9J9J9J9J")
+
