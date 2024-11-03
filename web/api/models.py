@@ -5,15 +5,16 @@ import mimetypes
 import os
 import re
 import urllib.parse
-from binascii import Error as BinasciiError
 from io import BytesIO
 from typing import Any, Dict, List
 
 import aiohttp
 import magic
 from accounts.models import CustomUser
+from asgiref.sync import sync_to_async
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models import FloatField, Func, JSONField, Q
 from django_stubs_ext.db.models import TypedModelMeta
@@ -22,6 +23,47 @@ from pgvector.django import HalfVectorField
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
 logger = logging.getLogger(__name__)
+
+
+def get_upload_path(instance, filename):
+    """
+    Generate the upload path for document files.
+    Path format: documents/<owner_email>/<filename>
+    """
+    owner_email = instance.collection.owner.email
+    # Sanitize email to be safe for use in paths
+    safe_email = owner_email.replace("@", "_at_")
+    if settings.DEBUG:
+        return f"dev-documents/{safe_email}/{filename}"  # pragma: no cover
+    return f"documents/{safe_email}/{filename}"
+
+
+def get_extension_from_mime(mime_type):
+    """Get file extension from MIME type."""
+    # Hard-code some common MIME types that mimetypes doesn't handle well
+    hardcode_mimetypes = {
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation": ".pptx",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ".xlsx",
+        "application/msword": ".doc",
+        "application/vnd.ms-powerpoint": ".ppt",
+        "application/vnd.ms-excel": ".xls",
+        "image/jpeg": ".jpg",
+        "image/png": ".png",
+        "image/gif": ".gif",
+        "application/pdf": ".pdf",
+    }
+
+    if mime_type in hardcode_mimetypes:
+        return hardcode_mimetypes[mime_type]
+
+    # Try to guess extension from MIME type
+    extension = mimetypes.guess_extension(mime_type)
+    if extension:
+        return extension
+
+    # Default to .bin if we can't determine the type
+    return ".bin"
 
 
 class Collection(models.Model):
@@ -58,7 +100,7 @@ class Document(models.Model):
     )
     name = models.CharField(max_length=255, db_index=True)
     url = models.URLField(blank=True)
-    base64 = models.TextField(blank=True)
+    s3_file = models.FileField(upload_to=get_upload_path, blank=True)
     metadata = JSONField(default=dict)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -77,6 +119,42 @@ class Document(models.Model):
                 fields=["name", "collection"], name="document_name_collection_idx"
             )
         ]
+
+    async def save_base64_to_s3(self, base64_content: str) -> None:
+        """Convert base64 to file and save to S3"""
+        try:
+            await self.delete_s3_file()
+            # Decode base64 content
+            file_content = base64.b64decode(base64_content)
+
+            # Detect MIME type
+            mime = magic.Magic(mime=True)
+            mime_type = mime.from_buffer(file_content)
+
+            # Get appropriate file extension
+            extension = get_extension_from_mime(mime_type)
+            # Generate filename
+            safe_name = self.name.replace(" ", "_")
+            filename = f"{safe_name}{extension}"
+
+            # Save to S3
+            await sync_to_async(self.s3_file.save)(
+                filename, ContentFile(file_content), save=True
+            )
+
+        except Exception as e:
+            raise ValidationError(f"Failed to save file to S3: {str(e)}")
+
+    async def delete_s3_file(self) -> None:
+        """Delete the S3 file"""
+        if self.s3_file:
+            await sync_to_async(self.s3_file.delete)(save=False)
+
+    async def get_url(self) -> str:
+        """Get the URL of the document"""
+        if self.s3_file:
+            return self.s3_file.url
+        return self.url
 
     async def embed_document(self) -> None:
         """
@@ -375,103 +453,81 @@ class Document(models.Model):
         ALLOWED_EXTENSIONS += IMAGE_EXTENSIONS  # Include images
         MAX_SIZE_BYTES = 50 * 1024 * 1024  # 50 MB
 
-        # Helper function to get file extension
-        def get_extension(filename):
-            _, ext = os.path.splitext(filename)
-            return ext[1:].lower() if ext else ""
-
-        def get_mime_type(data):
-            mime = magic.Magic(mime=True)
-            return mime.from_buffer(data)
-
-        async def fetch_document(url):
+        async def get_url_info(url):
+            """Get content type and filename from URL via HEAD request"""
             async with aiohttp.ClientSession() as session:
-                async with session.get(url) as response:
-                    if response.status != 200:
-                        raise ValidationError("Failed to fetch document from URL")
-                    content_length = response.headers.get("Content-Length")
-                    if content_length and int(content_length) > MAX_SIZE_BYTES:
-                        raise ValidationError("Document exceeds maximum size of 50MB.")
+                async with session.head(url, allow_redirects=True) as response:
+                    content_type = response.headers.get("Content-Type", "").lower()
                     content_disposition = response.headers.get(
                         "Content-Disposition", ""
                     )
+                    content_length = response.headers.get("Content-Length")
+                    if content_length and int(content_length) > MAX_SIZE_BYTES:
+                        raise ValidationError("Document exceeds maximum size of 50MB.")
                     filename_match = re.findall('filename="(.+)"', content_disposition)
                     filename = (
                         filename_match[0]
                         if filename_match
                         else os.path.basename(urllib.parse.urlparse(url).path)
                     )
-                    return await response.read(), filename
+                    return content_type, filename
 
-        async def is_pdf_url(url):
+        async def fetch_document(url):
             async with aiohttp.ClientSession() as session:
-                async with session.head(url, allow_redirects=True) as response:
-                    content_type = response.headers.get("Content-Type", "").lower()
-                    return "application/pdf" in content_type
+                async with session.get(url) as response:
+                    if response.status != 200:
+                        raise ValidationError("Failed to fetch document from URL")
+                    return await response.read()
 
-        # Step 1: Validate the document
+        # Step 1: Get the document data
+        extension = None
         filename = None
+        # every block should give back a document_data, extension, and filename
+        if self.s3_file and not document_data:
+            logger.info(f"Fetching document from S3: {self.s3_file.name}")
+            extension = os.path.splitext(self.s3_file.name)[1][1:].lower()
+            logger.info(f"Document extension: {extension}")
+            with self.s3_file.open("rb") as f:
+                document_data = f.read()
+            filename = os.path.basename(self.s3_file.name)
 
-        # every block should give back a document_data and filename
-        if self.url and not document_data:
-            parsed_url = urllib.parse.urlparse(self.url)
-            url_extension = get_extension(parsed_url.path)
-            is_pdf = await is_pdf_url(self.url)
-            logger.info(f"Is PDF: {is_pdf}, URL Extension: {url_extension}")
-            if is_pdf:
-                document_data, filename = await fetch_document(self.url)
-
-            elif url_extension == "" or url_extension not in ALLOWED_EXTENSIONS:
-                # Likely a webpage URL, convert to PDF via Gotenberg
-                try:
-                    pdf_data = await self._convert_url_to_pdf(self.url)
-                    document_data = pdf_data
-                    filename = "webpage.pdf"
-                except Exception as e:
-                    raise ValidationError(f"Failed to convert URL to PDF: {str(e)}")
-
+        elif self.url and not document_data:
+            content_type, filename = await get_url_info(self.url)
+            if "text/html" in content_type:
+                logger.info("Document is a webpage.")
+                # It's a webpage, convert to PDF
+                document_data = await self._convert_url_to_pdf(self.url)
+                logger.info("Successfully converted URL to PDF.")
+                extension = "pdf"
             else:
-                # non-pdf document - we still fetch it, and will convert it to pdf later
-                document_data, filename = await fetch_document(self.url)
+                # It's a regular file
+                logger.info(f"Fetching document from URL: {self.url}")
+                document_data = await fetch_document(self.url)
+                if "application/pdf" in content_type:
+                    extension = "pdf"
+                else:
+                    extension = get_extension_from_mime(content_type).lstrip(".")
+                logger.info(f"Document extension: {extension}")
 
-        elif self.base64 and not document_data:
-            # Decode base64 content
-            try:
-                document_data = base64.b64decode(self.base64)
-                filename = "document"
-            except BinasciiError:
-                raise ValidationError("Invalid base64 content.")
+        # here we should have a document_data and extension
+        if document_data and not extension and not filename:
+            # Get MIME type from magic
+            mime = magic.Magic(mime=True)
+            mime_type = mime.from_buffer(document_data)
+            extension = get_extension_from_mime(mime_type).lstrip(".")
+            filename = f"document.{extension}"
 
-        # here we should have a document_data and filename
+        # Validate the document
+        if not document_data or not extension or not filename:
+            raise ValidationError("Document data is missing.")
 
-        # Validate the size
-        assert document_data is not None, "document_data should not be None"
         if len(document_data) > MAX_SIZE_BYTES:
             raise ValidationError("Document exceeds maximum size of 50MB.")
 
-        # Determine file type
-        mime_type = get_mime_type(document_data)
-        extension = mimetypes.guess_extension(mime_type)
-        # hard-code some mimetype that guess_extesion can't handle
-        hardcode_mimetypes = {
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation": ".pptx",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ".xlsx",
-            "application/msword": ".doc",
-            "application/vnd.ms-powerpoint": ".ppt",
-            "application/vnd.ms-excel": ".xls",
-        }
-        if extension is None:
-            extension = hardcode_mimetypes.get(mime_type, None)
-        if extension:
-            extension = extension[1:].lower()
-        else:  # pragma: no cover
-            extension = get_extension(filename)
-
-        logger.info(f"Document extension: {extension}")
-        # Validate file extension
         if extension not in ALLOWED_EXTENSIONS:
             raise ValidationError(f"File extension .{extension} is not allowed.")
+
+        logger.info(f"Document extension: {extension}")
 
         # Determine if the document is an image or PDF
         is_image = extension in IMAGE_EXTENSIONS
@@ -599,4 +655,5 @@ class PageEmbedding(models.Model):
 
 class MaxSim(Func):
     function = "max_sim"
+    output_field = FloatField()
     output_field = FloatField()
