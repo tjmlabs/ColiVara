@@ -1,7 +1,7 @@
+import asyncio
 import base64
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
-import asyncio
 import pytest
 from accounts.models import CustomUser
 from api.middleware import add_slash
@@ -313,7 +313,6 @@ async def test_create_document_pdf_url_await(async_client, user):
         "name": "Test Document Fixture",
         "metadata": {},
         "url": "https://pdfobject.com/pdf/sample.pdf",
-        "base64": "",
         "num_pages": 1,
         "collection_name": "default collection",
         "pages": None,
@@ -353,7 +352,6 @@ async def test_create_document_pdf_url_update_await(
         "name": "Test Document Fixture",
         "metadata": {},
         "url": "https://pdfobject.com/pdf/sample.pdf",
-        "base64": "",
         "num_pages": 1,
         "collection_name": "Test Collection Fixture",
         "pages": None,
@@ -430,7 +428,6 @@ async def test_create_document_pdf_url_collection_await(async_client, user, coll
         "name": "Test Document Fixture",
         "metadata": {},
         "url": "https://pdfobject.com/pdf/sample.pdf",
-        "base64": "",
         "num_pages": 1,
         "collection_name": collection.name,
         "pages": None,
@@ -466,17 +463,17 @@ async def test_create_document_pdf_base64_await(async_client, user, collection):
         },
         headers={"Authorization": f"Bearer {user.token}"},
     )
+    response_data = response.json()
     assert response.status_code == 201
-    assert response.json() == {
-        "id": 1,
-        "name": "Test Document Fixture",
-        "metadata": {},
-        "url": "",
-        "base64": base64_string,
-        "num_pages": 1,
-        "collection_name": "default collection",
-        "pages": None,
-    }
+    # The URL should now be a pre-signed S3 URL
+    assert "s3.amazonaws.com" in response_data["url"]
+    assert response_data["id"] == 1
+    assert response_data["name"] == "Test Document Fixture"
+    assert response_data["metadata"] == {}
+    assert response_data["num_pages"] == 1
+    assert response_data["collection_name"] == "default collection"
+    assert response_data["pages"] is None
+    await Document.objects.all().adelete()
 
 
 async def test_create_document_pdf_base64_async(async_client, user, collection):
@@ -495,6 +492,7 @@ async def test_create_document_pdf_base64_async(async_client, user, collection):
         headers={"Authorization": f"Bearer {user.token}"},
     )
     assert response.status_code == 202
+    await Document.objects.all().adelete()
 
 
 async def test_create_document_docx_url_await(async_client, user, collection):
@@ -543,6 +541,8 @@ async def test_create_document_docx_base64_await(async_client, user, collection)
         headers={"Authorization": f"Bearer {user.token}"},
     )
     assert response.status_code == 201
+
+    await Document.objects.all().adelete()
 
 
 async def test_create_document_docx_base64_async(async_client, user, collection):
@@ -631,6 +631,8 @@ async def test_create_document_image_base64_await(async_client, user, collection
     )
     assert response.status_code == 201
 
+    await Document.objects.all().adelete()
+
 
 async def test_create_document_image_base64_async(async_client, user, collection):
     with open("api/tests/test_docs/sample.png", "rb") as f:
@@ -660,7 +662,6 @@ async def test_get_document_by_name(async_client, user, collection, document):
         "name": "Test Document Fixture",
         "metadata": {},
         "url": "https://www.example.com",
-        "base64": "",
         "num_pages": 1,
         "collection_name": "Test Collection Fixture",
         "pages": [
@@ -709,7 +710,6 @@ async def test_get_documents(async_client, user, collection, document):
             "name": "Test Document Fixture",
             "metadata": {},
             "url": "https://www.example.com",
-            "base64": "",
             "num_pages": 1,
             "collection_name": "Test Collection Fixture",
             "pages": None,
@@ -740,7 +740,6 @@ async def test_patch_document_no_embed(async_client, user, collection, document)
         "name": "Test Document Update",
         "metadata": {},
         "url": "https://www.example.com",
-        "base64": "",
         "num_pages": 1,
         "collection_name": "Test Collection Fixture",
         "pages": None,
@@ -757,7 +756,6 @@ async def test_patch_document_no_embed(async_client, user, collection, document)
         "name": "Test Document Update",
         "url": "https://www.example.com",
         "metadata": {},
-        "base64": "",
         "num_pages": 1,
         "collection_name": "Test Collection Fixture",
         "pages": None,
@@ -814,16 +812,41 @@ async def test_patch_document_embed(async_client, user, collection, document):
         headers={"Authorization": f"Bearer {user.token}"},
     )
     assert response.status_code == 200
-    assert response.json() == {
-        "id": 1,
-        "name": "Test Document Update",
-        "metadata": {"key": "value"},
-        "base64": base64_string,
-        "url": "",
-        "num_pages": 1,
-        "collection_name": "Test Collection Fixture",
-        "pages": None,
-    }
+    response_data = response.json()
+    assert response_data["id"] == 1
+    assert response_data["name"] == "Test Document Update"
+    assert response_data["metadata"] == {"key": "value"}
+    assert "s3.amazonaws.com" in response_data["url"]
+    assert response_data["num_pages"] == 1
+    assert response_data["collection_name"] == "Test Collection Fixture"
+    assert response_data["pages"] is None
+
+    await Document.objects.all().adelete()
+
+
+async def test_patch_document_url(async_client, user, collection, document):
+    # we update the URL of the document
+    response = await async_client.patch(
+        f"/documents/{document.name}/",
+        json={
+            "name": "Test Document Update",
+            "url": "https://www.w3schools.com/w3css/img_lights.jpg",
+            "collection_name": collection.name,
+        },
+        headers={"Authorization": f"Bearer {user.token}"},
+    )
+    assert response.status_code == 200
+    response_data = response.json()
+    assert response_data["id"] == 1
+    assert response_data["name"] == "Test Document Update"
+    assert response_data["metadata"] == {}
+    assert response_data["url"] == "https://www.w3schools.com/w3css/img_lights.jpg"
+    assert response_data["num_pages"] == 1
+    assert response_data["collection_name"] == "Test Collection Fixture"
+    assert response_data["pages"] is None
+
+    # now check if the document was actually updated
+    await Document.objects.all().adelete()
 
 
 async def test_patch_document_url_and_base64(async_client, user, collection, document):
@@ -1413,17 +1436,28 @@ async def test_embed_document_arxiv_async(async_client, user):
 
 async def test_document_fetch_failure_await(async_client, user):
     AIOHTTP_GET_PATH = "api.models.aiohttp.ClientSession.get"
-    mock_response = AsyncMock()
-    mock_response.status = 500
-    mock_response.headers = {}
-    mock_response.read = AsyncMock(return_value=b"")
+    AIOHTTP_HEAD_PATH = "api.models.aiohttp.ClientSession.head"
 
-    # Mock the context manager __aenter__ to return the mock_response
-    mock_response.__aenter__.return_value = mock_response
+    # Mock for HEAD request
+    mock_head_response = AsyncMock()
+    mock_head_response.status = 200
+    mock_head_response.headers = {
+        "Content-Type": "application/pdf",
+        "Content-Length": "1000",
+    }
+    mock_head_response.__aenter__.return_value = mock_head_response
 
-    # Patch the aiohttp.ClientSession.get method to return the mock_response
-    with patch(AIOHTTP_GET_PATH, return_value=mock_response) as mock_get:
-        # Perform the POST request to trigger embed_document via your endpoint
+    # Mock for GET request
+    mock_get_response = AsyncMock()
+    mock_get_response.status = 500
+    mock_get_response.headers = {}
+    mock_get_response.read = AsyncMock(return_value=b"")
+    mock_get_response.__aenter__.return_value = mock_get_response
+
+    # Patch both HEAD and GET methods
+    with patch(AIOHTTP_HEAD_PATH, return_value=mock_head_response) as mock_head, patch(
+        AIOHTTP_GET_PATH, return_value=mock_get_response
+    ) as mock_get:
         response = await async_client.post(
             "/documents/upsert-document/",
             json={
@@ -1434,7 +1468,10 @@ async def test_document_fetch_failure_await(async_client, user):
             headers={"Authorization": f"Bearer {user.token}"},
         )
 
-        # Assert that the fetch_document was called correctly
+        # Assert both HEAD and GET were called
+        mock_head.assert_called_once_with(
+            "https://example.com/nonexistent.pdf", allow_redirects=True
+        )
         mock_get.assert_called_once_with("https://example.com/nonexistent.pdf")
 
         # Assert that the response status code reflects the failure
@@ -1443,22 +1480,34 @@ async def test_document_fetch_failure_await(async_client, user):
 
 async def test_document_fetch_failure_async(async_client, user):
     AIOHTTP_GET_PATH = "api.models.aiohttp.ClientSession.get"
-    mock_response = AsyncMock()
-    mock_response.status = 500
-    mock_response.headers = {}
-    mock_response.read = AsyncMock(return_value=b"")
+    AIOHTTP_HEAD_PATH = "api.models.aiohttp.ClientSession.head"
 
-    # Mock the context manager __aenter__ to return the mock_response
-    mock_response.__aenter__.return_value = mock_response
+    # Mock for HEAD request
+    mock_head_response = AsyncMock()
+    mock_head_response.status = 200
+    mock_head_response.headers = {
+        "Content-Type": "application/pdf",
+        "Content-Length": "1000",
+    }
+    mock_head_response.__aenter__.return_value = mock_head_response
 
-    # Patch the aiohttp.ClientSession.get method to return the mock_response
-    with patch(AIOHTTP_GET_PATH, return_value=mock_response) as mock_get:
+    # Mock for GET request (failing response)
+    mock_get_response = AsyncMock()
+    mock_get_response.status = 500
+    mock_get_response.headers = {}
+    mock_get_response.read = AsyncMock(return_value=b"")
+    mock_get_response.__aenter__.return_value = mock_get_response
+
+    # Patch both HEAD and GET methods
+    with patch(AIOHTTP_HEAD_PATH, return_value=mock_head_response) as mock_head, patch(
+        AIOHTTP_GET_PATH, return_value=mock_get_response
+    ) as mock_get:
         # Mock EmailMessage
         with patch("api.views.EmailMessage") as MockEmailMessage:
             mock_email_instance = MockEmailMessage.return_value
             mock_email_instance.send = AsyncMock()
 
-            # Perform the POST request to trigger embed_document via your endpoint
+            # Perform the POST request
             response = await async_client.post(
                 "/documents/upsert-document/",
                 json={
@@ -1468,14 +1517,21 @@ async def test_document_fetch_failure_async(async_client, user):
                 headers={"Authorization": f"Bearer {user.token}"},
             )
 
-            # Assert that the response status code reflects the failure
+            # Assert that the response status code reflects the async processing
             assert response.status_code == 202
 
             # Wait for all pending tasks to complete
-            pending_tasks = [task for task in asyncio.all_tasks() if task is not asyncio.current_task()]
+            pending_tasks = [
+                task
+                for task in asyncio.all_tasks()
+                if task is not asyncio.current_task()
+            ]
             await asyncio.gather(*pending_tasks)
 
-            # Assert that the fetch_document was called correctly
+            # Assert that both HEAD and GET were called
+            mock_head.assert_called_once_with(
+                "https://example.com/nonexistent.pdf", allow_redirects=True
+            )
             mock_get.assert_called_once_with("https://example.com/nonexistent.pdf")
 
             # Assert that the email was sent
@@ -1490,22 +1546,31 @@ async def test_document_fetch_failure_async(async_client, user):
 
 async def test_document_file_too_big(async_client, user):
     AIOHTTP_GET_PATH = "api.models.aiohttp.ClientSession.get"
+    AIOHTTP_HEAD_PATH = "api.models.aiohttp.ClientSession.head"
     MAX_SIZE_BYTES = 50 * 1024 * 1024
-    mock_response = AsyncMock()
-    mock_response.status = 200
-    mock_response.headers = {
+
+    # Mock for HEAD request
+    mock_head_response = AsyncMock()
+    mock_head_response.status = 200
+    mock_head_response.headers = {
+        "Content-Type": "application/pdf",
         "Content-Length": str(MAX_SIZE_BYTES + 1),  # 50MB + 1 byte
     }
-    mock_response.read = AsyncMock(
-        return_value=b"x" * (MAX_SIZE_BYTES + 1)
-    )  # Dummy content
+    mock_head_response.__aenter__.return_value = mock_head_response
 
-    # Mock the context manager __aenter__ to return the mock_response
-    mock_response.__aenter__.return_value = mock_response
+    # Mock for GET request (shouldn't be called due to size check in HEAD)
+    mock_get_response = AsyncMock()
+    mock_get_response.status = 200
+    mock_get_response.headers = {
+        "Content-Length": str(MAX_SIZE_BYTES + 1),
+    }
+    mock_get_response.read = AsyncMock(return_value=b"x" * (MAX_SIZE_BYTES + 1))
+    mock_get_response.__aenter__.return_value = mock_get_response
 
-    # Patch the aiohttp.ClientSession.get method to return the mock_response
-    with patch(AIOHTTP_GET_PATH, return_value=mock_response) as mock_get:
-        # Perform the POST request to trigger embed_document via your endpoint
+    # Patch both HEAD and GET methods
+    with patch(AIOHTTP_HEAD_PATH, return_value=mock_head_response) as mock_head, patch(
+        AIOHTTP_GET_PATH, return_value=mock_get_response
+    ) as mock_get:
         response = await async_client.post(
             "/documents/upsert-document/",
             json={
@@ -1516,8 +1581,13 @@ async def test_document_file_too_big(async_client, user):
             headers={"Authorization": f"Bearer {user.token}"},
         )
 
-        # Assert that the fetch_document was called correctly
-        mock_get.assert_called_once_with("https://example.com/largefile.pdf")
+        # Assert that HEAD was called
+        mock_head.assert_called_once_with(
+            "https://example.com/largefile.pdf", allow_redirects=True
+        )
+
+        # Assert that GET was never called (should fail at HEAD check)
+        mock_get.assert_not_called()
 
         # Assert that the response status code reflects the failure
         assert response.status_code == 400
@@ -1564,15 +1634,6 @@ async def test_gotenberg_service_down(async_client, user):
         assert response.status_code == 400
 
 
-async def test_prep_document_bad_base64_string():
-    # Initialize Document with bad base64 string
-    doc = Document(base64="bad_base64_string")
-
-    # Attempt to prepare the document and expect a ValidationError
-    with pytest.raises(DjangoValidationError):
-        await doc._prep_document()
-
-
 async def test_prep_document_document_data_too_large():
     # Initialize Document without a URL or base64 (assuming document_data is handled internally)
     doc = Document()
@@ -1584,7 +1645,7 @@ async def test_prep_document_document_data_too_large():
         await doc._prep_document(document_data=document_data)
 
 
-async def test_prep_document_with_disallowed_extension():
+async def test_prep_document_with_disallowed_extension(collection):
     content = "bad base64 string"
     content_bytes = content.encode("utf-8")
     base64_bytes = base64.b64encode(content_bytes)
@@ -1592,6 +1653,59 @@ async def test_prep_document_with_disallowed_extension():
     # give it an .exe extension
     extension = "exe"
     bad_base64 = f"data:application/{extension};base64,{base64_string}"
-    doc = Document(base64=bad_base64)
+    document = Document(collection=collection)
+    await document.save_base64_to_s3(bad_base64)
     with pytest.raises(DjangoValidationError):
-        await doc._prep_document()
+        await document._prep_document()
+
+    await document.delete_s3_file()
+
+
+async def test_save_base64_to_s3_failure(collection):
+    # Create a document instance
+    document = Document(name="test document", collection=collection)
+
+    # Create a valid base64 string
+    content = "test content"
+    content_bytes = content.encode("utf-8")
+    base64_bytes = base64.b64encode(content_bytes)
+    base64_string = base64_bytes.decode("utf-8")
+
+    # Test S3 save failure
+    S3_SAVE_PATH = "django.db.models.fields.files.FieldFile.save"
+    with patch(S3_SAVE_PATH) as mock_save:
+        mock_save.side_effect = Exception("S3 Storage Error")
+
+        with pytest.raises(DjangoValidationError) as exc_info:
+            await document.save_base64_to_s3(base64_string)
+
+        assert str(exc_info.value) == "['Failed to save file to S3: S3 Storage Error']"
+        mock_save.assert_called_once()
+
+
+async def test_unknown_mime_type(collection):
+    # Create a document with content that will produce an unknown mime type
+    content = bytes([0xFF, 0xFE, 0xFD])  # Some arbitrary bytes
+    base64_string = base64.b64encode(content).decode("utf-8")
+
+    document = Document(name="test_unknown_mime", collection=collection)
+
+    # Mock magic to return an unknown mime type
+    MAGIC_PATH = "magic.Magic.from_buffer"
+    with patch(MAGIC_PATH) as mock_magic:
+        mock_magic.return_value = "application/x-unknown-type"
+
+        # First, verify that save_base64_to_s3 saves with .bin extension
+        await document.save_base64_to_s3(base64_string)
+
+        # Assert that the filename ends with .bin
+        assert document.s3_file.name.endswith(".bin")
+
+        # Then verify that _prep_document raises ValidationError because .bin is not allowed
+        with pytest.raises(DjangoValidationError) as exc_info:
+            await document._prep_document()
+
+        assert "File extension .bin is not allowed" in str(exc_info.value)
+
+    # Cleanup
+    await document.delete_s3_file()
