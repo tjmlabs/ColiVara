@@ -1,0 +1,45 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    environment: production  
+    
+    steps:
+      - name: Deploy to VPS
+        env:
+          PRIVATE_KEY: ${{ secrets.VPS_PRIVATE_SSH }}
+          HOSTNAME: ${{ secrets.VPS_HOSTNAME }}
+          USER_NAME: root
+          
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+            # Ensure we are in the correct directory
+            cd ColiVara || exit 1
+            
+            # Stash any local changes (if any exist)
+            git stash
+            
+            # Ensure we are on cloud branch
+            git fetch origin cloud
+            git checkout cloud || exit 1
+            
+            # Reset to origin/cloud to ensure we are in sync
+            git reset --hard origin/cloud
+            
+            # Pull latest changes
+            git pull origin cloud
+            
+            # Build and deploy
+            docker compose -f docker-compose-prod.yml pull  # Pull latest images first
+            docker compose -f docker-compose-prod.yml up -d --build
+            
+            # Clean up old images (optional)
+            docker image prune -f
+          '
+      
