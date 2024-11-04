@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="grow">
+            
+    <section class="relative">
+
+        <!-- Illustration behind content -->
+        <div class="absolute left-1/2 transform -translate-x-1/2 -mb-64 bottom-0 pointer-events-none -z-1" aria-hidden="true">
+            <svg width="1360" height="578" viewBox="0 0 1360 578" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="illustration-01">
+                        <stop stop-color="#FFF" offset="0%" />
+                        <stop stop-color="#EAEAEA" offset="77.402%" />
+                        <stop stop-color="#DFDFDF" offset="100%" />
+                    </linearGradient>
+                </defs>
+                <g fill="url(#illustration-01)" fill-rule="evenodd">
+                    <circle cx="1232" cy="128" r="128" />
+                    <circle cx="155" cy="443" r="64" />
+                </g>
+            </svg>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="pt-32 pb-12 md:pt-40 md:pb-20">
+                <div class="max-w-3xl mx-auto text-center">
+                    <!-- 404 content -->
+                    <h1 class="h1 mb-4">Oh, No! You stumbled upon a rarity.    
+                        Our server had an error.
+                    </h1>
+                    <!-- support email -->
+                    <p class="text-lg text-gray-500 mb-8">We got notified, but feel free to contact us at 
+                        <a href="mailto:founders@tjmlabs.com" class="text-blue-600"> our support email</a>.
+                    <div class="mt-8">
+                        <a class="btn text-white bg-blue-600 hover:bg-blue-700" href="{% url 'home' %}">Go back home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+</main>
+
+{% endblock content %}
