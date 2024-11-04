@@ -4,23 +4,40 @@
 
 ## Type of change
 
-<!-- Please delete options that are not relevant. -->
+<!-- Please select ONE option that best describes your changes -->
+<!-- Your selection will determine the semantic version bump -->
 
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Internal (changes that do not affect the application's functionality, changes in admin site, documentation improvements, refactor, settings) 
+- [ ] 🚨 Breaking change - causes existing functionality to break (triggers MAJOR version bump)
+- [ ] ✨ New feature - adds functionality in a non-breaking way (triggers MINOR version bump)
+- [ ] 🐛 Bug fix - fixes an issue without changing functionality (triggers PATCH version bump)
+- [ ] 🏠 Internal - changes that don't affect external functionality (no version bump)
+      (e.g., refactoring, docs, tests, admin site changes)
 
-## Checklist:
+## Release Impact
+
+<!-- The following will be automated based on your type of change selection above -->
+- Current version: <!-- e.g., v1.2.3 -->
+- Next version will be: <!-- will be automatically determined -->
+
+## Checklist
 
 - [ ] My code follows the style guidelines 
 - [ ] My code is tested with 99%+ coverage
 - [ ] I have commented my code, particularly in hard-to-understand areas
 - [ ] My changes generate no new warnings
+- [ ] I have updated the documentation to reflect my changes
+- [ ] I have added/updated tests to cover my changes
 
+## Breaking Changes
 
+<!-- If you checked "Breaking change" above, please detail the breaks here -->
+<!-- This will be included in the release notes -->
 
-## To Do before merging:
-- [ ] If applicable, changes have been merged to the cloud branch
-- [ ] The readme and documentation have been updated
-- [ ] If my changes break or alters current functionality, I have upgraded the SDKs to reflect these changes 
+## Migration Guide
+
+<!-- If you checked "Breaking change" above, please provide migration instructions -->
+<!-- This will be included in the release notes -->
+
+## Additional Notes
+
+<!-- Any other information that would be helpful to reviewers -->

@@ -1,0 +1,90 @@
+name: Create Release
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  release:
+    # Only run if PR was merged (not just closed)
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Important for generating changelog
+
+      - name: Get latest tag
+        id: get_latest_tag
+        run: |
+          latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+
+      - name: Determine version bump
+        id: bump_version
+        run: |
+          # Default to patch bump
+          BUMP_TYPE="patch"
+          
+          # Check PR labels for version bump type
+          if [[ "${{ contains(github.event.pull_request.labels.*.name, 'major') }}" == "true" ]]; then
+            BUMP_TYPE="major"
+          elif [[ "${{ contains(github.event.pull_request.labels.*.name, 'minor') }}" == "true" ]]; then
+            BUMP_TYPE="minor"
+          fi
+          
+          # Remove 'v' prefix for semver calculation
+          current_version=${LATEST_TAG#v}
+          
+          # Split version into parts
+          IFS='.' read -r major minor patch <<< "$current_version"
+          
+          # Bump version according to type
+          case $BUMP_TYPE in
+            major)
+              new_version="$((major + 1)).0.0"
+              ;;
+            minor)
+              new_version="${major}.$((minor + 1)).0"
+              ;;
+            patch)
+              new_version="${major}.${minor}.$((patch + 1))"
+              ;;
+          esac
+          
+          echo "NEW_VERSION=v${new_version}" >> $GITHUB_ENV
+          echo "Version bump: ${LATEST_TAG} -> v${new_version} (${BUMP_TYPE})"
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Generate changelog since last tag
+          CHANGELOG=$(git log ${LATEST_TAG}..HEAD --pretty=format:"* %s (%h)" --no-merges)
+          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+          echo "$CHANGELOG" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.NEW_VERSION }}
+          name: Release ${{ env.NEW_VERSION }}
+          body: |
+            ## Changes
+            ${{ env.CHANGELOG }}
+            
+            ## Pull Request
+            #${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          make_latest: true
+          generate_release_notes: false # Since we're generating our own changelog
+
