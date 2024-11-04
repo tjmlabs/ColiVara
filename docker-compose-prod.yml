@@ -26,5 +26,17 @@ services:
         reservations:
           memory: 1G
 
+redis:
+    image: "redis:alpine"
+    command: redis-server --maxmemory 2gb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    deploy:
+      resources:
+        limits:
+          memory: 3gb 
+
 volumes:
-  postgres_data:
+  redis_data:

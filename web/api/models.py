@@ -178,7 +178,7 @@ class Document(models.Model):
         """
         # Constants
         EMBEDDINGS_URL = settings.EMBEDDINGS_URL
-        EMBEDDINGS_BATCH_SIZE = 6
+        EMBEDDINGS_BATCH_SIZE = 3
         DELAY_BETWEEN_BATCHES = 1  # seconds
 
         # Helper function to send a batch of images to the embeddings service
@@ -227,6 +227,10 @@ class Document(models.Model):
                         "Failed to get embeddings from the embeddings service."
                     )
                 out = await response.json()
+                if "output" not in out or "data" not in out["output"]:
+                    raise ValidationError(
+                        f"Failed to get embeddings from the embeddings service. Repsonse: {out}"
+                    )
                 logger.info(
                     f"Got embeddings for batch of {len(images)} images. delayTime: {out['delayTime']}, executionTime: {out['executionTime']}"
                 )
@@ -239,6 +243,9 @@ class Document(models.Model):
             base64_images[i : i + EMBEDDINGS_BATCH_SIZE]
             for i in range(0, len(base64_images), EMBEDDINGS_BATCH_SIZE)
         ]
+        logger.info(
+            f"Split document {self.name} into {len(batches)} batches for embedding"
+        )
 
         try:
             # we save the document first, then save the pages

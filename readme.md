@@ -114,15 +114,11 @@ Please check swagger documentation endpoint (v1/docs) for endpoints. More compre
 
 You can import an openAPI spec (for example for Postman) from the swagger documentation endpoint at `v1/docs/openapi.json`
 
-## Roadmap for 1.0 Release
-
-1.  Complete Documentation for the API
-
-## Roadmap for 2.0 Release
+## Roadmap
 
 1. Independent Evals for quality + latency
 2. Full Demo with Generative Models
-3. Typescript SDK
+3. Automated SDKs for popular languages other than Python
 
 ## Getting Started (Local Setup)
 
