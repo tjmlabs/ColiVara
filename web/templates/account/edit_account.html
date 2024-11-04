@@ -310,6 +310,10 @@
                                                     </div>
                                                 </div>
                                             </form>
+                                            {% elif request.user.tier == "team" %}
+                                            <p>
+                                                You are part of a team. Only the team owner can invite new members.
+                                            </p>
                                             {% else %}
                                             <p>
                                                 You are not part of a team. You can create a team by upgrading to the team plan.

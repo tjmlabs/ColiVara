@@ -362,9 +362,13 @@ async def process_upsert_document(
 
         if available_credits < 1 and request.auth.tier == "free":
             # raise an exception so it's caught by the error handler
-            raise ValueError(
+            error_message = (
                 "You have no available credits. Please upgrade your subscription."
             )
+            if payload.wait:
+                return 402, GenericError(detail=error_message)
+            else:
+                raise ValueError(error_message)
 
         # we look up the document by name and collection
         # if it exists, we update its metadate and embeddings (by calling embed_document)
@@ -455,7 +459,12 @@ async def process_upsert_document(
     "/documents/upsert-document/",
     tags=["documents"],
     auth=Bearer(),
-    response={201: DocumentOut, 202: GenericMessage, 400: GenericError},
+    response={
+        201: DocumentOut,
+        202: GenericMessage,
+        400: GenericError,
+        402: GenericError,
+    },
 )
 async def upsert_document(
     request: Request, payload: DocumentIn
@@ -661,7 +670,12 @@ async def list_documents(
     "documents/{document_name}/",
     tags=["documents"],
     auth=Bearer(),
-    response={200: DocumentOut, 404: GenericError, 409: GenericError},
+    response={
+        200: DocumentOut,
+        404: GenericError,
+        409: GenericError,
+        402: GenericError,
+    },
 )
 async def partial_update_document(
     request: Request, document_name: str, payload: DocumentInPatch
@@ -707,7 +721,7 @@ async def partial_update_document(
     available_credits = await sync_to_async(request.auth.get_available_credits)()
 
     if available_credits < 1 and request.auth.tier == "free":
-        return 400, GenericError(
+        return 402, GenericError(
             detail="You have no available credits. Please upgrade your subscription."
         )
 
@@ -890,7 +904,7 @@ class QueryOut(Schema):
     "/search/",
     tags=["search"],
     auth=Bearer(),
-    response={200: QueryOut, 503: GenericError},
+    response={200: QueryOut, 503: GenericError, 402: GenericError},
 )
 async def search(
     request: Request, payload: QueryIn
@@ -927,7 +941,7 @@ async def search(
     """
     available_credits = await sync_to_async(request.auth.get_available_credits)()
     if available_credits < 1 and request.auth.tier == "free":
-        return 400, GenericError(
+        return 402, GenericError(
             detail="You have no available credits. Please upgrade your subscription."
         )
 
@@ -1140,7 +1154,7 @@ class EmbeddingsOut(Schema):
     "/embeddings/",
     tags=["embeddings"],
     auth=Bearer(),
-    response={200: EmbeddingsOut, 503: GenericError},
+    response={200: EmbeddingsOut, 503: GenericError, 402: GenericError},
 )
 async def embeddings(
     request: Request, payload: EmbeddingsIn
@@ -1160,6 +1174,13 @@ async def embeddings(
     Raises:
         HttpError: If the documents cannot be embedded.
     """
+    available_credits = await sync_to_async(request.auth.get_available_credits)()
+    num_pages = len(payload.input_data)
+    # case: free user with not enough first time grant credits
+    if available_credits < num_pages and request.auth.tier == "free":
+        return 402, GenericError(
+            detail="You have no available credits. Please upgrade your subscription."
+        )
     EMBEDDINGS_URL = settings.EMBEDDINGS_URL
     embed_token = settings.EMBEDDINGS_URL_TOKEN
     headers = {"Authorization": f"Bearer {embed_token}"}
@@ -1183,4 +1204,26 @@ async def embeddings(
             output_data = response_data["output"]
             # change object to _object
             output_data["_object"] = output_data.pop("object")
-            return 200, EmbeddingsOut(**output_data)
+
+        # usage
+        # case: free user without enough first time grant credits is handled above w/ early return
+        # case: paid or free user with enough first time grant credits
+        if available_credits >= num_pages:
+            await sync_to_async(request.auth.set_available_credits)(
+                available_credits - num_pages
+            )
+            logger.info(f"Decreased available credits by {num_pages}")
+        # case: paid user with not enough first time grant credits
+        else:
+            await sync_to_async(request.auth.record_consumed_credits)(
+                num_pages - available_credits
+            )
+
+            if available_credits != 0:
+                await sync_to_async(request.auth.set_available_credits)(0)
+
+            logger.info(
+                f"Set available credits to 0 and recorded {num_pages - available_credits} consumed credits"
+            )
+
+        return 200, EmbeddingsOut(**output_data)
