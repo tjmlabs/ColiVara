@@ -22,12 +22,13 @@ SECRET_KEY = env("SECRET_KEY", default="django-insecure-dummy-key")
 DEBUG = env.bool("DEBUG", default=True)
 LOCAL = env.bool("LOCAL", default=True)
 
-# change in production: example: [".example.com"]
-ALLOWED_HOSTS = ["*"]
+# change in production: example: DJANGO_ALLOWED_HOSTS = "example.com, www.example.com"
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["*"])
 
 # Admin definition
-ADMINS = env.list("DJANGO_ADMINS", default=[("Dummy Name", "dummy@example.com")])
-
+DJANGO_ADMINS = env.list("DJANGO_ADMINS", default=["Dummy Name:dummy@example.com"])
+# DJANGO_ADMINS=Blake:blake@cyb.org,Alice:alice@cyb.org
+ADMINS = [tuple(x.split(":")) for x in DJANGO_ADMINS]
 
 # Application definition
 
@@ -44,14 +45,13 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.github",
     # corsheaders
     "corsheaders",
     # local
     "accounts",
     "api",
-   "frontend",
+    "frontend",
     # file cleanup
     "django_cleanup.apps.CleanupConfig",
 ]
@@ -185,6 +185,8 @@ else:
         "EMAIL_PASSWORD", default="dummy password"
     )  # prod: SMTP password
     EMAIL_USE_TLS = True
+
+
 DEFAULT_EMAIL_FROM = env(
     "DEFAULT_EMAIL_FROM", default="dummy-email@example.com"
 )  # prod: SMTP email
@@ -196,7 +198,7 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
-LOGIN_REDIRECT_URL = "home"
+LOGIN_REDIRECT_URL = "edit_account"
 LOGOUT_REDIRECT_URL = "home"
 
 ACCOUNT_AUTHENTICATION_METHOD = "email"
@@ -302,7 +304,7 @@ STRIPE_PUBLIC_KEY = env("STRIPE_PUBLIC_KEY", default="pk_test_dummy_key")
 STRIPE_WH_SECRET = env("STRIPE_WH_SECRET", default="wh_dummy_key")
 
 STRIPE_TEAM_PRICE_ID_RECURRENT = env(
-    "STRIPE_TEAM_PRICE_ID_RECURRENT ", default="price_1J5J9vG7J9J9J9J9J9J9J9J9"
+    "STRIPE_TEAM_PRICE_ID_RECURRENT", default="price_1J5J9vG7J9J9J9J9J9J9J9J9"
 )
 STRIPE_TEAM_PRICE_ID_USAGE = env(
     "STRIPE_TEAM_PRICE_ID_USAGE", default="price_1J5J9vG7J9J9J9J9J9J9J9J"
@@ -317,3 +319,6 @@ STRIPE_INDIVIDUAL_PRICE_ID_USAGE = env(
 STRIPE_METER_EVENT = env("STRIPE_METER_EVENT", default="metering.subscription.updated")
 STRIPE_METER_ID = env("STRIPE_METER_ID", default="meter_1J5J9vG7J9J9J9J9J9J9J9J")
 
+
+# 5 minutes
+CONN_MAX_AGE = 300

@@ -4,7 +4,6 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage
 from django.shortcuts import redirect, render
-from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.views.decorators.http import require_POST
 
@@ -14,7 +13,7 @@ from .models import CustomUser
 @login_required
 def edit_account(request):
     usage = request.user.get_credit_usage()
-    credits_used = sum(event["aggregated_value"] for event in usage)
+    credits_used = int(sum(event["aggregated_value"] for event in usage))
     starting_credits = 2500
     if request.user.tier == "team":
         starting_credits = 25000
@@ -27,17 +26,6 @@ def edit_account(request):
             "starting_credits": starting_credits,
         },
     )
-
-
-def post_signup(request):
-    # check the session for a plan. If pro, go to stripe checkout. If free, go to home.
-    plan = request.session.get("plan", None)
-    if plan == "pro":
-        return redirect(reverse("stripe_checkout"))
-    response = redirect(reverse("pricing"))
-    # add query param to show a success message
-    response["Location"] += "?home=true"
-    return response
 
 
 @login_required
@@ -87,4 +75,4 @@ def invite_team_member(request):
     email.send()
 
     messages.success(request, "Account invited successfully")
-    return redirect("home")
+    return redirect("edit_account")

@@ -1,8 +1,7 @@
 # protect the admin login page
 from allauth.account.decorators import secure_admin_login
 from django.contrib import admin
-from django.http import HttpResponse
-from django.urls import include, path, reverse
+from django.urls import include, path
 from ninja import NinjaAPI
 
 api = NinjaAPI(

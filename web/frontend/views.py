@@ -1,10 +1,12 @@
 import json
 import logging
+from time import sleep
 
 import stripe
 from accounts.models import CustomUser, Team
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -64,13 +66,72 @@ def stripe_checkout(request):
     return redirect(checkout_session.url, code=303)
 
 
+@login_required
 def stripe_portal(request):
     stripe.api_key = settings.STRIPE_SECRET_KEY
     session = stripe.billing_portal.Session.create(
         customer=request.user.stripe_customer_id,
-        return_url=request.build_absolute_uri(reverse("home")),
+        return_url=request.build_absolute_uri(reverse("edit_account")),
     )
     return redirect(session.url, code=303)
+
+
+@require_POST
+@login_required
+def upgrade(request):
+    if request.user.tier == "team":
+        messages.error(request, "You are already on the team plan.")
+        return redirect("edit_account")
+    if request.user.tier == "free":
+        messages.error(request, "You are on the free plan. Please subscribe first.")
+        return redirect("edit_account")
+
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    subscription_id = request.user.stripe_subscription_id
+    new_price_id_recurrent = settings.STRIPE_TEAM_PRICE_ID_RECURRENT
+    new_price_id_usage = settings.STRIPE_TEAM_PRICE_ID_USAGE
+
+    stripe_sub = stripe.Subscription.list(customer=request.user.stripe_customer_id)
+
+    item_ids = [item["id"] for item in stripe_sub["data"][0]["items"]["data"]]
+    stripe.Subscription.modify(
+        subscription_id,
+        items=[
+            {"id": item_ids[0], "price": new_price_id_recurrent},
+            {"id": item_ids[1], "price": new_price_id_usage},
+        ],
+    )
+    messages.success(request, "Subscription upgraded to team plan.")
+    return redirect("edit_account")
+
+
+@require_POST
+@login_required
+def downgrade(request):
+    if request.user.tier == "individual":
+        messages.error(request, "You are already on the individual plan.")
+        return redirect("edit_account")
+    if request.user.tier == "free":
+        messages.error(request, "You are on the free plan. Please subscribe first.")
+        return redirect("edit_account")
+
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    subscription_id = request.user.stripe_subscription_id
+    new_price_id_recurrent = settings.STRIPE_INDIVIDUAL_PRICE_ID_RECURRENT
+    new_price_id_usage = settings.STRIPE_INDIVIDUAL_PRICE_ID_USAGE
+
+    stripe_sub = stripe.Subscription.list(customer=request.user.stripe_customer_id)
+
+    item_ids = [item["id"] for item in stripe_sub["data"][0]["items"]["data"]]
+    stripe.Subscription.modify(
+        subscription_id,
+        items=[
+            {"id": item_ids[0], "price": new_price_id_recurrent},
+            {"id": item_ids[1], "price": new_price_id_usage},
+        ],
+    )
+    messages.success(request, "Subscription downgraded to individual plan.")
+    return redirect("edit_account")
 
 
 @csrf_exempt
@@ -127,6 +188,8 @@ def stripe_webhook(request):
     elif event["type"] == "customer.subscription.updated":
         logger.info("Received event: Subscription updated")
         customer_id = data_object["customer"]
+        # we want to sleep here as we get update events with race conditions with checkout.session.completed
+        sleep(1)
         user = CustomUser.objects.get(stripe_customer_id=customer_id)
         logger.info(f"User Email: {user.email}")
         incoming_price_id = data_object["items"]["data"][0]["plan"]["id"]

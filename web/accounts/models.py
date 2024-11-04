@@ -104,7 +104,7 @@ class CustomUser(AbstractUser):
         if not customer_id:
             return []
 
-        now = datetime.datetime.utcnow().replace(
+        now = (datetime.datetime.utcnow() + datetime.timedelta(days=1)).replace(
             hour=0, minute=0, second=0, microsecond=0
         )
         last_month = now - datetime.timedelta(days=30)
