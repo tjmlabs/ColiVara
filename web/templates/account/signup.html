@@ -50,7 +50,12 @@
                       
                       <!-- Bottom link -->
                       <div class="text-center mt-6">
-                          <p class="text-sm text-gray-500">By signing up, you agree to the <a class="font-medium text-gray-700 underline hover:no-underline whitespace-nowrap" href="#0">Terms of Service</a> and <a class="font-medium text-gray-700 underline hover:no-underline whitespace-nowrap" href="#0">Privacy Policy</a>.</p>
+                          <p class="text-sm text-gray-500">By signing up, you agree to the 
+                            <a class="font-medium text-gray-700 underline hover:no-underline whitespace-nowrap" 
+                            href="{% url 'terms_privacy' %}">Terms of Service</a> and 
+                            <a class="font-medium text-gray-700 underline hover:no-underline whitespace-nowrap" 
+                            href="{% url 'terms_privacy' %}"
+                            >Privacy Policy</a>.</p>
                       </div>
 
                   </div>
