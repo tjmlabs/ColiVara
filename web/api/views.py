@@ -441,13 +441,15 @@ async def process_upsert_document(
         if not payload.wait:  # only send an email in the async case
             user_email = request.auth.email
             admin_email = settings.ADMINS[0][1]
+            from_email = settings.DEFAULT_FROM_EMAIL
 
-            to = [user_email, admin_email]
+            to = [user_email]
             email = EmailMessage(
                 subject="Document Upsertion Failed",
                 body=f"There was an error processing your document: {str(e)}",
                 to=to,
-                from_email=admin_email,
+                bcc=[admin_email],
+                from_email=from_email,
             )
             email.content_subtype = "html"
             email.send()

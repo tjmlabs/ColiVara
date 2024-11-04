@@ -187,8 +187,8 @@ else:
     EMAIL_USE_TLS = True
 
 
-DEFAULT_EMAIL_FROM = env(
-    "DEFAULT_EMAIL_FROM", default="dummy-email@example.com"
+DEFAULT_FROM_EMAIL = env(
+    "DEFAULT_FROM_EMAIL", default="dummy-email@example.com"
 )  # prod: SMTP email
 
 
@@ -228,11 +228,17 @@ ACCOUNT_SIGNUP_REDIRECT_URL = "home"  # "post_signup"
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 
+# Allauth Social
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
 
 
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        "SCOPE": ["user"],
+    }
+}
 # EMEDDING Service
 EMBEDDINGS_URL = env("EMBEDDINGS_URL")
 EMBEDDINGS_URL_TOKEN = env("EMBEDDINGS_URL_TOKEN")
