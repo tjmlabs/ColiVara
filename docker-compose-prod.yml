@@ -25,6 +25,7 @@ services:
           memory: 3G     
         reservations:
           memory: 1G
+
   redis:
     image: "redis:alpine"
     command: redis-server --maxmemory 2gb --maxmemory-policy allkeys-lru
