@@ -30,6 +30,10 @@ def payment_cancel(request):
     return redirect("home")
 
 
+def terms_privacy(request):
+    return render(request, "terms_privacy.html")
+
+
 def stripe_checkout(request):
     stripe.api_key = settings.STRIPE_SECRET_KEY
     success_url = request.build_absolute_uri(reverse("payment_success"))

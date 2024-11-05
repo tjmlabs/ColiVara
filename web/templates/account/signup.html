@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static socialaccount %}
 {% block content %}
 
 <main class="relative grow flex">
@@ -42,13 +42,20 @@
                           <div class="space-y-3 mt-6">
                               <button class="btn text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full">Register</button>
                               <div class="italic text-sm text-gray-400 text-center">Or</div>
-                              <button class="btn text-white bg-gradient-to-t from-gray-900 to-gray-700 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full">Continue with GitHub</button>                                        
+                              <a class="btn text-white bg-gradient-to-t from-gray-900 to-gray-700 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
+                              href="{% provider_login_url 'github' %}"
+                              >Continue with GitHub</a>                                        
                           </div>
                       </form>
                       
                       <!-- Bottom link -->
                       <div class="text-center mt-6">
-                          <p class="text-sm text-gray-500">By signing up, you agree to the <a class="font-medium text-gray-700 underline hover:no-underline whitespace-nowrap" href="#0">Terms of Service</a> and <a class="font-medium text-gray-700 underline hover:no-underline whitespace-nowrap" href="#0">Privacy Policy</a>.</p>
+                          <p class="text-sm text-gray-500">By signing up, you agree to the 
+                            <a class="font-medium text-gray-700 underline hover:no-underline whitespace-nowrap" 
+                            href="{% url 'terms_privacy' %}">Terms of Service</a> and 
+                            <a class="font-medium text-gray-700 underline hover:no-underline whitespace-nowrap" 
+                            href="{% url 'terms_privacy' %}"
+                            >Privacy Policy</a>.</p>
                       </div>
 
                   </div>

@@ -5,6 +5,7 @@ import sentry_sdk
 import stripe
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.core.mail import EmailMessage
 from django.db import models, transaction
 from django.utils.crypto import get_random_string
 
@@ -244,6 +245,25 @@ class CustomUser(AbstractUser):
                 )
 
     def notify_member(self, member, reason):
-        # Implement your notification logic here
-        # TDOD: Send an email to the member
+        # Stripe will email the subscription owner, but for team members, you may want to notify them separately
+        if reason == "cancel":
+            subject = "Your Team Onwner subscription has been cancelled"
+            message = "Your Team Owner has cancelled the subscription. You have been downgraded to the free tier."
+        elif reason == "downgrade":
+            subject = "Your Team Owner has downgraded the subscription"
+            message = "Your Team Owner has downgraded the subscription. You have been downgraded to the free tier."
+        else:
+            return
+
+        to = [member.email]
+        from_email = settings.DEFAULT_FROM_EMAIL
+        admin_email = settings.ADMINS[0][1]
+        email = EmailMessage(
+            subject=subject,
+            body=message,
+            to=to,
+            bcc=[admin_email],
+            from_email=from_email,
+        )
+        email.send()
         pass

@@ -62,14 +62,14 @@ def invite_team_member(request):
     user.save()
 
     # send an email to the user with the password
-    admin_email = settings.ADMINS[0][1]
+    from_email = settings.DEFAULT_FROM_EMAIL
     owner_name = request.user.email
     to = [member_email]
     email = EmailMessage(
         subject="Colivara Team Invitation",
         body=f"{str(owner_name)} invited to join their team on Colivara! Please use this temporary password to sign in: {str(password)}",
         to=to,
-        from_email=admin_email,
+        from_email=from_email,
     )
     email.content_subtype = "html"
     email.send()

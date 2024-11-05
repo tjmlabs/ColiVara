@@ -187,8 +187,8 @@ else:
     EMAIL_USE_TLS = True
 
 
-DEFAULT_EMAIL_FROM = env(
-    "DEFAULT_EMAIL_FROM", default="dummy-email@example.com"
+DEFAULT_FROM_EMAIL = env(
+    "DEFAULT_FROM_EMAIL", default="dummy-email@example.com"
 )  # prod: SMTP email
 
 
@@ -228,11 +228,17 @@ ACCOUNT_SIGNUP_REDIRECT_URL = "home"  # "post_signup"
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 
+# Allauth Social
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
 
 
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        "SCOPE": ["user"],
+    }
+}
 # EMEDDING Service
 EMBEDDINGS_URL = env("EMBEDDINGS_URL")
 EMBEDDINGS_URL_TOKEN = env("EMBEDDINGS_URL_TOKEN")
@@ -322,3 +328,31 @@ STRIPE_METER_ID = env("STRIPE_METER_ID", default="meter_1J5J9vG7J9J9J9J9J9J9J9J"
 
 # 5 minutes
 CONN_MAX_AGE = 300
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": env("REDIS_URL", default="redis://redis:6379/1"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "SOCKET_CONNECT_TIMEOUT": 5,
+            "SOCKET_TIMEOUT": 5,
+            "RETRY_ON_TIMEOUT": True,
+            "MAX_CONNECTIONS": 1000,
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+            "CONNECTION_POOL_CLASS": "redis.connection.BlockingConnectionPool",
+            "CONNECTION_POOL_CLASS_KWARGS": {
+                "max_connections": 50,
+                "timeout": 20,
+            },
+        },
+        "KEY_PREFIX": "colivara",  # Add a prefix to avoid key collisions
+    }
+}
+
+CACHE_TTL = 60 * 5  # 5 minutes
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 4  # 4 week
+SESSION_COOKIE_HTTPONLY = True
