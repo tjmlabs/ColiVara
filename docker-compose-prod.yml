@@ -37,4 +37,5 @@ services:
         limits:
           memory: 3gb 
 
-
+volumes:
+  redis_data:
