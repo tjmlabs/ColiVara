@@ -30,6 +30,7 @@ DJANGO_ADMINS = env.list("DJANGO_ADMINS", default=["Dummy Name:dummy@example.com
 # DJANGO_ADMINS=Blake:blake@cyb.org,Alice:alice@cyb.org
 ADMINS = [tuple(x.split(":")) for x in DJANGO_ADMINS]
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -241,6 +242,8 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 # EMEDDING Service
 EMBEDDINGS_URL = env("EMBEDDINGS_URL")
+# Queries need to be fast, so we use a separate service for embeddings.
+ALWAYS_ON_EMBEDDINGS_URL = env("ALWAYS_ON_EMBEDDINGS_URL", default=EMBEDDINGS_URL)
 EMBEDDINGS_URL_TOKEN = env("EMBEDDINGS_URL_TOKEN")
 
 # Gotenberg

@@ -139,7 +139,10 @@ async def create_collection(
             name=payload.name, owner=request.auth, metadata=payload.metadata
         )
         return 201, CollectionOut(
-            id=collection.id, name=collection.name, metadata=collection.metadata, num_documents=0
+            id=collection.id,
+            name=collection.name,
+            metadata=collection.metadata,
+            num_documents=0,
         )
     except IntegrityError:
         return 409, GenericError(
@@ -166,7 +169,12 @@ async def list_collections(request: Request) -> List[CollectionOut]:
         HTTPException: If there is an issue with the request or authentication.
     """
     collections = [
-        CollectionOut(id=c.id, name=c.name, metadata=c.metadata, num_documents=await c.document_count())
+        CollectionOut(
+            id=c.id,
+            name=c.name,
+            metadata=c.metadata,
+            num_documents=await c.document_count(),
+        )
         async for c in Collection.objects.filter(owner=request.auth)
     ]
     return collections
@@ -208,7 +216,10 @@ async def get_collection(
             name=collection_name, owner=request.auth
         )
         return 200, CollectionOut(
-            id=collection.id, name=collection.name, metadata=collection.metadata, num_documents=await collection.document_count()
+            id=collection.id,
+            name=collection.name,
+            metadata=collection.metadata,
+            num_documents=await collection.document_count(),
         )
     except Collection.DoesNotExist:
         return 404, GenericError(detail=f"Collection: {collection_name} doesn't exist")
@@ -253,7 +264,10 @@ async def partial_update_collection(
 
     await collection.asave()
     return 200, CollectionOut(
-        id=collection.id, name=collection.name, metadata=collection.metadata, num_documents=await collection.document_count()
+        id=collection.id,
+        name=collection.name,
+        metadata=collection.metadata,
+        num_documents=await collection.document_count(),
     )
 
 
@@ -1026,7 +1040,7 @@ async def search(
 
 
 async def get_query_embeddings(query: str) -> List:
-    EMBEDDINGS_URL = settings.EMBEDDINGS_URL
+    EMBEDDINGS_URL = settings.ALWAYS_ON_EMBEDDINGS_URL
     embed_token = settings.EMBEDDINGS_URL_TOKEN
     headers = {"Authorization": f"Bearer {embed_token}"}
     payload = {
@@ -1184,7 +1198,7 @@ async def embeddings(
         return 402, GenericError(
             detail="You have no available credits. Please upgrade your subscription."
         )
-    EMBEDDINGS_URL = settings.EMBEDDINGS_URL
+    EMBEDDINGS_URL = settings.ALWAYS_ON_EMBEDDINGS_URL
     embed_token = settings.EMBEDDINGS_URL_TOKEN
     headers = {"Authorization": f"Bearer {embed_token}"}
     task = payload.task
