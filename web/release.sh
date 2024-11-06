@@ -5,7 +5,7 @@ set -e
 
 # Collect static files
 echo "Collecting static files..."
-python manage.py collectstatic --noinput
+python manage.py collectstatic --noinput --ignore css/style.css
 
 # Apply database migrations
 echo "Applying database migrations..."
