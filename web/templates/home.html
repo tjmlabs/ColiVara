@@ -53,15 +53,25 @@
                 <div class="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center"
                      data-aos="zoom-y-out"
                      data-aos-delay="450">
-                  <a class="btn text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full mb-4 sm:w-auto sm:mb-0 group"
-                     href="{% url 'account_signup' %}">
-                    <span class="relative inline-flex items-center">
-                      Start Free Trial <span class="tracking-normal text-blue-300 group-hover:translate-x-0.5 transition-transform ml-1">-&gt;</span>
-                    </span>
-                  </a>
-                  <a class="btn text-gray-800 bg-white hover:bg-gray-50 shadow w-full sm:w-auto sm:ml-4"
-                     href="https://docs.colivara.com"
-                     target="_blank">Learn More</a>
+                     {% if request.user.is_anonymous %}
+                      <a class="btn text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full mb-4 sm:w-auto sm:mb-0 group"
+                        href="{% url 'account_signup' %}">
+                        <span class="relative inline-flex items-center">
+                          Start Free Trial <span class="tracking-normal text-blue-300 group-hover:translate-x-0.5 transition-transform ml-1">-&gt;</span>
+                        </span>
+                      </a>
+                      {% else %}
+                        {% url 'edit_account' as edit_url %}
+                        <a class="btn text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full mb-4 sm:w-auto sm:mb-0 group"
+                        href="{{ edit_url }}#api-keys">
+                        <span class="relative inline-flex items-center">
+                          Get your API Keys <span class="tracking-normal text-blue-300 group-hover:translate-x-0.5 transition-transform ml-1">-&gt;</span>
+                        </span>
+                        </a>
+                    {% endif %}
+                      <a class="btn text-gray-800 bg-white hover:bg-gray-50 shadow w-full sm:w-auto sm:ml-4"
+                        href="https://docs.colivara.com"
+                        target="_blank">Learn More</a>
                 </div>
               </div>
             </div>
