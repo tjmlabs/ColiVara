@@ -144,6 +144,7 @@ async def test_create_collection(async_client, user):
         "id": 1,
         "name": "Test Collection Fixture",
         "metadata": {"key": "value"},
+        "num_documents": 0,
     }
 
 
@@ -186,6 +187,7 @@ async def test_get_collection_by_name(async_client, user, collection):
         "id": 1,
         "name": "Test Collection Fixture",
         "metadata": {"key": "value"},
+        "num_documents": 0,
     }
 
 
@@ -196,7 +198,7 @@ async def test_list_collection(async_client, user, collection):
     )
     assert response.status_code == 200
     assert response.json() == [
-        {"id": 1, "name": "Test Collection Fixture", "metadata": {"key": "value"}}
+        {"id": 1, "name": "Test Collection Fixture", "metadata": {"key": "value"}, "num_documents": 0}
     ]
 
 
@@ -212,6 +214,7 @@ async def test_patch_collection(async_client, user, collection):
         "id": 1,
         "name": "Test Collection Update",
         "metadata": {"key": "value"},
+        "num_documents": 0,
     }
 
     # now check if the collection was actually updated
@@ -225,6 +228,7 @@ async def test_patch_collection(async_client, user, collection):
         "id": 1,
         "name": "Test Collection Update",
         "metadata": {"key": "value"},
+        "num_documents": 0,
     }
 
 
@@ -258,6 +262,7 @@ async def test_patch_collection_no_metadata(async_client, user, collection):
         "id": 1,
         "name": "Test Collection Update",
         "metadata": {"key": "value"},
+        "num_documents": 0,
     }
 
 
