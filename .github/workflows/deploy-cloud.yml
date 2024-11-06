@@ -7,7 +7,6 @@ jobs:
   deploy:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    environment: production  
     
     steps:
       - name: Deploy to VPS
@@ -36,8 +35,8 @@ jobs:
             git pull origin cloud
             
             # Build and deploy
-            docker compose -f docker-compose-prod.yml pull  # Pull latest images first
-            docker compose -f docker-compose-prod.yml up -d --build
+            docker-compose -f "docker-compose-prod.yml" pull  # Pull latest images first
+            docker-compose -f "docker-compose-prod.yml" up -d --build
             
             # Clean up old images (optional)
             docker image prune -f
