@@ -8,9 +8,9 @@ ColiVara is a suite of services that allows you to store, search, and retrieve d
 
 It is a web-first implementation of the ColiPali paper using ColQwen2 as the LLM model. It works exactly like RAG from the end-user standpoint - but using vision models instead of chunking and text-processing for documents.
 
-### Quick Usage:
+### Cloud Quickstart:
 
-1. Get an API Key from the [ColiVara Website](https://colivara.com) or run the API locally (see below).
+1. Get a free API Key from the [ColiVara Website](https://colivara.com).
 
 2. Install the Python SDK and use it to interact with the API.
 
@@ -18,31 +18,70 @@ It is a web-first implementation of the ColiPali paper using ColQwen2 as the LLM
 pip install colivara-py
 ```
 
-3. Index a document. ColiVara accepts a file url, or base64 encoded file, or a file path. We support over 100 file formats including PDF, DOCX, PPTX, and more. We will also automically take a screenshot of URLs (webpages) and index them.
+3. Index a document. Colivara accepts a file url, or base64 encoded file, or a file path. We support over 100 file formats including PDF, DOCX, PPTX, and more. We will also automatically take a screenshot of URLs (webpages) and index them.
 
 ```python
 from colivara_py import ColiVara
 
-rag_client = ColiVara(
+client = ColiVara(
     # this is the default and can be omitted
     api_key=os.environ.get("COLIVARA_API_KEY"),
+    # this is the default and can be omitted
     base_url="https://api.colivara.com"
 )
 
 # Upload a document to the default collection
-document = rag_client.upsert_document(
+document = client.upsert_document(
     name="sample_document",
     url="https://example.com/sample.pdf",
-    metadata={"author": "John Doe"}
+    # optional - add metadata
+    metadata={"author": "John Doe"},
+    # optional - specify a collection
+    collection_name="user_1_collection", 
+    # optional - wait for the document to index
+    wait=True
 )
 ```
 
 4. Search for a document. You can filter by collection name, collection metadata, and document metadata. You can also specify the number of results you want.
 
 ```python
-results = rag_client.search(query="machine learning")
-print(results) # top 3 pages with the most relevant information
+# Simple search
+results = client.search("what is 1+1?")
+# search with a specific collection
+results = client.search("what is 1+1?", collection_name="user_1_collection")
+# Search with a filter on document metadata
+results = client.search(
+    "what is 1+1?",
+    query_filter={
+        "on": "document",
+        "key": "author",
+        "value": "John Doe",
+        "lookup": "key_lookup",  # or contains
+    },
+)
+# Search with a filter on collection metadata
+results = client.search(
+    "what is 1+1?",
+    query_filter={
+        "on": "collection",
+        "key": ["tag1", "tag2"],
+        "lookup": "has_any_keys",
+    },
+)
+# top 3 pages with the most relevant information
+print(results)
 ```
+
+### Documentation:
+
+Our documentation is available at [docs.colivara.com](https://docs.colivara.com).
+
+
+
+> [!NOTE]
+> If you prefer Swagger, you can try our endpoints at [ColiVara API Swagger](https://api.colivara.com/v1/docs/). You can also import an openAPI spec (for example for Postman) from the swagger documentation endpoint at [`v1/docs/openapi.json`](https://api.colivara.com/v1/docs/openapi.json)
+
 
 ### Why?
 
@@ -69,7 +108,7 @@ _Credit: [helloIamleonie on X](https://x.com/helloiamleonie)_
 - **State of the Art retrieval**: The API is based on the ColiPali paper and uses the ColQwen2 model for embeddings. It outperforms existing retrieval systems on both quality and latency.
 - **User Management**: Multi-user setup with each user having their own collections and documents.
 - **Wide Format Support**: Supports over 100 file formats including PDF, DOCX, PPTX, and more.
-- **Webpage Support**: Automatically takes a screenshot of webpages and indexes them even if it not a file.
+- **Webpage Support**: Automatically takes a screenshot of webpages and indexes them even if it is not a file.
 - **Collections**: A user can have multiple collections. For example, a user can have a collection for research papers and another for books. Allowing for efficient retrieval and organization of documents.
 - **Documents**: Each collection can have multiple documents with unlimited and user-defined metadata.
 - **Filtering**: Filtering for collections and documents on arbitrary metadata fields. For example, you can filter documents by author or year. Or filter collections by type.
@@ -81,7 +120,11 @@ _Credit: [helloIamleonie on X](https://x.com/helloiamleonie)_
 
 ## Evals:
 
-The ColiPali team has provided the following evals in their paper. We have run quick sanity checks on the API and the Embeddings Service and are getting similar results. We are working on own independent evals and will update this section with our results.
+The ColiPali team has provided the following evals in their paper. We have run quick sanity checks on the API and the Embeddings Service and are getting similar results. We are working on our own independent evals repository and will update this section with our results and how to reproduce them.
+
+Updates: 
+
+- 11/6/2024: Our ArxivQ score is 86.6 - matching state of the art results in the vidore leaderboard. 
 
 ![ColiPali Evals](docs/colipali-evals.png)
 
@@ -91,28 +134,12 @@ The ColiPali team has provided the following evals in their paper. We have run q
 2. REST API for document/collection management (This repo)
 3. Embeddings Service. This needs a GPU with at least 8gb VRAM. The code is under [`ColiVarE`](https://github.com/tjmlabs/ColiVarE) repo and is optimized for a serverless GPU workload.
 
-   > You can run the embedding service seperately and use your own storage and API for the rest of the components. The Embedding service is designed to be modular and can be used with any storage and API. (For example, if you want to use Qdrant for storage and Node for the API)
+   > You can run the embedding service separately and use your own storage and API for the rest of the components. The Embedding service is designed to be modular and can be used with any storage and API. (For example, if you want to use Qdrant for storage and Node for the API)
 
 4. Language-specific SDKs for the API (Typescript SDK Coming Soon)
-   1. Python SDK: [ColiVara-Py](https://github.com/tjmlabs/colivara-py)
+   1. Python SDK: [colivara-py](https://github.com/tjmlabs/colivara-py)
 
-### Cloud Quickstart:
 
-Coming soon...
-
-You can sign up for the waitlist on the [ColiVara Website](https://colivara.com). We will be launching a cloud version of the API soon.
-
-### Local Setup:
-
-1. Setup the Embeddings Service (ColiVarE) - This is a separate repo and is required for the API to work. The directions are available here: [ColiVarE](https://github.com/tjmlabs/ColiVarE/blob/main/readme.md)
-
-2. Clone this repo and follow the Getting Started section below.
-
-### Endpoints:
-
-Please check swagger documentation endpoint (v1/docs) for endpoints. More comprehensive documentation is being worked on.
-
-You can import an openAPI spec (for example for Postman) from the swagger documentation endpoint at `v1/docs/openapi.json`
 
 ## Roadmap
 
@@ -122,10 +149,13 @@ You can import an openAPI spec (for example for Postman) from the swagger docume
 
 ## Getting Started (Local Setup)
 
-1. Clone the repo
+
+1. Setup the Embeddings Service (ColiVarE) - This is a separate repo and is required for the API to work. The directions are available here: [ColiVarE](https://github.com/tjmlabs/ColiVarE/blob/main/readme.md)
+
+2. Clone the repo
 
 ```bash
-git clone {repo_url}
+git clone https://github.com/tjmlabs/ColiVara
 ```
 
 2. Create a .env.dev file in the root directory with the following variables:
@@ -147,7 +177,7 @@ docker-compose exec web python manage.py createsuperuser
 # get the token from the superuser creation
 docker-compose exec web python manage.py shell
 from accounts.models import CustomUser
-user = CustomUser.objects.first().token # save this token somewhere (I will make this easier in the future)
+user = CustomUser.objects.first().token # save this token somewhere
 ```
 
 4. Application will be running at http://localhost:8001 and the swagger documentation at http://localhost:8001/v1/docs
