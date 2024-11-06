@@ -34,8 +34,9 @@
                         </li>
                     {% else %}
                         <li class="px-3 py-1">
+                            {% url 'home'  as home_url %}
                             <a class="text-gray-700 hover:text-gray-900 flex items-center transition"
-                               href="#pricing">Pricing</a>
+                            href="{{ home_url }}#pricing">Pricing</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -128,8 +129,9 @@
                             </li>
                         {% else %}
                             <li>
+                                {% url 'home' as home_url %}
                                 <a class="flex text-gray-700 hover:bg-gray-100 rounded-lg py-1.5 px-2"
-                                   href="#pricing">Pricing</a>
+                                href="{{ home_url }}#pricing">Pricing</a>
                             </li>
                         {% endif %}
                     </ul>

@@ -3461,14 +3461,6 @@ input[type="search"]::-webkit-search-results-decoration {
   opacity: 1;
 }
 
-.opacity-25{
-  opacity: 0.25;
-}
-
-.opacity-30{
-  opacity: 0.3;
-}
-
 .opacity-40{
   opacity: 0.4;
 }
