@@ -72,6 +72,46 @@ While the process is automated, maintainers can:
 - Deployment status is available in our monitoring dashboard
 - Release notifications are sent to our communication channels
 
+## Branch Management: Main & Cloud
+
+We maintain two primary branches:
+- `main`: For self-hosted version
+- `cloud`: For cloud version with additional features
+
+### Syncing Main to Cloud
+
+Changes from `main` are merged into `cloud`:
+- Automatically via GitHub Action when a release is published
+- Manually when the automatic sync fails
+
+#### Manual Sync Process
+
+If the GitHub Action fails due to merge conflicts:
+
+1. Update your local repository:
+   ```bash
+   git fetch origin
+   git checkout cloud
+   git pull origin cloud
+   ```
+
+2. Merge main:
+
+```bash
+git merge main --no-commit    # --no-commit allows reviewing changes before finalizing
+```
+
+If there are conflicts:
+
+- Resolve conflicts keeping cloud-specific files intact
+
+3. Complete merge
+```bash
+git add .
+git commit -m "Merge main into cloud"
+git push origin cloud
+```
+
 ---
 
 For questions about the release process, please open an issue or contact the maintainer: @Jonathan-Adly or @Abdullah13521 @HalemoGPA
