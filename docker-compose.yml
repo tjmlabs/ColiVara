@@ -6,17 +6,25 @@ services:
 
     command: uvicorn config.asgi:application --reload --host 0.0.0.0 --port 8000
 
-
     volumes:
       - ./web:/code
     depends_on:
       - db
     env_file:
       - ./.env.dev
-  
+
+  tailwind:
+    build: ./web
+    command: npm run dev
+    volumes:
+      - ./web:/code
+    env_file:
+      - ./.env.dev
+    tty: true
+    stdin_open: true
+
   gotenberg:
     image: gotenberg/gotenberg:8
-
 
   db:
     image: pgvector/pgvector:pg16
@@ -24,6 +32,20 @@ services:
       - postgres_data:/var/lib/postgresql/data/
     environment:
       - "POSTGRES_HOST_AUTH_METHOD=trust"
-    
+
+  redis:
+    image: "redis:alpine"
+    command: redis-server --maxmemory 2gb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    deploy:
+      resources:
+        limits:
+          memory: 3gb 
+
 volumes:
   postgres_data:
+  redis_data:
+

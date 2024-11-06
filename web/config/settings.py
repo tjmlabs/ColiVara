@@ -22,8 +22,8 @@ SECRET_KEY = env("SECRET_KEY", default="django-insecure-dummy-key")
 DEBUG = env.bool("DEBUG", default=True)
 LOCAL = env.bool("LOCAL", default=True)
 
-# change in production: example: [".example.com"]
-ALLOWED_HOSTS = ["*"]
+# change in production: example: DJANGO_ALLOWED_HOSTS = "example.com, www.example.com"
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["*"])
 
 # Admin definition
 DJANGO_ADMINS = env.list("DJANGO_ADMINS", default=["Dummy Name:dummy@example.com"])
@@ -46,13 +46,13 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.github",
     # corsheaders
     "corsheaders",
     # local
     "accounts",
     "api",
+    "frontend",
     # file cleanup
     "django_cleanup.apps.CleanupConfig",
 ]
@@ -97,14 +97,17 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
-        "APP_DIRS": True,
+        "DIRS": [str(BASE_DIR.joinpath("templates"))],
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+            ],
+            "loaders": [
+                "django.template.loaders.filesystem.Loader",
+                "django.template.loaders.app_directories.Loader",
             ],
         },
     },
@@ -183,8 +186,10 @@ else:
         "EMAIL_PASSWORD", default="dummy password"
     )  # prod: SMTP password
     EMAIL_USE_TLS = True
-DEFAULT_EMAIL_FROM = env(
-    "DEFAULT_EMAIL_FROM", default="dummy-email@example.com"
+
+
+DEFAULT_FROM_EMAIL = env(
+    "DEFAULT_FROM_EMAIL", default="dummy-email@example.com"
 )  # prod: SMTP email
 
 
@@ -194,7 +199,7 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
-LOGIN_REDIRECT_URL = "home"
+LOGIN_REDIRECT_URL = "edit_account"
 LOGOUT_REDIRECT_URL = "home"
 
 ACCOUNT_AUTHENTICATION_METHOD = "email"
@@ -224,11 +229,17 @@ ACCOUNT_SIGNUP_REDIRECT_URL = "home"  # "post_signup"
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 
+# Allauth Social
 SOCIALACCOUNT_EMAIL_AUTHENTICATION = True
 SOCIALACCOUNT_EMAIL_AUTHENTICATION_AUTO_CONNECT = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
 
 
+SOCIALACCOUNT_PROVIDERS = {
+    "github": {
+        "SCOPE": ["user"],
+    }
+}
 # EMEDDING Service
 EMBEDDINGS_URL = env("EMBEDDINGS_URL")
 # Queries need to be fast, so we use a separate service for embeddings.
@@ -274,6 +285,7 @@ if SENTRY_DSN:
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
 
+
 # S3
 AWS_S3_ACCESS_KEY_ID = env("AWS_S3_ACCESS_KEY_ID", default="dummy_key")
 AWS_S3_SECRET_ACCESS_KEY = env("AWS_S3_SECRET_ACCESS_KEY", default="dummy_key")
@@ -294,3 +306,56 @@ STORAGES = {
         "BACKEND": "servestatic.storage.CompressedManifestStaticFilesStorage",
     },
 }
+
+# stripe
+STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", default="test_dummy_key")
+STRIPE_PUBLIC_KEY = env("STRIPE_PUBLIC_KEY", default="pk_test_dummy_key")
+STRIPE_WH_SECRET = env("STRIPE_WH_SECRET", default="wh_dummy_key")
+
+STRIPE_TEAM_PRICE_ID_RECURRENT = env(
+    "STRIPE_TEAM_PRICE_ID_RECURRENT", default="price_1J5J9vG7J9J9J9J9J9J9J9J9"
+)
+STRIPE_TEAM_PRICE_ID_USAGE = env(
+    "STRIPE_TEAM_PRICE_ID_USAGE", default="price_1J5J9vG7J9J9J9J9J9J9J9J"
+)
+
+STRIPE_INDIVIDUAL_PRICE_ID_RECURRENT = env(
+    "STRIPE_INDIVIDUAL_PRICE_ID_RECURRENT", default="price_1J5J9vG7J9J9J9J9J9J9J9J"
+)
+STRIPE_INDIVIDUAL_PRICE_ID_USAGE = env(
+    "STRIPE_INDIVIDUAL_PRICE_ID_USAGE", default="price_1J5J9vG7J9J9J9J9J9J9J9J"
+)
+STRIPE_METER_EVENT = env("STRIPE_METER_EVENT", default="metering.subscription.updated")
+STRIPE_METER_ID = env("STRIPE_METER_ID", default="meter_1J5J9vG7J9J9J9J9J9J9J9J")
+
+
+# 5 minutes
+CONN_MAX_AGE = 300
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": env("REDIS_URL", default="redis://redis:6379/1"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "SOCKET_CONNECT_TIMEOUT": 5,
+            "SOCKET_TIMEOUT": 5,
+            "RETRY_ON_TIMEOUT": True,
+            "MAX_CONNECTIONS": 1000,
+            "COMPRESSOR": "django_redis.compressors.zlib.ZlibCompressor",
+            "CONNECTION_POOL_CLASS": "redis.connection.BlockingConnectionPool",
+            "CONNECTION_POOL_CLASS_KWARGS": {
+                "max_connections": 50,
+                "timeout": 20,
+            },
+        },
+        "KEY_PREFIX": "colivara",  # Add a prefix to avoid key collisions
+    }
+}
+
+CACHE_TTL = 60 * 5  # 5 minutes
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 4  # 4 week
+SESSION_COOKIE_HTTPONLY = True
