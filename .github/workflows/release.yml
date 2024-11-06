@@ -84,7 +84,7 @@ jobs:
             #${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}
           draft: false
           prerelease: false
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }} # Personal Access Token with repo scope so sync-cloud is triggered
           make_latest: true
           generate_release_notes: false # Since we're generating our own changelog
 
