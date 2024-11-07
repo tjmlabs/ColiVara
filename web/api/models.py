@@ -462,11 +462,17 @@ class Document(models.Model):
         ]
         ALLOWED_EXTENSIONS += IMAGE_EXTENSIONS  # Include images
         MAX_SIZE_BYTES = 50 * 1024 * 1024  # 50 MB
-
+        SCRAPERBEE_MAX_SIZE = 2 * 1024 * 1024  # 2 MB
+        
         async def get_url_info(url):
             """Get content type and filename from URL via HEAD request"""
+            # first try is without proxy
             async with aiohttp.ClientSession() as session:
                 async with session.head(url, allow_redirects=True) as response:
+                    if response.status != 200:
+                        # if the status is not 200, we try with the proxy
+                        logger.info(f"Failed to fetch document info from URL. Trying with proxy.")
+                        return await get_url_info_with_proxy(url)
                     content_type = response.headers.get("Content-Type", "").lower()
                     content_disposition = response.headers.get(
                         "Content-Disposition", ""
@@ -480,11 +486,45 @@ class Document(models.Model):
                         if filename_match
                         else os.path.basename(urllib.parse.urlparse(url).path)
                     )
-                    return content_type, filename
+                    if not filename:
+                        filename = f"document_{url}"
+
+                    return content_type, filename, None
+        
+        async def get_url_info_with_proxy(url):
+            if not settings.USE_PROXY:
+                logger.info("Proxy is disabled.")
+                raise ValidationError("Failed to fetch document info from URL.")
+           
+            url = f"{settings.PROXY_URL}?api_key={settings.PROXY_API_KEY}&url={urllib.parse.quote(url)}"
+            logger.info(f"Fetching document info from URL via proxy")
+    
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as response:
+                    if response.status != 200:
+                        raise ValidationError("Failed to fetch document info from URL. Some documents are protected by anti-scrapping measures. We recommend you download them and send us base64.")
+                    content_type = response.headers.get("Content-Type", "").lower()
+                    content_disposition = response.headers.get(
+                        "Content-Disposition", ""
+                    )
+                    content_length = response.headers.get("Content-Length")
+                    if content_length and int(content_length) > SCRAPERBEE_MAX_SIZE:
+                        raise ValidationError("Document URL exceeds maximum size of 2MB. We accept documents up to 50MB via base64")
+                    filename_match = re.findall('filename="(.+)"', content_disposition)
+                    filename = (
+                        filename_match[0]
+                        if filename_match
+                        else os.path.basename(urllib.parse.urlparse(url).path)
+                    )
+
+                    document_data = await response.read()
+                    logger.info(f"Document fetched from URL")
+                    
+                    if not filename:
+                        filename = f"document_{url}"
+                    return content_type, filename, document_data
 
         async def fetch_document(url):
-            if settings.USE_PROXY:
-                url = f"{settings.PROXY_URL}?api_key={settings.PROXY_API_KEY}&url={urllib.parse.quote(url)}"
             async with aiohttp.ClientSession() as session:
                 async with session.get(url) as response:
                     if response.status != 200:
@@ -504,7 +544,9 @@ class Document(models.Model):
             filename = os.path.basename(self.s3_file.name)
 
         elif self.url and not document_data:
-            content_type, filename = await get_url_info(self.url)
+            # document data can be fetched from the url if using proxies, otherwise we are optimized and using a head request
+            content_type, filename, document_data = await get_url_info(self.url)
+            logger.info(f"Content type: {content_type}, Filename: {filename}, document_data_len: {len(document_data)}")
             if "text/html" in content_type:
                 logger.info("Document is a webpage.")
                 # It's a webpage, convert to PDF
@@ -514,7 +556,8 @@ class Document(models.Model):
             else:
                 # It's a regular file
                 logger.info(f"Fetching document from URL: {self.url}")
-                document_data = await fetch_document(self.url)
+                if not document_data:
+                    document_data = await fetch_document(self.url)
                 if "application/pdf" in content_type:
                     extension = "pdf"
                 else:
@@ -531,7 +574,7 @@ class Document(models.Model):
 
         # Validate the document
         if not document_data or not extension or not filename:
-            raise ValidationError("Document data is missing.")
+            raise ValidationError(f"Document data is missing. Data: {len(document_data)}, Extension: {extension}, Filename: {filename}")
 
         if len(document_data) > MAX_SIZE_BYTES:
             raise ValidationError("Document exceeds maximum size of 50MB.")
@@ -540,15 +583,16 @@ class Document(models.Model):
             raise ValidationError(f"File extension .{extension} is not allowed.")
 
         logger.info(f"Document extension: {extension}")
-
+        
+        if not filename.endswith(extension):
+            filename = f"{filename}.{extension}"
+        logger.info(f"Document filename: {filename}")
         # Determine if the document is an image or PDF
         is_image = extension in IMAGE_EXTENSIONS
         is_pdf = extension == "pdf"
         # Step 2: Convert to PDF if necessary
         if not is_image and not is_pdf:
             logger.info(f"Converting document to PDF. Extension: {extension}")
-            # Use Gotenberg to convert to PDF
-            filename = f"{filename}.{extension}"
             pdf_data = await self._convert_to_pdf(document_data, filename)
         elif is_pdf:
             logger.info("Document is already a PDF.")
@@ -561,7 +605,10 @@ class Document(models.Model):
 
         # here all documents are converted to pdf
         # Step 3: Turn the PDF into images via pdf2image
-        images = convert_from_bytes(pdf_data)
+        try:
+            images = convert_from_bytes(pdf_data)
+        except Exception as e:
+            raise ValidationError(f"Failed to convert PDF to images. If you gave us a URL, this might be due to the URL being protected by anti-scrapping measures. We recommend you download the document and send us the base64.")
         logger.info(f"Successfully converted PDF to {len(images)} images.")
 
         # here all documents are converted to images
