@@ -483,6 +483,8 @@ class Document(models.Model):
                     return content_type, filename
 
         async def fetch_document(url):
+            if settings.USE_PROXY:
+                url = f"{settings.PROXY_URL}?api_key={settings.PROXY_API_KEY}&url={urllib.parse.quote(url)}"
             async with aiohttp.ClientSession() as session:
                 async with session.get(url) as response:
                     if response.status != 200:
