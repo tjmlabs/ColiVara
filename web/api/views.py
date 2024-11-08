@@ -314,8 +314,8 @@ class DocumentIn(Schema):
     name: str
     metadata: dict = Field(default_factory=dict)
     collection_name: str = Field(
-        "default collection",
-        description="""The name of the collection to which the document belongs. If not provided, the document will be added to the default collection. Use 'all' to access all collections belonging to the user.""",
+        "default_collection",
+        description="""The name of the collection to which the document belongs. If not provided, the document will be added to the default_collection. Use 'all' to access all collections belonging to the user.""",
     )
     url: Optional[str] = None
     base64: Optional[str] = None
@@ -350,8 +350,8 @@ class DocumentInPatch(Schema):
     name: Optional[str] = None
     metadata: Optional[dict] = Field(default_factory=dict)
     collection_name: Optional[str] = Field(
-        "default collection",
-        description="""The name of the collection to which the document belongs. If not provided, the document will be added to the default collection. Use 'all' to access all collections belonging to the user.""",
+        "default_collection",
+        description="""The name of the collection to which the document belongs. If not provided, the document will be added to the default_collection. Use 'all' to access all collections belonging to the user.""",
     )
     url: Optional[str] = None
     base64: Optional[str] = None
@@ -491,7 +491,7 @@ async def upsert_document(
 
     This endpoint allows the user to create or update a document in a collection.
     The document can be provided as a URL or a base64-encoded string.
-    if the collection is not provided, a collection named "default collection" will be used.
+    if the collection is not provided, a collection named "default_collection" will be used.
     if the collection is provided, it will be created if it does not exist.
 
     Args:
@@ -514,7 +514,7 @@ async def upsert_document(
             "wait": true # optional, if true, the response will be sent after waiting for the document to be processed. Otherwise, it will be done asynchronously.
         }
     """
-    # if the user didn't give a collection, payload.collection will be "default collection"
+    # if the user didn't give a collection, payload.collection will be "default_collection"
     if payload.collection_name == "all":
         return 400, GenericError(
             detail="The collection name 'all' is not allowed when inserting or updating a document - only when retrieving. Please provide a valid collection name."
@@ -539,12 +539,12 @@ async def upsert_document(
 async def get_document(
     request: Request,
     document_name: str,
-    collection_name: Optional[str] = "default collection",
+    collection_name: Optional[str] = "default_collection",
     expand: Optional[str] = None,
 ) -> Tuple[int, DocumentOut] | Tuple[int, GenericError]:
     """
     Retrieve a specific document from the user documents.
-    Default collection is "default collection".
+    Default collection is "default_collection".
     To get all documents, use collection_name="all".
 
     Args:
@@ -615,7 +615,7 @@ async def get_document(
 )
 async def list_documents(
     request: Request,
-    collection_name: Optional[str] = "default collection",
+    collection_name: Optional[str] = "default_collection",
     expand: Optional[str] = None,
 ) -> List[DocumentOut]:
     """
@@ -626,7 +626,7 @@ async def list_documents(
 
     Args:
         request (Request): The request object.
-        collection_name (Optional[str]): The name of the collection to fetch documents from. Defaults to "default collection". Use "all" to fetch documents from all collections.
+        collection_name (Optional[str]): The name of the collection to fetch documents from. Defaults to "default_collection". Use "all" to fetch documents from all collections.
         expand (Optional[str]): A comma-separated string specifying additional fields to include in the response.
                                 If "pages" is included, the pages of each document will be included.
 
@@ -637,7 +637,7 @@ async def list_documents(
         HTTPException: If the collection or documents are not found.
 
     Example:
-        GET /documents/?collection_name=default collection&expand=pages
+        GET /documents/?collection_name=default_collection&expand=pages
     """
     expand_fields = expand.split(",") if expand else []
 
@@ -799,7 +799,7 @@ async def partial_update_document(
 async def delete_document(
     request: Request,
     document_name: str,
-    collection_name: Optional[str] = "default collection",
+    collection_name: Optional[str] = "default_collection",
 ) -> Tuple[int, None] | Tuple[int, GenericError]:
     """
     Delete a document by its Name.
@@ -809,7 +809,7 @@ async def delete_document(
 
     Args:
         request: The HTTP request object, which includes authentication information.
-        collection_name (name): The name of the collection containing the document. Defaults to "default collection". Use "all" to access all collections belonging to the user.
+        collection_name (name): The name of the collection containing the document. Defaults to "default_collection". Use "all" to access all collections belonging to the user.
         document_name (int): The name of the document to be deleted.
 
     Returns:
