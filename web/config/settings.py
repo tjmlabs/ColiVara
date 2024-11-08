@@ -361,13 +361,3 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 4  # 4 week
 SESSION_COOKIE_HTTPONLY = True
-
-
-# PROXY
-PROXY_URL = env("PROXY_URL", default=None)
-PROXY_API_KEY = env("PROXY_API_KEY", default=None)
-if PROXY_URL and PROXY_API_KEY:
-    USE_PROXY = True
-else:
-    USE_PROXY = False
-    logger.info("Proxy is not enabled. Set PROXY_URL and PROXY_API_KEY in .env file.")
