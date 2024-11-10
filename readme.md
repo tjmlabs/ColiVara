@@ -30,7 +30,7 @@ client = ColiVara(
     base_url="https://api.colivara.com"
 )
 
-# Upload a document to the default collection
+# Upload a document to the default_collection
 document = client.upsert_document(
     name="sample_document",
     url="https://example.com/sample.pdf",

@@ -324,7 +324,7 @@ async def test_create_document_pdf_url_await(async_client, user):
         "metadata": {},
         "url": "https://pdfobject.com/pdf/sample.pdf",
         "num_pages": 1,
-        "collection_name": "default collection",
+        "collection_name": "default_collection",
         "pages": None,
     }
 
@@ -481,7 +481,7 @@ async def test_create_document_pdf_base64_await(async_client, user, collection):
     assert response_data["name"] == "Test Document Fixture"
     assert response_data["metadata"] == {}
     assert response_data["num_pages"] == 1
-    assert response_data["collection_name"] == "default collection"
+    assert response_data["collection_name"] == "default_collection"
     assert response_data["pages"] is None
     await Document.objects.all().adelete()
 
@@ -688,7 +688,7 @@ async def test_get_document_by_name(async_client, user, collection, document):
 async def test_get_document_by_name_multiple_documents(
     async_client, user, collection, document
 ):
-    # first we create a new document with the same name under default collection
+    # first we create a new document with the same name under default_collection
     response = await async_client.post(
         "/documents/upsert-document/",
         json={
@@ -784,7 +784,7 @@ async def test_patch_document_not_found(async_client, user, collection, document
 async def test_patch_document_multiple_documents(
     async_client, user, collection, document
 ):
-    # first we create a new document with the same name under default collection
+    # first we create a new document with the same name under default_collection
     response = await async_client.post(
         "/documents/upsert-document/",
         json={
@@ -912,7 +912,7 @@ async def test_delete_document_not_found(async_client, user, collection, documen
 async def test_delete_document_multiple_documents(
     async_client, user, collection, document
 ):
-    # first we create a new document with the same name under default collection
+    # first we create a new document with the same name under default_collection
     response = await async_client.post(
         "/documents/upsert-document/",
         json={
