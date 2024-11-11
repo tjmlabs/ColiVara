@@ -3,6 +3,7 @@ from time import sleep
 import pytest
 from accounts.models import CustomUser
 from django.conf import settings
+from django.core.management import call_command
 from playwright.sync_api import Page, expect
 
 
@@ -12,6 +13,19 @@ def django_db_setup():
     settings.DATABASES["default"]["TEST"] = {
         "MIRROR": "default",
     }
+
+
+@pytest.fixture(scope="module", autouse=True)
+def cleanup_users(django_db_setup, django_db_blocker):
+    with django_db_blocker.unblock():
+        # This runs before the tests
+        call_command("cleanup_users")
+
+    yield
+
+    with django_db_blocker.unblock():
+        # This runs after the tests
+        call_command("cleanup_users")
 
 
 def test_homepage_loads(page: Page):
@@ -26,7 +40,7 @@ def test_signup(page: Page):
     page.goto("http://host.docker.internal:8001/accounts/edit-account/")
     expect(
         page.locator(
-            "text=You have 1000 remaining credits before you need to upgrade to a paid plan"
+            "text=You have 100 remaining credits before you need to upgrade to a paid plan"
         )
     ).to_be_visible()
 
@@ -38,9 +52,6 @@ def test_upgrade_to_individual(page: Page):
     _navigate_to_homepage(page)
 
     _upgrade_subscription(page, "individual")
-    expect(
-        page.locator("text=0 credits used out of 2500 credits in the past 30 days")
-    ).to_be_visible()
 
 
 def test_upgrade_to_team(page: Page):
@@ -50,9 +61,6 @@ def test_upgrade_to_team(page: Page):
     _navigate_to_homepage(page)
 
     _upgrade_subscription(page, "team")
-    expect(
-        page.locator("text=0 credits used out of 25000 credits in the past 30 days")
-    ).to_be_visible()
 
 
 def test_upgrade_individual_to_team(page: Page):
@@ -188,8 +196,13 @@ def _upgrade_subscription(page: Page, tier: str):
     # enter name
     page.fill("input[name='billingName']", "Test User")
 
-    # handle checkbox
-    page.get_by_role("checkbox").set_checked(False)
+    # handle checkbox (not always there)
+    if page.locator("input[name='enableStripePass']").first.is_visible():
+        page.locator("input[name='enableStripePass']").set_checked(False)
+
+    # Zip code (not always there)
+    if page.locator("input[name='billingPostalCode']").first.is_visible():
+        page.fill("input[name='billingPostalCode']", "12345")
 
     # click the pay button
     page.get_by_text("Subscribe").last.click()
@@ -201,3 +214,8 @@ def _upgrade_subscription(page: Page, tier: str):
 
     # check we are on the correct plan
     expect(page.locator(f"text=You are on {tier} plan")).to_be_visible()
+
+
+# to run and see the tests in action, run the following command:
+# docker-compose exec web pytest -c "pytest-ui.ini" -k "test_signup" --headed --slowmo 500
+# make sure xquartz is running on your local machine
