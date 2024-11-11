@@ -7,6 +7,7 @@ from accounts.models import CustomUser
 from api.middleware import add_slash
 from api.models import Collection, Document, Page, PageEmbedding
 from api.views import Bearer, QueryFilter, QueryIn, filter_query, router
+from asgiref.sync import sync_to_async
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from ninja.testing import TestAsyncClient
@@ -295,6 +296,23 @@ async def test_delete_collection_not_found(async_client, user, collection):
 
 
 """ Document tests """
+
+
+async def test_create_document_pdf_url_await_no_credits(async_client, user):
+    await sync_to_async(user.set_available_credits)(0)
+
+    response = await async_client.post(
+        "/documents/upsert-document/",
+        json={
+            "name": "Test Document Fixture",
+            "url": "https://pdfobject.com/pdf/sample.pdf",
+            "wait": True,
+        },
+        headers={"Authorization": f"Bearer {user.token}"},
+    )
+
+    # we should get a 402 status code due to missing credits
+    assert response.status_code == 402
 
 
 async def test_create_document_pdf_url_await(async_client, user):

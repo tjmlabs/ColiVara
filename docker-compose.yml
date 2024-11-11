@@ -8,10 +8,13 @@ services:
 
     volumes:
       - ./web:/code
+      - /tmp/.X11-unix:/tmp/.X11-unix
     depends_on:
       - db
     env_file:
       - ./.env.dev
+    environment:
+      - DISPLAY=host.docker.internal:0
 
   tailwind:
     build: ./web

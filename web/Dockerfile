@@ -7,7 +7,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 # Install dependencies
 RUN apt-get update && \
-    apt-get install -y libmagic1 poppler-utils && \
+    apt-get install -y libmagic1 poppler-utils xauth && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -22,6 +22,10 @@ RUN uv pip compile requirements.in -o requirements.txt && \
 # Copy package.json and package-lock.json for frontend dependencies
 COPY package.json package-lock.json ./
 RUN npm install
+
+# Install playwright dependencies
+RUN playwright install
+RUN playwright install-deps
 
 # Copy the rest of the application code
 COPY . .

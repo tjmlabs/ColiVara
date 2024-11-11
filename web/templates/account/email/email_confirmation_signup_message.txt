@@ -17,5 +17,4 @@ Thanks,
 
 Jonathan Adly
 
-{% endblocktrans %}
 {% endautoescape %}
