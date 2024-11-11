@@ -30,6 +30,7 @@ DJANGO_ADMINS = env.list("DJANGO_ADMINS", default=["Dummy Name:dummy@example.com
 # DJANGO_ADMINS=Blake:blake@cyb.org,Alice:alice@cyb.org
 ADMINS = [tuple(x.split(":")) for x in DJANGO_ADMINS]
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -180,9 +181,11 @@ else:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = env("EMAIL_HOST", default="smtp.gmail.com")  # prod: SMTP server
     EMAIL_PORT = 587
-    EMAIL_HOST_USER = env("EMAIL_USER", default="dummy user")  # prod: SMTP username
+    EMAIL_HOST_USER = env(
+        "EMAIL_HOST_USER", default="dummy user"
+    )  # prod: SMTP username
     EMAIL_HOST_PASSWORD = env(
-        "EMAIL_PASSWORD", default="dummy password"
+        "EMAIL_HOST_PASSWORD", default="dummy password"
     )  # prod: SMTP password
     EMAIL_USE_TLS = True
 
@@ -241,6 +244,8 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 # EMEDDING Service
 EMBEDDINGS_URL = env("EMBEDDINGS_URL")
+# Queries need to be fast, so we use a separate service for embeddings.
+ALWAYS_ON_EMBEDDINGS_URL = env("ALWAYS_ON_EMBEDDINGS_URL", default=EMBEDDINGS_URL)
 EMBEDDINGS_URL_TOKEN = env("EMBEDDINGS_URL_TOKEN")
 
 # Gotenberg

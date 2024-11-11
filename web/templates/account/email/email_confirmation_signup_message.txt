@@ -1,10 +1,7 @@
-{% load account %}
-{% load i18n %}
-{% autoescape off %}
-
 Thanks for signing up for the ColiVara hosted API.
 
 You can grab your API keys, subscribe to a plan, and look at the documentation on the dashboard:
+
 Head to https://colivara.com now to get started!
 
 ColiVara is built upon years of practice in text extraction and RAG pipelines, addressing the common challenges we've encountered for many clients through our consultancy, TJM Labs. 
@@ -16,5 +13,3 @@ If you have any questions or feedback, feel free to reply to this email, I check
 Thanks,
 
 Jonathan Adly
-
-{% endautoescape %}

@@ -78,6 +78,9 @@ class Collection(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    async def document_count(self) -> int:
+        return await self.documents.acount()
+
     class Meta(TypedModelMeta):
         constraints = [
             models.UniqueConstraint(
@@ -459,82 +462,63 @@ class Document(models.Model):
         ]
         ALLOWED_EXTENSIONS += IMAGE_EXTENSIONS  # Include images
         MAX_SIZE_BYTES = 50 * 1024 * 1024  # 50 MB
-
-        async def get_url_info(url):
-            """Get content type and filename from URL via HEAD request"""
-            async with aiohttp.ClientSession() as session:
-                async with session.head(url, allow_redirects=True) as response:
-                    content_type = response.headers.get("Content-Type", "").lower()
-                    content_disposition = response.headers.get(
-                        "Content-Disposition", ""
-                    )
-                    content_length = response.headers.get("Content-Length")
-                    if content_length and int(content_length) > MAX_SIZE_BYTES:
-                        raise ValidationError("Document exceeds maximum size of 50MB.")
-                    filename_match = re.findall('filename="(.+)"', content_disposition)
-                    filename = (
-                        filename_match[0]
-                        if filename_match
-                        else os.path.basename(urllib.parse.urlparse(url).path)
-                    )
-                    return content_type, filename
-
-        async def fetch_document(url):
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url) as response:
-                    if response.status != 200:
-                        raise ValidationError("Failed to fetch document from URL")
-                    return await response.read()
-
         # Step 1: Get the document data
+        filename = None  # document.pdf or document.docx
         extension = None
-        filename = None
-        # every block should give back a document_data, extension, and filename
-        if self.s3_file and not document_data:
-            logger.info(f"Fetching document from S3: {self.s3_file.name}")
-            extension = os.path.splitext(self.s3_file.name)[1][1:].lower()
-            logger.info(f"Document extension: {extension}")
-            with self.s3_file.open("rb") as f:
-                document_data = f.read()
-            filename = os.path.basename(self.s3_file.name)
-
-        elif self.url and not document_data:
-            content_type, filename = await get_url_info(self.url)
-            if "text/html" in content_type:
-                logger.info("Document is a webpage.")
-                # It's a webpage, convert to PDF
-                document_data = await self._convert_url_to_pdf(self.url)
-                logger.info("Successfully converted URL to PDF.")
-                extension = "pdf"
-            else:
-                # It's a regular file
-                logger.info(f"Fetching document from URL: {self.url}")
-                document_data = await fetch_document(self.url)
-                if "application/pdf" in content_type:
-                    extension = "pdf"
-                else:
-                    extension = get_extension_from_mime(content_type).lstrip(".")
-                logger.info(f"Document extension: {extension}")
-
-        # here we should have a document_data and extension
-        if document_data and not extension and not filename:
+        # here we should have a document_data and filename
+        if document_data:
+            logger.info("Document data provided.")
             # Get MIME type from magic
             mime = magic.Magic(mime=True)
             mime_type = mime.from_buffer(document_data)
             extension = get_extension_from_mime(mime_type).lstrip(".")
             filename = f"document.{extension}"
 
-        # Validate the document
-        if not document_data or not extension or not filename:
-            raise ValidationError("Document data is missing.")
+        # every block should give back a document_data, and filename w/ extension
+        elif self.s3_file:
+            logger.info(f"Fetching document from S3: {self.s3_file.name}")
+            with self.s3_file.open("rb") as f:
+                document_data = f.read()
+            filename = os.path.basename(self.s3_file.name)
+            logger.info(f"Document filename: {filename}")
+
+        elif self.url:
+            content_type, filename = await self._get_url_info()
+            if "text/html" in content_type:
+                logger.info("Document is a webpage.")
+                # It's a webpage, convert to PDF
+                document_data = await self._convert_url_to_pdf(self.url)
+                logger.info("Successfully converted URL to PDF.")
+                filename = f"{filename}.pdf"
+            else:
+                # It's a regular file
+                logger.info(f"Fetching document from URL: {self.url}")
+                document_data = await self._fetch_document()
+                if "application/pdf" in content_type:
+                    extension = "pdf"
+                else:
+                    extension = get_extension_from_mime(content_type).lstrip(".")
+                assert filename, "Filename should be set"
+                name = os.path.splitext(filename)[0]
+                filename = f"{name}.{extension}"
+                logger.info(f"Document filename: {filename}")
+        else:
+            raise ValidationError(
+                "Document data is missing. Please provide a document or a URL."
+            )
+
+        # make sure we have the document data and filename
+        assert document_data, "Document data should be set"
+        assert filename, "Filename should be set"
+
+        if not extension:
+            extension = os.path.splitext(filename)[1].lstrip(".")
 
         if len(document_data) > MAX_SIZE_BYTES:
             raise ValidationError("Document exceeds maximum size of 50MB.")
 
         if extension not in ALLOWED_EXTENSIONS:
             raise ValidationError(f"File extension .{extension} is not allowed.")
-
-        logger.info(f"Document extension: {extension}")
 
         # Determine if the document is an image or PDF
         is_image = extension in IMAGE_EXTENSIONS
@@ -543,7 +527,6 @@ class Document(models.Model):
         if not is_image and not is_pdf:
             logger.info(f"Converting document to PDF. Extension: {extension}")
             # Use Gotenberg to convert to PDF
-            filename = f"{filename}.{extension}"
             pdf_data = await self._convert_to_pdf(document_data, filename)
         elif is_pdf:
             logger.info("Document is already a PDF.")
@@ -556,7 +539,12 @@ class Document(models.Model):
 
         # here all documents are converted to pdf
         # Step 3: Turn the PDF into images via pdf2image
-        images = convert_from_bytes(pdf_data)
+        try:
+            images = convert_from_bytes(pdf_data)
+        except Exception:
+            raise ValidationError(
+                "Failed to convert PDF to images. The PDF may be corrupted, which sometimes happens with URLs. Try downloading the document and sending us the base64."
+            )
         logger.info(f"Successfully converted PDF to {len(images)} images.")
 
         # here all documents are converted to images
@@ -571,6 +559,40 @@ class Document(models.Model):
 
         # Step 5: returning the base64 images
         return base64_images
+
+    async def _get_url_info(self):
+        """Get content type and filename from URL via HEAD request"""
+        MAX_SIZE_BYTES = 50 * 1024 * 1024  # 50 MB
+        async with aiohttp.ClientSession() as session:
+            async with session.head(self.url, allow_redirects=True) as response:
+                # handle when the response is not 200
+                if response.status != 200:
+                    raise ValidationError(
+                        "Failed to fetch document info from URL. Some documents are protected by anti-scrapping measures. We recommend you download them and send us base64."
+                    )
+                content_type = response.headers.get("Content-Type", "").lower()
+                content_disposition = response.headers.get("Content-Disposition", "")
+                content_length = response.headers.get("Content-Length")
+                if content_length and int(content_length) > MAX_SIZE_BYTES:
+                    raise ValidationError("Document exceeds maximum size of 50MB.")
+                filename_match = re.findall('filename="(.+)"', content_disposition)
+                filename = (
+                    filename_match[0]
+                    if filename_match
+                    else os.path.basename(urllib.parse.urlparse(self.url).path)
+                )
+                if not filename:
+                    filename = "downloaded_file"
+                return content_type, filename
+
+    async def _fetch_document(self):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self.url) as response:
+                if response.status != 200:
+                    raise ValidationError(
+                        "Failed to fetch document info from URL. Some documents are protected by anti-scrapping measures. We recommend you download them and send us base64."
+                    )
+                return await response.read()
 
     @retry(
         stop=stop_after_attempt(3),

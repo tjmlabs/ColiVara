@@ -6,7 +6,7 @@
             <!-- Site branding -->
             <div class="flex items-center">
                 <a class="inline-flex" href="{% url 'home' %}">
-                    <img src="{% static 'images/logo.png' %}"
+                    <img src="{% static 'images/new-logo.svg' %}"
                          alt="ColiVara"
                          class="h-8"
                          height="8"
@@ -20,7 +20,12 @@
                     <li>
                         <a class="text-gray-600 hover:text-gray-900 px-5 py-2 flex items-center transition duration-150 ease-in-out"
                            href="https://docs.colivara.com"
-                           target="_blank">Documenation</a>
+                           target="_blank">Documentation</a>
+                    </li>
+                    <li>
+                        <a class="text-gray-600 hover:text-gray-900 px-5 py-2 flex items-center transition duration-150 ease-in-out"
+                           href="https://blog.colivara.com"
+                           target="_blank">Blog</a>
                     </li>
                     <li>
                         <a class="text-gray-600 hover:text-gray-900 px-5 py-2 flex items-center transition duration-150 ease-in-out"
@@ -34,8 +39,9 @@
                         </li>
                     {% else %}
                         <li class="px-3 py-1">
+                            {% url 'home'  as home_url %}
                             <a class="text-gray-700 hover:text-gray-900 flex items-center transition"
-                               href="#pricing">Pricing</a>
+                            href="{{ home_url }}#pricing">Pricing</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -118,6 +124,11 @@
                         </li>
                         <li>
                             <a class="flex text-gray-700 hover:bg-gray-100 rounded-lg py-1.5 px-2"
+                               href="https://blog.colivara.com"
+                               target="_blank">Blog</a>
+                        </li>
+                        <li>
+                            <a class="flex text-gray-700 hover:bg-gray-100 rounded-lg py-1.5 px-2"
                                href="https://github.com/tjmlabs/ColiVara"
                                target="_blank">Github</a>
                         </li>
@@ -128,8 +139,9 @@
                             </li>
                         {% else %}
                             <li>
+                                {% url 'home' as home_url %}
                                 <a class="flex text-gray-700 hover:bg-gray-100 rounded-lg py-1.5 px-2"
-                                   href="#pricing">Pricing</a>
+                                href="{{ home_url }}#pricing">Pricing</a>
                             </li>
                         {% endif %}
                     </ul>

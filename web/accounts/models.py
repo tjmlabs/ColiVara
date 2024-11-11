@@ -33,7 +33,7 @@ class CustomUser(AbstractUser):
     stripe_customer_id = models.CharField(max_length=255, blank=True)
     stripe_subscription_id = models.CharField(max_length=255, blank=True)
     token = models.CharField(max_length=255, blank=True)
-    available_credits = models.IntegerField(default=1000)  # free 1000 credits on signup
+    available_credits = models.IntegerField(default=100)  # free 100 credits on signup
     team = models.ForeignKey(
         Team, on_delete=models.SET_NULL, null=True, blank=True, related_name="members"
     )
@@ -105,16 +105,27 @@ class CustomUser(AbstractUser):
         if not customer_id:
             return []
 
-        now = (datetime.datetime.utcnow() + datetime.timedelta(days=1)).replace(
-            hour=0, minute=0, second=0, microsecond=0
-        )
-        last_month = now - datetime.timedelta(days=30)
+    
+        # retrieve subscription "current_period_end": 1682288167, and "current_period_start": 1679624167
+        sub = stripe.Subscription.retrieve(self.stripe_subscription_id)
+        start_time = sub.current_period_start 
+        end_time = sub.current_period_end
+        
+        # change start time to be midnight before the subscription started
+        start_time = datetime.datetime.fromtimestamp(start_time)
+        start_time = start_time.replace(hour=0, minute=0, second=0)
+        start_time = int(start_time.timestamp())
+       
+        # change end time to be midnight after the subscription ends
+        end_time = datetime.datetime.fromtimestamp(end_time)
+        end_time = end_time.replace(hour=0, minute=0, second=0)
+        end_time = int(end_time.timestamp())
         try:
             usage = stripe.billing.Meter.list_event_summaries(
                 settings.STRIPE_METER_ID,
                 customer=customer_id,
-                start_time=int(last_month.timestamp()),
-                end_time=int(now.timestamp()),
+                start_time=start_time,
+                end_time=end_time,
                 value_grouping_window="day",
             )
             results = usage.data

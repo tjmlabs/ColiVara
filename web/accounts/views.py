@@ -12,11 +12,16 @@ from .models import CustomUser
 
 @login_required
 def edit_account(request):
-    usage = request.user.get_credit_usage()
-    credits_used = int(sum(event["aggregated_value"] for event in usage))
-    starting_credits = 2500
-    if request.user.tier == "team":
-        starting_credits = 25000
+    initial_grant = request.user.get_available_credits()
+    if initial_grant == 0:
+        usage = request.user.get_credit_usage()
+        credits_used = int(sum(event["aggregated_value"] for event in usage))
+        starting_credits = 2500
+        if request.user.tier == "team":
+            starting_credits = 25000
+    else:
+        credits_used = 100 - initial_grant
+        starting_credits = 100
     return render(
         request,
         "account/edit_account.html",
