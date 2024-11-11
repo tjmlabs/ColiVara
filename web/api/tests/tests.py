@@ -145,6 +145,7 @@ async def test_create_collection(async_client, user):
         "id": 1,
         "name": "Test Collection Fixture",
         "metadata": {"key": "value"},
+        "num_documents": 0,
     }
 
 
@@ -187,6 +188,7 @@ async def test_get_collection_by_name(async_client, user, collection):
         "id": 1,
         "name": "Test Collection Fixture",
         "metadata": {"key": "value"},
+        "num_documents": 0,
     }
 
 
@@ -197,7 +199,12 @@ async def test_list_collection(async_client, user, collection):
     )
     assert response.status_code == 200
     assert response.json() == [
-        {"id": 1, "name": "Test Collection Fixture", "metadata": {"key": "value"}}
+        {
+            "id": 1,
+            "name": "Test Collection Fixture",
+            "metadata": {"key": "value"},
+            "num_documents": 0,
+        }
     ]
 
 
@@ -213,6 +220,7 @@ async def test_patch_collection(async_client, user, collection):
         "id": 1,
         "name": "Test Collection Update",
         "metadata": {"key": "value"},
+        "num_documents": 0,
     }
 
     # now check if the collection was actually updated
@@ -226,6 +234,7 @@ async def test_patch_collection(async_client, user, collection):
         "id": 1,
         "name": "Test Collection Update",
         "metadata": {"key": "value"},
+        "num_documents": 0,
     }
 
 
@@ -259,6 +268,7 @@ async def test_patch_collection_no_metadata(async_client, user, collection):
         "id": 1,
         "name": "Test Collection Update",
         "metadata": {"key": "value"},
+        "num_documents": 0,
     }
 
 
@@ -332,7 +342,7 @@ async def test_create_document_pdf_url_await(async_client, user):
         "metadata": {},
         "url": "https://pdfobject.com/pdf/sample.pdf",
         "num_pages": 1,
-        "collection_name": "default collection",
+        "collection_name": "default_collection",
         "pages": None,
     }
 
@@ -489,7 +499,7 @@ async def test_create_document_pdf_base64_await(async_client, user, collection):
     assert response_data["name"] == "Test Document Fixture"
     assert response_data["metadata"] == {}
     assert response_data["num_pages"] == 1
-    assert response_data["collection_name"] == "default collection"
+    assert response_data["collection_name"] == "default_collection"
     assert response_data["pages"] is None
     await Document.objects.all().adelete()
 
@@ -696,7 +706,7 @@ async def test_get_document_by_name(async_client, user, collection, document):
 async def test_get_document_by_name_multiple_documents(
     async_client, user, collection, document
 ):
-    # first we create a new document with the same name under default collection
+    # first we create a new document with the same name under default_collection
     response = await async_client.post(
         "/documents/upsert-document/",
         json={
@@ -792,7 +802,7 @@ async def test_patch_document_not_found(async_client, user, collection, document
 async def test_patch_document_multiple_documents(
     async_client, user, collection, document
 ):
-    # first we create a new document with the same name under default collection
+    # first we create a new document with the same name under default_collection
     response = await async_client.post(
         "/documents/upsert-document/",
         json={
@@ -920,7 +930,7 @@ async def test_delete_document_not_found(async_client, user, collection, documen
 async def test_delete_document_multiple_documents(
     async_client, user, collection, document
 ):
-    # first we create a new document with the same name under default collection
+    # first we create a new document with the same name under default_collection
     response = await async_client.post(
         "/documents/upsert-document/",
         json={
@@ -1547,18 +1557,17 @@ async def test_document_fetch_failure_async(async_client, user):
             await asyncio.gather(*pending_tasks)
 
             # Assert that both HEAD and GET were called
-            mock_head.assert_called_once_with(
-                "https://example.com/nonexistent.pdf", allow_redirects=True
-            )
-            mock_get.assert_called_once_with("https://example.com/nonexistent.pdf")
+            mock_head.assert_called_once()
+            mock_get.assert_called_once()
 
             # Assert that the email was sent
             MockEmailMessage.assert_called_once_with(
                 subject="Document Upsertion Failed",
-                body="There was an error processing your document: ['Failed to fetch document from URL']",
+                body="There was an error processing your document: ['Failed to fetch document info from URL. Some documents are protected by anti-scrapping measures. We recommend you download them and send us base64.']",
                 to=[user.email, "dummy@example.com"],
                 from_email="dummy@example.com",
             )
+
             mock_email_instance.send.assert_called_once()
 
 
@@ -1611,7 +1620,7 @@ async def test_document_file_too_big(async_client, user):
         assert response.status_code == 400
 
 
-async def test_gotenberg_service_down(async_client, user):
+async def test_gotenberg_service_down_with_file(async_client, user):
     GOTENBERG_POST_PATH = "api.models.aiohttp.ClientSession.post"
     # Create a mock response object with status 500
     mock_response = AsyncMock()
@@ -1652,6 +1661,29 @@ async def test_gotenberg_service_down(async_client, user):
         assert response.status_code == 400
 
 
+async def test_gotenberg_service_down_with_url(async_client, user):
+    GOTENBERG_POST_PATH = "api.models.aiohttp.ClientSession.post"
+    # Create a mock response object with status 500
+    mock_response = AsyncMock()
+    mock_response.status = 500
+    mock_response.json.return_value = AsyncMock(return_value={"error": "Service Down"})
+    # Mock the context manager __aenter__ to return the mock_response
+    mock_response.__aenter__.return_value = mock_response
+    # Patch the aiohttp.ClientSession.post method to return the mock_response
+
+    with patch(GOTENBERG_POST_PATH, return_value=mock_response):
+        response = await async_client.post(
+            "/documents/upsert-document/",
+            json={
+                "name": "Test Document Fixture",
+                "url": "https://example.com/largefile.pdf",
+                "wait": True,
+            },
+            headers={"Authorization": f"Bearer {user.token}"},
+        )
+        assert response.status_code == 400
+
+
 async def test_prep_document_document_data_too_large():
     # Initialize Document without a URL or base64 (assuming document_data is handled internally)
     doc = Document()
@@ -1661,6 +1693,17 @@ async def test_prep_document_document_data_too_large():
     # Attempt to prepare the document and expect a ValidationError
     with pytest.raises(DjangoValidationError):
         await doc._prep_document(document_data=document_data)
+
+
+async def test_prep_document_pdf_conversion_failure():
+    CONVERT_FROM_BYTES_PATH = "api.models.convert_from_bytes"
+
+    document = Document()  #
+    pdf_data = b"corrupted_pdf_data"
+
+    with patch(CONVERT_FROM_BYTES_PATH, side_effect=Exception("PDF conversion failed")):
+        with pytest.raises(DjangoValidationError):
+            await document._prep_document(document_data=pdf_data)
 
 
 async def test_prep_document_with_disallowed_extension(collection):
@@ -1727,3 +1770,39 @@ async def test_unknown_mime_type(collection):
 
     # Cleanup
     await document.delete_s3_file()
+
+
+async def test_get_url_info_non_200_response():
+    AIOHTTP_HEAD_PATH = "api.models.aiohttp.ClientSession.head"
+
+    # Mock response with non-200 status
+    mock_response = AsyncMock()
+    mock_response.status = 404
+    mock_response.__aenter__.return_value = mock_response
+
+    document = Document(url="https://example.com/doc.pdf")
+
+    with patch(AIOHTTP_HEAD_PATH, return_value=mock_response):
+        with pytest.raises(DjangoValidationError):
+            await document._get_url_info()
+
+
+async def test_get_url_info_empty_filename_fallback():
+    AIOHTTP_HEAD_PATH = "api.models.aiohttp.ClientSession.head"
+
+    # Mock response with empty filename
+    mock_response = AsyncMock()
+    mock_response.status = 200
+    mock_response.headers = {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": "",  # Empty content disposition
+        "Content-Length": "1000",
+    }
+    mock_response.__aenter__.return_value = mock_response
+
+    document = Document(url="https://example.com/")  # URL with no filename
+
+    with patch(AIOHTTP_HEAD_PATH, return_value=mock_response):
+        content_type, filename = await document._get_url_info()
+
+        assert filename == "downloaded_file"

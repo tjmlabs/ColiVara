@@ -1,4 +1,1 @@
-{% load i18n %}
-{% autoescape off %}
-    {% blocktrans %}Welcome to ColiVara{% endblocktrans %}
-{% endautoescape %}
+Welcome to ColiVara

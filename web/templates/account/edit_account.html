@@ -194,6 +194,8 @@
                                             <p>
                                                 {% if request.user.tier == "free" %}
                                                 You have {{ request.user.available_credits }} remaining credits before you need to upgrade to a paid plan.
+                                                {% elif starting_credits == 100 %}
+                                                You have used {{ credits_used }} credits out of the free {{ starting_credits }} credits on signup. After this, your paid plan will start.
                                                 {% else %}
                                                 {{ credits_used }} credits used out of {{ starting_credits }} credits in the past 30 days. Additional usage will be billed at 0.01 $ per credit
                                                 {% endif %}
