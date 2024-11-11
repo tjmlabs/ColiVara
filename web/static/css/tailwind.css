@@ -2573,6 +2573,10 @@ input[type="search"]::-webkit-search-results-decoration {
   cursor: not-allowed;
 }
 
+.cursor-pointer{
+  cursor: pointer;
+}
+
 .list-inside{
   list-style-position: inside;
 }
