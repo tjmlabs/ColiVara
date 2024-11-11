@@ -4,25 +4,18 @@ import pytest
 from accounts.models import CustomUser
 from django.conf import settings
 
-
 @pytest.fixture(scope='module', autouse=True)
 def django_db_setup():
     # This is so that we are accessing the same database (non-test) as the playwright browser
-    # this messes with the tests in api/tests/tests.py so we have to run them seperately for now
-    # using docker-compose exec web pytest api/tests/tests.py and docker-compose exec web pytest frontend/tests/frontend_tests.py
     settings.DATABASES['default']['TEST'] = {
         'MIRROR': 'default',
     }
 
-    yield
 
-
-@pytest.mark.django_db
 def test_homepage_loads(page: Page):
     _navigate_to_homepage(page)
 
 
-@pytest.mark.django_db
 def test_signup(page: Page):
     _navigate_to_homepage(page)
     _create_account(page, "pw_testing@example.com")
@@ -30,16 +23,6 @@ def test_signup(page: Page):
     # go to the edit account view to check credits
     page.goto("http://host.docker.internal:8001/accounts/edit-account/")
     expect(page.locator("text=You have 1000 remaining credits before you need to upgrade to a paid plan")).to_be_visible()
-
-    # delete the created user
-    user = CustomUser.objects.get(email="pw_testing@example.com")
-
-    if user:
-        print("User created successfully")
-        user.delete()
-        user.save()
-    else:
-        print("User not created")
 
 
 def test_upgrade_to_individual(page: Page):
