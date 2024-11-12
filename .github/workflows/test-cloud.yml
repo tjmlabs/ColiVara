@@ -88,6 +88,7 @@ jobs:
           AWS_S3_ACCESS_KEY_ID: ${{ secrets.AWS_S3_ACCESS_KEY_ID }}
           AWS_S3_SECRET_ACCESS_KEY: ${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}
           AWS_STORAGE_BUCKET_NAME: ${{ secrets.AWS_STORAGE_BUCKET_NAME }}
+          REDIS_URL: redis://localhost:6379/0
         run: python manage.py migrate && python manage.py collectstatic --noinput --ignore css/style.css
       
       - name: Start Stripe CLI Webhook Listener
@@ -119,6 +120,7 @@ jobs:
           STRIPE_INDIVIDUAL_PRICE_ID_USAGE: ${{ secrets.STRIPE_INDIVIDUAL_PRICE_ID_USAGE }}
           STRIPE_METER_EVENT: ${{ secrets.STRIPE_METER_EVENT }}
           TEST_BASE_URL: http://localhost:8001
+          REDIS_URL: redis://localhost:6379/0
         run: python manage.py runserver 8001 & sleep 10 && python manage.py populate_social_app
               
       - name: Run UI tests
@@ -140,6 +142,7 @@ jobs:
           STRIPE_INDIVIDUAL_PRICE_ID_USAGE: ${{ secrets.STRIPE_INDIVIDUAL_PRICE_ID_USAGE }}
           STRIPE_METER_EVENT: ${{ secrets.STRIPE_METER_EVENT }}
           TEST_BASE_URL: http://localhost:8001
+          REDIS_URL: redis://localhost:6379/0
         run: pytest -c pytest-ui.ini --tracing=retain-on-failure
         
       - name: Run Main Tests
@@ -152,6 +155,7 @@ jobs:
           AWS_S3_SECRET_ACCESS_KEY: ${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}
           AWS_STORAGE_BUCKET_NAME: ${{ secrets.AWS_STORAGE_BUCKET_NAME }}
           GOTENBERG_URL: http://localhost:3000
+          REDIS_URL: redis://localhost:6379/0
         run: pytest
 
       - name: Upload Test Results
