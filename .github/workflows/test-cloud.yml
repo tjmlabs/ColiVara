@@ -140,7 +140,7 @@ jobs:
           STRIPE_INDIVIDUAL_PRICE_ID_USAGE: ${{ secrets.STRIPE_INDIVIDUAL_PRICE_ID_USAGE }}
           STRIPE_METER_EVENT: ${{ secrets.STRIPE_METER_EVENT }}
           TEST_BASE_URL: http://localhost:8001
-        run: pytest -c pytest-ui.ini
+        run: pytest -c pytest-ui.ini --tracing=retain-on-failure
         
       - name: Run Main Tests
         working-directory: ./web
@@ -153,3 +153,15 @@ jobs:
           AWS_STORAGE_BUCKET_NAME: ${{ secrets.AWS_STORAGE_BUCKET_NAME }}
           GOTENBERG_URL: http://localhost:3000
         run: pytest
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-test-results
+          path: |
+            ./web/test-results/
+            ./web/playwright-report/
+            ./web/pytest-logs.txt
+          retention-days: 3
+      
