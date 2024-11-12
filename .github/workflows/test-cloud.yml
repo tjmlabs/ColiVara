@@ -54,10 +54,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
     
-      - name: Create env file
-        run: |
-          echo "${{ secrets.ENV_TEST_FILE }}" | base64 -d > ./web/.env.test
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -87,23 +83,55 @@ jobs:
         working-directory: ./web
         run: |
           playwright install
-          playwright install-deps
+          playwright install-deps chromium
     
       - name: Run migrations
         working-directory: ./web
-        run: |
-          set -a
-          source .env.test
-          set +a
-          DATABASE_URL=postgres://test_user:test_password@localhost:5432/test_db python manage.py migrate
-
-  
+        env:
+          DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
+          EMBEDDINGS_URL: ${{ secrets.EMBEDDINGS_URL }}
+          EMBEDDINGS_URL_TOKEN: ${{ secrets.EMBEDDINGS_URL_TOKEN }}
+          AWS_S3_ACCESS_KEY_ID: ${{ secrets.AWS_S3_ACCESS_KEY_ID }}
+          AWS_S3_SECRET_ACCESS_KEY: ${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}
+          AWS_STORAGE_BUCKET_NAME: ${{ secrets.AWS_STORAGE_BUCKET_NAME }}
+        run: python manage.py migrate
+     
       - name: Run UI tests
         working-directory: ./web
-        run: |
-          set -a
-          source .env.test
-          set +a
-          DATABASE_URL=postgres://test_user:test_password@localhost:5432/test_db \
-          GOTENBERG_URL=http://localhost:3000 \
-          pytest -c pytest-ui.ini
+        env:
+          DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
+          EMBEDDINGS_URL: ${{ secrets.EMBEDDINGS_URL }}
+          EMBEDDINGS_URL_TOKEN: ${{ secrets.EMBEDDINGS_URL_TOKEN }}
+          AWS_S3_ACCESS_KEY_ID: ${{ secrets.AWS_S3_ACCESS_KEY_ID }}
+          AWS_S3_SECRET_ACCESS_KEY: ${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}
+          AWS_STORAGE_BUCKET_NAME: ${{ secrets.AWS_STORAGE_BUCKET_NAME }}
+          GOTENBERG_URL: http://localhost:3000
+          STRIPE_METER_ID: ${{ secrets.STRIPE_METER_ID }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_PUBLIC_KEY: ${{ secrets.STRIPE_PUBLIC_KEY }}
+          STRIPE_TEAM_PRICE_ID_RECURRENT: ${{ secrets.STRIPE_TEAM_PRICE_ID_RECURRENT }}
+          STRIPE_TEAM_PRICE_ID_USAGE: ${{ secrets.STRIPE_TEAM_PRICE_ID_USAGE }}
+          STRIPE_INDIVIDUAL_PRICE_ID_RECURRENT: ${{ secrets.STRIPE_INDIVIDUAL_PRICE_ID_RECURRENT }}
+          STRIPE_INDIVIDUAL_PRICE_ID_USAGE: ${{ secrets.STRIPE_INDIVIDUAL_PRICE_ID_USAGE }}
+          STRIPE_METER_EVENT: ${{ secrets.STRIPE_METER_EVENT }}
+        run: pytest -c pytest-ui.ini
+        
+      - name: Run Main Tests
+        working-directory: ./web
+        env:
+          DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
+          EMBEDDINGS_URL: ${{ secrets.EMBEDDINGS_URL }}
+          EMBEDDINGS_URL_TOKEN: ${{ secrets.EMBEDDINGS_URL_TOKEN }}
+          AWS_S3_ACCESS_KEY_ID: ${{ secrets.AWS_S3_ACCESS_KEY_ID }}
+          AWS_S3_SECRET_ACCESS_KEY: ${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}
+          AWS_STORAGE_BUCKET_NAME: ${{ secrets.AWS_STORAGE_BUCKET_NAME }}
+          GOTENBERG_URL: http://localhost:3000
+          STRIPE_METER_ID: ${{ secrets.STRIPE_METER_ID }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_PUBLIC_KEY: ${{ secrets.STRIPE_PUBLIC_KEY }}
+          STRIPE_TEAM_PRICE_ID_RECURRENT: ${{ secrets.STRIPE_TEAM_PRICE_ID_RECURRENT }}
+          STRIPE_TEAM_PRICE_ID_USAGE: ${{ secrets.STRIPE_TEAM_PRICE_ID_USAGE }}
+          STRIPE_INDIVIDUAL_PRICE_ID_RECURRENT: ${{ secrets.STRIPE_INDIVIDUAL_PRICE_ID_RECURRENT }}
+          STRIPE_INDIVIDUAL_PRICE_ID_USAGE: ${{ secrets.STRIPE_INDIVIDUAL_PRICE_ID_USAGE }}
+          STRIPE_METER_EVENT: ${{ secrets.STRIPE_METER_EVENT }}
+        run: pytest
