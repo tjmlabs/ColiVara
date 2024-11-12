@@ -50,6 +50,7 @@ jobs:
         env:
           STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
           STRIPE_DEVICE_NAME: ${{ secrets.STRIPE_DEVICE_NAME }}
+        options: --listen --forward-to http://localhost:8001/stripe-webhook/
     
     steps:
       - uses: actions/checkout@v4
@@ -114,6 +115,7 @@ jobs:
           STRIPE_INDIVIDUAL_PRICE_ID_RECURRENT: ${{ secrets.STRIPE_INDIVIDUAL_PRICE_ID_RECURRENT }}
           STRIPE_INDIVIDUAL_PRICE_ID_USAGE: ${{ secrets.STRIPE_INDIVIDUAL_PRICE_ID_USAGE }}
           STRIPE_METER_EVENT: ${{ secrets.STRIPE_METER_EVENT }}
+          TEST_BASE_URL: http://localhost:8001
         run: pytest -c pytest-ui.ini
         
       - name: Run Main Tests
@@ -126,12 +128,4 @@ jobs:
           AWS_S3_SECRET_ACCESS_KEY: ${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}
           AWS_STORAGE_BUCKET_NAME: ${{ secrets.AWS_STORAGE_BUCKET_NAME }}
           GOTENBERG_URL: http://localhost:3000
-          STRIPE_METER_ID: ${{ secrets.STRIPE_METER_ID }}
-          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
-          STRIPE_PUBLIC_KEY: ${{ secrets.STRIPE_PUBLIC_KEY }}
-          STRIPE_TEAM_PRICE_ID_RECURRENT: ${{ secrets.STRIPE_TEAM_PRICE_ID_RECURRENT }}
-          STRIPE_TEAM_PRICE_ID_USAGE: ${{ secrets.STRIPE_TEAM_PRICE_ID_USAGE }}
-          STRIPE_INDIVIDUAL_PRICE_ID_RECURRENT: ${{ secrets.STRIPE_INDIVIDUAL_PRICE_ID_RECURRENT }}
-          STRIPE_INDIVIDUAL_PRICE_ID_USAGE: ${{ secrets.STRIPE_INDIVIDUAL_PRICE_ID_USAGE }}
-          STRIPE_METER_EVENT: ${{ secrets.STRIPE_METER_EVENT }}
         run: pytest
