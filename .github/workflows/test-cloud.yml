@@ -44,13 +44,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
-      stripe:
-        image: stripe/stripe-cli
-        env:
-          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
-          STRIPE_DEVICE_NAME: ${{ secrets.STRIPE_DEVICE_NAME }}
-        options: listen --forward-to http://localhost:8001/stripe-webhook/
     
     steps:
       - uses: actions/checkout@v4
@@ -96,6 +89,16 @@ jobs:
           AWS_S3_SECRET_ACCESS_KEY: ${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}
           AWS_STORAGE_BUCKET_NAME: ${{ secrets.AWS_STORAGE_BUCKET_NAME }}
         run: python manage.py migrate && python manage.py collectstatic --noinput
+      
+      - name: Start Stripe CLI Webhook Listener
+        env:
+          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+          STRIPE_DEVICE_NAME: ${{ secrets.STRIPE_DEVICE_NAME }}
+        run: |
+          docker run --rm -d \
+            -e STRIPE_API_KEY=$STRIPE_API_KEY \
+            -e STRIPE_DEVICE_NAME=$STRIPE_DEVICE_NAME \
+            stripe/stripe-cli:latest listen --forward-to http://localhost:8001/stripe-webhook/
      
       - name: Run UI tests
         working-directory: ./web
