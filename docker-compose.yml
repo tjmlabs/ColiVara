@@ -8,10 +8,16 @@ services:
 
     volumes:
       - ./web:/code
+      - /tmp/.X11-unix:/tmp/.X11-unix
     depends_on:
       - db
+      - redis
+      - gotenberg
+
     env_file:
       - ./.env.dev
+    environment:
+      - DISPLAY=host.docker.internal:0
 
   tailwind:
     build: ./web
@@ -43,7 +49,13 @@ services:
     deploy:
       resources:
         limits:
-          memory: 3gb 
+          memory: 3gb
+
+  stripe:
+    image: stripe/stripe-cli
+    env_file:
+      - ./.env.dev
+    command: listen --forward-to web:8000/stripe-webhook/
 
 volumes:
   postgres_data:

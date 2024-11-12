@@ -102,7 +102,7 @@
                         <a 
                         class="btn-sm py-1.5 rounded-lg !text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
                         :href="isCloud ? '{% url 'stripe_checkout' %}?tier=individual' : 'mailto:founders@tjmlabs.com'" 
-                        x-text="isCloud ? 'Upgrade' : 'Contact us'"></a>
+                        x-text="isCloud ? 'Upgrade to Individual Subscription' : 'Contact us'"></a>
 
                     <!-- downgrade -->
                     {% elif request.user.tier == "team" and request.user.team.owner == request.user %}
@@ -252,7 +252,7 @@
                         <a 
                         class="btn-sm py-1.5 rounded-lg !text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full"
                         :href="isCloud ? '{% url 'stripe_checkout' %}?tier=team' : 'mailto:founders@tjmlabs.com'" 
-                        x-text="isCloud ? 'Upgrade' : 'Contact us'"></a>
+                        x-text="isCloud ? 'Upgrade to Team Subscription' : 'Contact us'"></a>
                         
                         <!-- upgrade -->
                         {% elif request.user.tier == "individual" %}
@@ -261,7 +261,7 @@
                                 x-show="isCloud"
                                 @click="showConfirm = true"
                                 class="btn-sm py-1.5 rounded-lg !text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full">
-                                Upgrade
+                                Upgrade to team
                             </button>
                     
                             <a x-show="!isCloud"
