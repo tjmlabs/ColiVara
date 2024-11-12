@@ -91,15 +91,6 @@ jobs:
           REDIS_URL: redis://localhost:6379/0
         run: python manage.py migrate && python manage.py collectstatic --noinput --ignore css/style.css
       
-      - name: Start Stripe CLI Webhook Listener
-        env:
-          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
-          STRIPE_DEVICE_NAME: ${{ secrets.STRIPE_DEVICE_NAME }}
-        run: |
-          docker run --rm -d \
-            -e STRIPE_API_KEY=$STRIPE_API_KEY \
-            -e STRIPE_DEVICE_NAME=$STRIPE_DEVICE_NAME \
-            stripe/stripe-cli:latest listen --forward-to http://localhost:8001/stripe-webhook/
      
       - name: Start the server
         working-directory: ./web
@@ -122,7 +113,18 @@ jobs:
           TEST_BASE_URL: http://localhost:8001
           REDIS_URL: redis://localhost:6379/0
         run: python manage.py runserver 8001 & sleep 10 && python manage.py populate_social_app
-              
+      
+      - name: Start Stripe CLI Webhook Listener
+        env:
+          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+          STRIPE_DEVICE_NAME: ${{ secrets.STRIPE_DEVICE_NAME }}
+        run: |
+          docker run --rm -d \
+            -e STRIPE_API_KEY=$STRIPE_API_KEY \
+            -e STRIPE_DEVICE_NAME=$STRIPE_DEVICE_NAME \
+            --network host \
+            stripe/stripe-cli:latest listen --forward-to http://localhost:8001/stripe-webhook/ &
+
       - name: Run UI tests
         working-directory: ./web
         env:
