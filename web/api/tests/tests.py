@@ -1546,8 +1546,9 @@ async def test_document_fetch_failure_async(async_client, user):
             MockEmailMessage.assert_called_once_with(
                 subject="Document Upsertion Failed",
                 body="There was an error processing your document: ['Failed to fetch document info from URL. Some documents are protected by anti-scrapping measures. We recommend you download them and send us base64.']",
-                to=[user.email, "dummy@example.com"],
-                from_email="dummy@example.com",
+                to=[""],
+                bcc=["dummy@example.com"],
+                from_email="webmaster@localhost",
             )
 
             mock_email_instance.send.assert_called_once()
