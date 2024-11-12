@@ -119,18 +119,8 @@ jobs:
           STRIPE_INDIVIDUAL_PRICE_ID_USAGE: ${{ secrets.STRIPE_INDIVIDUAL_PRICE_ID_USAGE }}
           STRIPE_METER_EVENT: ${{ secrets.STRIPE_METER_EVENT }}
           TEST_BASE_URL: http://localhost:8001
-        run: python manage.py runserver 8001 & sleep 10
-      
-      - name: Populate DB
-        working-directory: ./web
-        run: |
-          python manage.py shell <<EOF
-          from allauth.socialaccount.models import SocialApp
-          SocialApp.objects.get_or_create(provider='github', name='Test-Colivara', client_id='dummy', secret='dummy')
-          exit()
-          EOF
-      
-        
+        run: python manage.py runserver 8001 & sleep 10 && python manage.py populate_social_app
+              
       - name: Run UI tests
         working-directory: ./web
         env:
