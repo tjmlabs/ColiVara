@@ -88,7 +88,7 @@ jobs:
           AWS_S3_ACCESS_KEY_ID: ${{ secrets.AWS_S3_ACCESS_KEY_ID }}
           AWS_S3_SECRET_ACCESS_KEY: ${{ secrets.AWS_S3_SECRET_ACCESS_KEY }}
           AWS_STORAGE_BUCKET_NAME: ${{ secrets.AWS_STORAGE_BUCKET_NAME }}
-        run: python manage.py migrate && python manage.py collectstatic --noinput
+        run: python manage.py migrate && python manage.py collectstatic --noinput --ignore css/style.css
       
       - name: Start Stripe CLI Webhook Listener
         env:
