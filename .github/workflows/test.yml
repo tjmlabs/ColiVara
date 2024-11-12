@@ -1,3 +1,5 @@
+name: Test Main
+
 on:
   pull_request:
     branches: [main]

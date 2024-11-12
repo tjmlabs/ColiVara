@@ -751,6 +751,14 @@ async def partial_update_document(
         await document.embed_document()
         record_usage = True
 
+    elif payload.base64:
+        document.metadata = payload.metadata or document.metadata
+        document.name = payload.name or document.name
+        await document.save_base64_to_s3(payload.base64)
+        await document.pages.all().adelete()
+        await document.embed_document()
+        record_usage = True
+
     else:
         document.name = payload.name or document.name
         document.metadata = payload.metadata or document.metadata
