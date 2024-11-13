@@ -1,12 +1,14 @@
 # ColiVara = COntextualized Late Interaction Vision Augmented Retrieval API
 
-[![codecov](https://codecov.io/gh/tjmlabs/ColiVara/branch/main/graph/badge.svg)](https://codecov.io/gh/tjmlabs/ColiVara) [![Tests](https://github.com/tjmlabs/ColiVara/actions/workflows/test.yml/badge.svg)](https://github.com/tjmlabs/Colivara/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/tjmlabs/ColiVara/branch/main/graph/badge.svg)](https://codecov.io/gh/tjmlabs/ColiVara) [![Tests](https://github.com/tjmlabs/ColiVara/actions/workflows/test.yml/badge.svg)](https://github.com/tjmlabs/Colivara/actions/workflows/test.yml) 
+
+[![Discord](https://dcbadge.limes.pink/api/server/https://discord.gg/VaGbJXmQ)](https://discord.gg/[INVITE](https://discord.gg/VaGbJXmQ))
 
 **State of the Art Retrieval - with a delightful developer experience**
 
 ColiVara is a suite of services that allows you to store, search, and retrieve documents based on their **_visual_** embedding.
 
-It is a web-first implementation of the ColiPali paper using ColQwen2 as the LLM model. It works exactly like RAG from the end-user standpoint - but using vision models instead of chunking and text-processing for documents.
+It is a web-first implementation of the ColPali paper using ColQwen2 as the LLM model. It works exactly like RAG from the end-user standpoint - but using vision models instead of chunking and text-processing for documents.
 
 ### Cloud Quickstart:
 
@@ -91,21 +93,21 @@ However, it is limited by the quality of the text extraction pipeline. With limi
 
 ColiVara uses vision models to generate embeddings for documents, allowing you to retrieve documents based on their visual content.
 
-_From the ColiPali paper:_
+_From the ColPali paper:_
 
 > Documents are visually rich structures that convey information through text, as well as tables, figures, page layouts, or fonts. While modern document retrieval systems exhibit strong performance on query-to-text matching, they struggle to exploit visual cues efficiently, hindering their performance on practical document retrieval applications such as Retrieval Augmented Generation.
 
-[Learn More in the ColiPali Paper](https://arxiv.org/abs/2407.01449)
+[Learn More in the ColPali Paper](https://arxiv.org/abs/2407.01449)
 
 **How does it work?**
 
 _Credit: [helloIamleonie on X](https://x.com/helloiamleonie)_
 
-![ColiPali Explainer](docs/colipali-explainer.jpg)
+![ColPali Explainer](docs/colipali-explainer.jpg)
 
 ## Key Features
 
-- **State of the Art retrieval**: The API is based on the ColiPali paper and uses the ColQwen2 model for embeddings. It outperforms existing retrieval systems on both quality and latency.
+- **State of the Art retrieval**: The API is based on the ColPali paper and uses the ColQwen2 model for embeddings. It outperforms existing retrieval systems on both quality and latency.
 - **User Management**: Multi-user setup with each user having their own collections and documents.
 - **Wide Format Support**: Supports over 100 file formats including PDF, DOCX, PPTX, and more.
 - **Webpage Support**: Automatically takes a screenshot of webpages and indexes them even if it is not a file.
@@ -120,13 +122,13 @@ _Credit: [helloIamleonie on X](https://x.com/helloiamleonie)_
 
 ## Evals:
 
-The ColiPali team has provided the following evals in their paper. We have run quick sanity checks on the API and the Embeddings Service and are getting similar results. We are working on our own independent evals repository and will update this section with our results and how to reproduce them.
+The ColPali team has provided the following evals in their paper. We have run quick sanity checks on the API and the Embeddings Service and are getting similar results. We are working on our own independent evals repository and will update this section with our results and how to reproduce them.
 
 Updates: 
 
 - 11/6/2024: Our ArxivQ score is 86.6 - matching state of the art results in the vidore leaderboard. 
 
-![ColiPali Evals](docs/colipali-evals.png)
+![ColPali Evals](docs/colipali-evals.png)
 
 ## Components:
 

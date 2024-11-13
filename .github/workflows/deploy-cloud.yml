@@ -1,6 +1,8 @@
 name: Deploy to Production
 
 on:
+  schedule:
+    - cron: '0 5 * * *'  # Runs at 5:00 AM UTC daily
   workflow_dispatch:
   
 jobs:
