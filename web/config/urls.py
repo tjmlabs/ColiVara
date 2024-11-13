@@ -9,7 +9,7 @@ api = NinjaAPI(
     version="1.0.0",
     description="""Colivara is a suite of services that allows you to store, search, and retrieve documents based on their visual embeddings.
 
-    It is a web-first implementation of the ColiPali paper using ColQwen2 as backend model. It works exacly like RAG from the end-user standpoint - but using vision models instead of chunking and text-processing for documents.""",
+    It is a web-first implementation of the ColPali paper using ColQwen2 as backend model. It works exacly like RAG from the end-user standpoint - but using vision models instead of chunking and text-processing for documents.""",
     servers=[
         {"url": "https://api.colivara.com", "description": "Production Server"},
         {"url": "http://localhost:8001", "description": "Local Server"},
