@@ -1047,6 +1047,89 @@ async def search(
     return 200, QueryOut(query=payload.query, results=formatted_results)
 
 
+@router.post(
+    "/filter/",
+    tags=["filter"],
+    auth=Bearer(),
+    response={200: Union[List[DocumentOut], List[CollectionOut]], 503: GenericError},
+)
+async def filter(
+    request: Request,
+    payload: QueryFilter,
+    expand: Optional[str] = None,
+) -> Union[
+    Tuple[int, List[DocumentOut]],
+    Tuple[int, List[CollectionOut]],
+    Tuple[int, GenericError],
+]:
+    """
+    Filter for documents and collections that meet the criteria of the filter.
+
+    Args:
+        request: The HTTP request object, which includes the user information.
+        payload (QueryFilter): The input data for the filter, which includes the filter criteria.
+        expand (Optional[str]): A comma-separated list of fields to expand in the response. If "pages" is included, the document's pages will be included.
+
+    Returns:
+        DocumentOut: The retrieved documents with their details.
+        CollectionOut: The retrieved collections with their details.
+
+    Raises:
+        HttpError: If the collection does not exist or the query is invalid.
+
+    Example:
+        POST /filter/?expand=pages
+        {
+            "on": "document",
+            "key": "breed",
+            "value": "collie",
+            "lookup": "contains"
+        }
+    """
+    # filter the documents or collections based on the payload
+    base_query: QuerySet[Union[Document, Collection]]
+
+    if payload.on == "document":
+        base_query = await filter_documents(payload, request.auth)
+        documents = []
+
+        async for doc in base_query:
+            document_out = DocumentOut(
+                id=doc.id,
+                name=doc.name,
+                metadata=doc.metadata,
+                url=await doc.get_url(),
+                num_pages=await doc.page_count(),
+                collection_name=doc.collection.name,
+            )
+
+            if expand and "pages" in expand.split(","):
+                document_out.pages = [
+                    PageOut(
+                        document_name=doc.name,
+                        img_base64=page.img_base64,
+                        page_number=page.page_number,
+                    )
+                    async for page in doc.pages.all()
+                ]
+
+            documents.append(document_out)
+        return 200, documents
+    else:
+        base_query = await filter_collections(payload, request.auth)
+        collections = [
+            CollectionOut(
+                id=col.id,
+                name=col.name,
+                metadata=col.metadata,
+                num_documents=await col.document_count(),
+            )
+            async for col in base_query
+        ]
+
+        return 200, collections
+
+
 async def get_query_embeddings(query: str) -> List:
     EMBEDDINGS_URL = settings.ALWAYS_ON_EMBEDDINGS_URL
     embed_token = settings.EMBEDDINGS_URL_TOKEN
@@ -1102,6 +1185,59 @@ async def filter_query(payload: QueryIn, user: CustomUser) -> QuerySet[Page]:
         }
         filter_params = lookup_operations[lookup](key, value)
         base_query = base_query.filter(**filter_params)
+    return base_query
+
+
+async def filter_documents(
+    query_filter: QueryFilter, user: CustomUser
+) -> QuerySet[Document]:
+    base_query = Document.objects.select_related("collection")
+    base_query = base_query.filter(collection__owner=user)
+
+    field_prefix = "metadata"
+
+    lookup_operations = {
+        "key_lookup": lambda k, v: {f"{field_prefix}__{k}": v},
+        "contains": lambda k, v: {f"{field_prefix}__contains": {k: v}},
+        "contained_by": lambda k, v: {f"{field_prefix}__contained_by": {k: v}},
+        "has_key": lambda k, _: {f"{field_prefix}__has_key": k},
+        "has_keys": lambda k, _: {f"{field_prefix}__has_keys": k},
+        "has_any_keys": lambda k, _: {f"{field_prefix}__has_any_keys": k},
+    }
+
+    key = query_filter.key
+    value = query_filter.value
+    lookup = query_filter.lookup
+
+    filter_params = lookup_operations[lookup](key, value)
+    base_query = base_query.filter(**filter_params)
+
+    return base_query
+
+
+async def filter_collections(
+    query_filter: QueryFilter, user: CustomUser
+) -> QuerySet[Collection]:
+    base_query = Collection.objects.all().filter(owner=user)
+
+    field_prefix = "metadata"
+
+    lookup_operations = {
+        "key_lookup": lambda k, v: {f"{field_prefix}__{k}": v},
+        "contains": lambda k, v: {f"{field_prefix}__contains": {k: v}},
+        "contained_by": lambda k, v: {f"{field_prefix}__contained_by": {k: v}},
+        "has_key": lambda k, _: {f"{field_prefix}__has_key": k},
+        "has_keys": lambda k, _: {f"{field_prefix}__has_keys": k},
+        "has_any_keys": lambda k, _: {f"{field_prefix}__has_any_keys": k},
+    }
+
+    key = query_filter.key
+    value = query_filter.value
+    lookup = query_filter.lookup
+
+    filter_params = lookup_operations[lookup](key, value)
+    base_query = base_query.filter(**filter_params)
+
     return base_query
 
 

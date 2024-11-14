@@ -20,7 +20,8 @@ from django.db.models import FloatField, Func, JSONField, Q
 from django_stubs_ext.db.models import TypedModelMeta
 from pdf2image import convert_from_bytes
 from pgvector.django import HalfVectorField
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
+from tenacity import (retry, retry_if_exception_type, stop_after_attempt,
+                      wait_fixed)
 
 logger = logging.getLogger(__name__)
 
@@ -110,6 +111,9 @@ class Document(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    async def page_count(self) -> int:
+        return await self.pages.acount()
 
     class Meta(TypedModelMeta):
         constraints = [
