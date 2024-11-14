@@ -1086,6 +1086,12 @@ async def filter(
             "lookup": "contains"
         }
     """
+    available_credits = await sync_to_async(request.auth.get_available_credits)()
+    if available_credits < 1 and request.auth.tier == "free":
+        return 402, GenericError(
+            detail="You have no available credits. Please upgrade your subscription."
+        )
+
     # filter the documents or collections based on the payload
     base_query: QuerySet[Union[Document, Collection]]
 
