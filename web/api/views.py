@@ -424,22 +424,7 @@ async def process_upsert_document(
             )
         )
         logger.info(f"Document {document.name} processed successfully.")
-        if available_credits >= document.num_pages:
-            await sync_to_async(request.auth.set_available_credits)(
-                available_credits - document.num_pages
-            )
-            logger.info(f"Decreased available credits by {document.num_pages}")
-        else:
-            await sync_to_async(request.auth.record_consumed_credits)(
-                document.num_pages - available_credits
-            )
-
-            if available_credits != 0:
-                await sync_to_async(request.auth.set_available_credits)(0)
-
-            logger.info(
-                f"Set available credits to 0 and recorded {document.num_pages - available_credits} consumed credits"
-            )
+        consume_credits(request, available_credits, document.num_pages)
 
         return 201, DocumentOut(
             id=document.id,
@@ -772,22 +757,7 @@ async def partial_update_document(
     )
     logger.info(f"Document {new_document.name} updated successfully.")
     if record_usage:
-        if available_credits >= new_document.num_pages:
-            await sync_to_async(request.auth.set_available_credits)(
-                available_credits - new_document.num_pages
-            )
-            logger.info(f"Decreased available credits by {new_document.num_pages}")
-        else:
-            await sync_to_async(request.auth.record_consumed_credits)(
-                new_document.num_pages - available_credits
-            )
-
-            if available_credits != 0:
-                await sync_to_async(request.auth.set_available_credits)(0)
-
-            logger.info(
-                f"Set available credits to 0 and recorded {new_document.num_pages - available_credits} consumed credits"
-            )
+        consume_credits(request, available_credits, new_document.num_pages)
     return 200, DocumentOut(
         id=new_document.id,
         name=new_document.name,
@@ -1034,15 +1004,7 @@ async def search(
         async for row in results
     ]
 
-    logger.info(f"Current available credits: {available_credits}")
-
-    # available credit is a 1000 one time grant, so, we keep using this until it runs out, without hitting stripe
-    if available_credits >= 1:
-        await sync_to_async(request.auth.set_available_credits)(available_credits - 1)
-        logger.info("Decreased available credits by 1")
-    else:
-        await sync_to_async(request.auth.record_consumed_credits)(1)
-        logger.info("Increased consumed credits by 1")
+    consume_credits(request, available_credits, 1)
 
     return 200, QueryOut(query=payload.query, results=formatted_results)
 
@@ -1120,6 +1082,8 @@ async def filter(
                 ]
 
             documents.append(document_out)
+
+        consume_credits(request, available_credits, 1)
         return 200, documents
     else:
         base_query = await filter_collections(payload, request.auth)
@@ -1133,6 +1097,7 @@ async def filter(
             async for col in base_query
         ]
 
+        consume_credits(request, available_credits, 1)
         return 200, collections
 
 
@@ -1372,25 +1337,27 @@ async def embeddings(
             # change object to _object
             output_data["_object"] = output_data.pop("object")
 
-        # usage
-        # case: free user without enough first time grant credits is handled above w/ early return
-        # case: paid or free user with enough first time grant credits
-        if available_credits >= num_pages:
-            await sync_to_async(request.auth.set_available_credits)(
-                available_credits - num_pages
-            )
-            logger.info(f"Decreased available credits by {num_pages}")
-        # case: paid user with not enough first time grant credits
-        else:
-            await sync_to_async(request.auth.record_consumed_credits)(
-                num_pages - available_credits
-            )
-
-            if available_credits != 0:
-                await sync_to_async(request.auth.set_available_credits)(0)
-
-            logger.info(
-                f"Set available credits to 0 and recorded {num_pages - available_credits} consumed credits"
-            )
+        consume_credits(request, available_credits, num_pages)
 
         return 200, EmbeddingsOut(**output_data)
+
+
+async def consume_credits(request, available_credits, consumed_credits):
+    logger.info(f"Current available credits: {available_credits}")
+
+    # available credit is a 100 one time grant, so, we keep using this until it runs out, without hitting stripe
+    if available_credits >= consumed_credits:
+        await sync_to_async(request.auth.set_available_credits)(
+            available_credits - consumed_credits
+        )
+        logger.info(f"Decreased available credits by {consumed_credits}")
+    else:
+        await sync_to_async(request.auth.record_consumed_credits)(
+            consumed_credits - available_credits
+        )
+
+        if available_credits != 0:
+            await sync_to_async(request.auth.set_available_credits)(0)
+        logger.info(
+            f"Set available credits to 0 and recorded {consumed_credits - available_credits} consumed credits"
+        )
