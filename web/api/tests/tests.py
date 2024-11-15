@@ -861,6 +861,38 @@ async def test_patch_document_embed(async_client, user, collection, document):
     await Document.objects.all().adelete()
 
 
+async def test_patch_document_name(async_client, user, collection, document):
+    # we will change the base64 string of the page
+    with open("api/tests/test_docs/sample.png", "rb") as f:
+        # convert the file to base64
+        base64_string = base64.b64encode(f.read()).decode("utf-8")
+
+    # we updated the base64 string of the page
+    response = await async_client.patch(
+        f"/documents/{document.name}/",
+        json={
+            "name": "test.png",
+            "base64": base64_string,
+            "metadata": {"key": "value"},
+            "collection_name": collection.name,
+        },
+        headers={"Authorization": f"Bearer {user.token}"},
+    )
+    assert response.status_code == 200
+    response_data = response.json()
+    assert response_data["id"] == 1
+    assert (
+        response_data["name"] == "test.png"
+    )  # ensure the name was updated without adding the extension twice
+    assert response_data["metadata"] == {"key": "value"}
+    assert "s3.amazonaws.com" in response_data["url"]
+    assert response_data["num_pages"] == 1
+    assert response_data["collection_name"] == "Test Collection Fixture"
+    assert response_data["pages"] is None
+
+    await Document.objects.all().adelete()
+
+
 async def test_patch_document_url(async_client, user, collection, document):
     # we update the URL of the document
     response = await async_client.patch(
