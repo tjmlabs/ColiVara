@@ -121,12 +121,7 @@ ASGI_APPLICATION = "config.asgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        **env.dj_db_url("DATABASE_URL", default="postgres://postgres@db/postgres"),
-        "OPTIONS": {
-            "pool": True,
-        },
-    },
+    "default": env.dj_db_url("DATABASE_URL", default="postgres://postgres@db/postgres")
 }
 
 
