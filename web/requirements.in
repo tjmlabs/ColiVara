@@ -1,5 +1,5 @@
 Django==5.1.3
-psycopg[binary,pool]==3.2.3
+psycopg[binary]==3.2.3
 environs[django]==11
 django-ninja==1.3.0
 servestatic==1.0.0

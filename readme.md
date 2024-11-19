@@ -122,13 +122,11 @@ _Credit: [helloIamleonie on X](https://x.com/helloiamleonie)_
 
 ## Evals:
 
-The ColPali team has provided the following evals in their paper. We have run quick sanity checks on the API and the Embeddings Service and are getting similar results. We are working on our own independent evals repository and will update this section with our results and how to reproduce them.
+We run independent evaluations with major releases. The evaluations are based on the ColPali paper and are designed to be reproducible. We use the Vidore dataset and leaderboard as the baseline for our evaluations.
 
-Updates: 
+You can run the evaluation independently using our eval repo at: https://github.com/tjmlabs/ColiVara-eval
 
-- 11/6/2024: Our ArxivQ score is 86.6 - matching state of the art results in the vidore leaderboard. 
-
-![ColPali Evals](docs/colipali-evals.png)
+![ColPali Evals](docs/evaluation.jpg)
 
 ## Components:
 

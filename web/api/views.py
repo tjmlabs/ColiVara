@@ -978,8 +978,7 @@ async def search(
         "max_sim",
     )
     # Normalization
-    extra_tokens = 12
-    normalization_factor = query_length + extra_tokens
+    normalization_factor = query_length
 
     # Format the results
     formatted_results = [
