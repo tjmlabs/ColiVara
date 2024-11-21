@@ -19,6 +19,7 @@ from ninja.files import UploadedFile
 from ninja.security import HttpBearer
 from pgvector.utils import HalfVector
 from pydantic import Field, model_validator
+from svix.api import ApplicationIn, EndpointIn, EndpointUpdate, MessageIn, SvixAsync
 from typing_extensions import Self
 
 from .models import Collection, Document, MaxSim, Page
@@ -70,7 +71,7 @@ class Bearer(HttpBearer):
 
 class CollectionIn(Schema):
     name: str
-    metadata: Optional[dict] = Field(default_factory=dict)
+    metadata: Optional[dict] = Field(default_factory=lambda: {})
 
     @model_validator(mode="after")
     def validate_name(self) -> Self:
@@ -348,7 +349,7 @@ class DocumentOut(Schema):
 
 class DocumentInPatch(Schema):
     name: Optional[str] = None
-    metadata: Optional[dict] = Field(default_factory=dict)
+    metadata: Optional[dict] = Field(default_factory=lambda: {})
     collection_name: Optional[str] = Field(
         "default_collection",
         description="""The name of the collection to which the document belongs. If not provided, the document will be added to the default_collection. Use 'all' to access all collections belonging to the user.""",
@@ -426,6 +427,30 @@ async def process_upsert_document(
         logger.info(f"Document {document.name} processed successfully.")
         consume_credits(request, available_credits, document.num_pages)
 
+        if (
+            not payload.wait
+            and request.auth.svix_application_id
+            and settings.SVIX_TOKEN != ""
+        ):
+            # send an event to the webhook
+            svix = SvixAsync(settings.SVIX_TOKEN)
+            await svix.message.create(
+                request.auth.svix_application_id,
+                MessageIn(
+                    event_type="upsert.success",
+                    payload={
+                        "type": "upsert.success",
+                        "message": "Document upserted successfully",
+                        "id": document.id,
+                        "name": document.name,
+                        "metadata": document.metadata,
+                        "url": await document.get_url(),
+                        "num_pages": document.num_pages,
+                        "collection_name": document.collection.name,
+                    },
+                ),
+            )
+
         return 201, DocumentOut(
             id=document.id,
             name=document.name,
@@ -438,7 +463,30 @@ async def process_upsert_document(
     except Exception as e:
         logger.error(f"Error processing document: {str(e)}")
 
-        if not payload.wait:  # only send an email in the async case
+        if (
+            not payload.wait
+            and request.auth.svix_application_id
+            and settings.SVIX_TOKEN != ""
+        ):
+            # send an event to the webhook
+            svix = SvixAsync(settings.SVIX_TOKEN)
+            await svix.message.create(
+                request.auth.svix_application_id,
+                MessageIn(
+                    event_type="upsert.fail",
+                    payload={
+                        "type": "upsert.fail",
+                        "message": "There was an error processing your document",
+                        "name": payload.name,
+                        "metadata": payload.metadata,
+                        "collection_name": payload.collection_name,
+                        "error": str(e),
+                    },
+                ),
+            )
+        elif (
+            not payload.wait
+        ):  # only send an email in the async case and if there's no webhook
             user_email = request.auth.email
             admin_email = settings.ADMINS[0][1]
             from_email = settings.DEFAULT_FROM_EMAIL
@@ -1360,3 +1408,94 @@ async def consume_credits(request, available_credits, consumed_credits):
         logger.info(
             f"Set available credits to 0 and recorded {consumed_credits - available_credits} consumed credits"
         )
+
+
+""" Webhooks """
+
+
+class WebhookIn(Schema):
+    url: str
+
+
+class WebhookOut(Schema):
+    app_id: str
+    endpoint_id: str
+    webhook_secret: str
+
+
+@router.post(
+    "/webhook/",
+    auth=Bearer(),
+    tags=["webhook"],
+    response={200: WebhookOut, 400: GenericError},
+)
+async def add_webhook(
+    request: Request, payload: WebhookIn
+) -> Tuple[int, GenericError] | Tuple[int, WebhookOut]:
+    """
+    Add a webhook to the service.
+
+    This endpoint allows the user to add a webhook to the service. The webhook will be called when a document is upserted
+    with the upsertion status.
+
+    Events are document upsert successful, document upsert failed.
+
+    Args:
+        request: The HTTP request object, which includes the user information.
+        url (str): The URL of the webhook.
+
+    Returns:
+        A message indicating that the webhook was added successfully.
+
+    Raises:
+        HttpError: If the webhook is invalid.
+    """
+    try:
+        # Throw an error if SVIX_TOKEN is not set
+        if settings.SVIX_TOKEN == "":
+            raise ValueError(
+                "SVIX_TOKEN is not set in the environment variables. Please set it before adding a webhook."
+            )
+
+        svix = SvixAsync(settings.SVIX_TOKEN)
+
+        if not request.auth.svix_application_id:
+            app = await svix.application.create(ApplicationIn(name=request.auth.email))
+            app_id = app.id
+        else:
+            app_id = request.auth.svix_application_id
+
+        if request.auth.svix_endpoint_id:
+            # update the webhook
+            endpoint_out = await svix.endpoint.update(
+                app_id,
+                request.auth.svix_endpoint_id,
+                EndpointUpdate(
+                    url=payload.url,
+                ),
+            )
+        else:
+            # create the webhook
+            endpoint_out = await svix.endpoint.create(
+                app_id,
+                EndpointIn(
+                    url=payload.url,
+                    version=1,
+                    description="User webhook",
+                ),
+            )
+
+        # save the app_id and endpoint_id to the user
+        request.auth.svix_application_id = app_id
+        request.auth.svix_endpoint_id = endpoint_out.id
+        await request.auth.asave()
+
+        endpoint_secret_out = await svix.endpoint.get_secret(app_id, endpoint_out.id)
+
+        return 200, WebhookOut(
+            app_id=app_id,
+            endpoint_id=endpoint_out.id,
+            webhook_secret=endpoint_secret_out.key,
+        )
+    except Exception as e:
+        return 400, GenericError(detail="Error adding webhook: " + str(e))

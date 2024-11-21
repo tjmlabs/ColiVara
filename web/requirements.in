@@ -23,3 +23,4 @@ pytest-cov==5.0.0
 mypy==1.11
 django-stubs[compatible-mypy]==5.1.0
 pytest-playwright==0.5.2
+svix==1.40.0

@@ -293,6 +293,9 @@ AWS_S3_ACCESS_KEY_ID = env("AWS_S3_ACCESS_KEY_ID", default="dummy_key")
 AWS_S3_SECRET_ACCESS_KEY = env("AWS_S3_SECRET_ACCESS_KEY", default="dummy_key")
 AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", default="dummy_bucket")
 
+# Svix
+SVIX_TOKEN = env("SVIX_TOKEN", default="")
+
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.s3.S3Storage",

@@ -32,6 +32,8 @@ class CustomUser(AbstractUser):
     tier = models.CharField(max_length=50, choices=TIER, default="free")
     stripe_customer_id = models.CharField(max_length=255, blank=True)
     stripe_subscription_id = models.CharField(max_length=255, blank=True)
+    svix_application_id = models.CharField(max_length=255, blank=True)
+    svix_endpoint_id = models.CharField(max_length=255, blank=True)
     token = models.CharField(max_length=255, blank=True)
     available_credits = models.IntegerField(default=100)  # free 100 credits on signup
     team = models.ForeignKey(
@@ -105,17 +107,16 @@ class CustomUser(AbstractUser):
         if not customer_id:
             return []
 
-    
         # retrieve subscription "current_period_end": 1682288167, and "current_period_start": 1679624167
         sub = stripe.Subscription.retrieve(self.stripe_subscription_id)
-        start_time = sub.current_period_start 
+        start_time = sub.current_period_start
         end_time = sub.current_period_end
-        
+
         # change start time to be midnight before the subscription started
         start_time = datetime.datetime.fromtimestamp(start_time)
         start_time = start_time.replace(hour=0, minute=0, second=0)
         start_time = int(start_time.timestamp())
-       
+
         # change end time to be midnight after the subscription ends
         end_time = datetime.datetime.fromtimestamp(end_time)
         end_time = end_time.replace(hour=0, minute=0, second=0)
