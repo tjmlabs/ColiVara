@@ -194,6 +194,12 @@ def _upgrade_subscription(page: Page, tier: str, base_url):
     # wait for the stripe checkout to load
     sleep(5)
 
+    # click on the card option
+    page.locator("[data-testid='card-accordion-item']").click()
+
+    # wait for the card form to load
+    sleep(3)
+
     # enter credit card details
     page.fill("input[name='cardNumber']", "4242424242424242")
     page.fill("input[name='cardExpiry']", "1228")

@@ -34,6 +34,8 @@ class CustomUser(AbstractUser):
     stripe_subscription_id = models.CharField(max_length=255, blank=True)
     svix_application_id = models.CharField(max_length=255, blank=True)
     svix_endpoint_id = models.CharField(max_length=255, blank=True)
+    svix_endpoint_url = models.CharField(max_length=255, blank=True)
+    svix_endpoint_secret = models.CharField(max_length=255, blank=True)
     token = models.CharField(max_length=255, blank=True)
     available_credits = models.IntegerField(default=100)  # free 100 credits on signup
     team = models.ForeignKey(

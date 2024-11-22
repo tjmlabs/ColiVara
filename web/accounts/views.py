@@ -6,6 +6,7 @@ from django.core.mail import EmailMessage
 from django.shortcuts import redirect, render
 from django.utils.crypto import get_random_string
 from django.views.decorators.http import require_POST
+from svix.api import ApplicationIn, EndpointIn, EndpointUpdate, Svix
 
 from .models import CustomUser
 
@@ -80,4 +81,54 @@ def invite_team_member(request):
     email.send()
 
     messages.success(request, "Account invited successfully")
+    return redirect("edit_account")
+
+
+@login_required
+@require_POST
+def add_webhook(request):
+    webhook_url = request.POST.get("url")
+
+    # Return an error if SVIX_TOKEN is not set
+    if settings.SVIX_TOKEN == "":
+        messages.error(request, "SVIX_TOKEN is not set.")
+
+    svix = Svix(settings.SVIX_TOKEN)
+
+    if not request.user.svix_application_id:
+        app = svix.application.create(ApplicationIn(name=request.user.email))
+        app_id = app.id
+    else:
+        app_id = request.user.svix_application_id
+
+    if request.user.svix_endpoint_id:
+        # update the webhook
+        endpoint_out = svix.endpoint.update(
+            app_id,
+            request.user.svix_endpoint_id,
+            EndpointUpdate(
+                url=webhook_url,
+            ),
+        )
+    else:
+        # create the webhook
+        endpoint_out = svix.endpoint.create(
+            app_id,
+            EndpointIn(
+                url=webhook_url,
+                version=1,
+                description="User webhook",
+            ),
+        )
+
+    endpoint_secret_out = svix.endpoint.get_secret(app_id, endpoint_out.id)
+
+    # save the app_id, endpoint id, url, and secret to the user
+    request.user.svix_application_id = app_id
+    request.user.svix_endpoint_id = endpoint_out.id
+    request.user.svix_endpoint_url = webhook_url
+    request.user.svix_endpoint_secret = endpoint_secret_out.key
+    request.user.save()
+
+    messages.success(request, "Webhook added successfully.")
     return redirect("edit_account")

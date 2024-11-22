@@ -6,15 +6,8 @@ import pytest
 from accounts.models import CustomUser
 from api.middleware import add_slash
 from api.models import Collection, Document, Page, PageEmbedding
-from api.views import (
-    Bearer,
-    QueryFilter,
-    QueryIn,
-    filter_collections,
-    filter_documents,
-    filter_query,
-    router,
-)
+from api.views import (Bearer, QueryFilter, QueryIn, filter_collections,
+                       filter_documents, filter_query, router)
 from asgiref.sync import sync_to_async
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -1059,6 +1052,20 @@ async def test_patch_document_no_embed(async_client, user, collection, document)
     }
 
 
+async def test_patch_document_no_credits(async_client, user, collection, document):
+    await sync_to_async(user.set_available_credits)(0)
+
+    # we are changing the name
+    response = await async_client.patch(
+        f"/documents/{document.name}/",
+        json={"name": "Test Document Update", "collection_name": collection.name},
+        headers={"Authorization": f"Bearer {user.token}"},
+    )
+
+    # we should get a 402 status code due to missing credits
+    assert response.status_code == 402
+
+
 async def test_patch_document_not_found(async_client, user, collection, document):
     response = await async_client.patch(
         "/documents/Nonexistent/",
@@ -2074,6 +2081,44 @@ async def test_document_fetch_failure_async(async_client, user):
             )
 
             mock_email_instance.send.assert_called_once()
+
+
+async def test_create_document_pdf_url_async_no_credits(async_client, user):
+    await sync_to_async(user.set_available_credits)(0)
+
+    # Mock EmailMessage
+    with patch("api.views.EmailMessage") as MockEmailMessage:
+        mock_email_instance = MockEmailMessage.return_value
+        mock_email_instance.send = AsyncMock()
+
+        # Perform the POST request
+        response = await async_client.post(
+            "/documents/upsert-document/",
+            json={
+                "name": "Test Document Fixture",
+                "url": "https://pdfobject.com/pdf/sample.pdf",
+            },
+            headers={"Authorization": f"Bearer {user.token}"},
+        )
+        # Assert that the response status code reflects the async processing
+        assert response.status_code == 202
+
+        # Wait for all pending tasks to complete
+        pending_tasks = [
+            task for task in asyncio.all_tasks() if task is not asyncio.current_task()
+        ]
+        await asyncio.gather(*pending_tasks)
+
+        # Assert that the email was sent
+        MockEmailMessage.assert_called_once_with(
+            subject="Document Upsertion Failed",
+            body="There was an error processing your document: You have no available credits. Please upgrade your subscription.",
+            to=[""],
+            bcc=["dummy@example.com"],
+            from_email="dummy-email@example.com",
+        )
+
+        mock_email_instance.send.assert_called_once()
 
 
 async def test_document_fetch_failure_async_webhook(async_client, user):
