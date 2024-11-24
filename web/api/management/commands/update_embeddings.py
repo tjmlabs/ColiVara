@@ -5,6 +5,7 @@ import requests
 from api.models import Page, PageEmbedding
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.db import transaction
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 # Constants
@@ -16,20 +17,26 @@ class Command(BaseCommand):
     help = "Update embeddings for all documents, we run this whenever we upgrade the base model"
 
     def handle(self, *args: Any, **options: Any) -> None:
+        batch_size = 100
         pages = Page.objects.all()
 
-        for page in pages:
-            image: List[str] = [page.img_base64]
-            embeddings_obj: List[Dict[str, Any]] = send_batch(image)
-            embeddings: List[float] = embeddings_obj[0]["embedding"]
-            page.embeddings.all().delete()
-            bulk_create_embeddings = [
-                PageEmbedding(page=page, embedding=embedding)
-                for embedding in embeddings
-            ]
-            PageEmbedding.objects.bulk_create(bulk_create_embeddings)
-            self.stdout.write(self.style.SUCCESS(f"Updated embedding for {page.id}"))
-            sleep(DELAY_BETWEEN_BATCHES)
+        for i in range(0, pages.count(), batch_size):
+            batch = pages[i : i + batch_size]
+            for page in batch:
+                image: List[str] = [page.img_base64]
+                embeddings_obj: List[Dict[str, Any]] = send_batch(image)
+                embeddings: List[float] = embeddings_obj[0]["embedding"]
+                with transaction.atomic():
+                    page.embeddings.all().delete()
+                    bulk_create_embeddings = [
+                        PageEmbedding(page=page, embedding=embedding)
+                        for embedding in embeddings
+                    ]
+                    PageEmbedding.objects.bulk_create(bulk_create_embeddings)
+                self.stdout.write(
+                    self.style.SUCCESS(f"Updated embedding for {page.id}")
+                )
+                sleep(DELAY_BETWEEN_BATCHES)
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(5))
