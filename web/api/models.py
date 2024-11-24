@@ -290,7 +290,7 @@ class Document(models.Model):
                 # each page = 1 embedding, an
                 # exampple all_embeddings = [
                 #     {
-                #         "embedding": [[0.1, 0.2, ..., 0.128], [0.1, 0.2, ...]],  # List of 1030 members, each a list of 128 floats
+                #         "embedding": [[0.1, 0.2, ..., 0.128], [0.1, 0.2, ...]],  # List of n members, each a list of 128 floats
                 #         "index": 0,
                 #         "object": "embedding"
                 #     },

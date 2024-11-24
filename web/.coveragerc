@@ -1,6 +1,7 @@
 [run]
 omit =
     */migrations/*
+    */management/commands/*
 [html]
 directory = api/tests/htmlcov
 
