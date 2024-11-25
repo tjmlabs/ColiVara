@@ -18,11 +18,18 @@ class Command(BaseCommand):
 
     def handle(self, *args: Any, **options: Any) -> None:
         batch_size = 100
-        pages = Page.objects.all()
+        # Get all page IDs first
+        page_ids = list(Page.objects.all().values_list("id", flat=True))
+        total_pages = len(page_ids)
+        processed_count = 0
 
-        for i in range(0, pages.count(), batch_size):
-            batch = pages[i : i + batch_size]
-            for page in batch:
+        for i in range(0, total_pages, batch_size):
+            batch_ids = page_ids[i : i + batch_size]
+            # Get fresh queryset for each batch
+            batch_pages = Page.objects.filter(id__in=batch_ids)
+
+            for page in batch_pages:
+                processed_count += 1
                 image: List[str] = [page.img_base64]
                 embeddings_obj: List[Dict[str, Any]] = send_batch(image)
                 embeddings: List[float] = embeddings_obj[0]["embedding"]
@@ -34,7 +41,9 @@ class Command(BaseCommand):
                     ]
                     PageEmbedding.objects.bulk_create(bulk_create_embeddings)
                 self.stdout.write(
-                    self.style.SUCCESS(f"Updated embedding for {page.id}")
+                    self.style.SUCCESS(
+                        f"Updated embedding for {page.id} ({processed_count}/{total_pages})"
+                    )
                 )
                 sleep(DELAY_BETWEEN_BATCHES)
 
