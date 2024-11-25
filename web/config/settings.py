@@ -364,3 +364,7 @@ SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 4  # 4 week
 SESSION_COOKIE_HTTPONLY = True
+
+
+MARKETING_EMAIL_LIST_ID = env("MARKETING_EMAIL_LIST_ID", default="dummy id")
+MARKETING_EMAIL_API_KEY = env("MARKETING_EMAIL_API_KEY", default="dummy key")
