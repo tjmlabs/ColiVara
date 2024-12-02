@@ -425,7 +425,7 @@ async def process_upsert_document(
             )
         )
         logger.info(f"Document {document.name} processed successfully.")
-        consume_credits(request, available_credits, document.num_pages)
+        await consume_credits(request, available_credits, document.num_pages)
 
         if (
             not payload.wait
@@ -805,7 +805,7 @@ async def partial_update_document(
     )
     logger.info(f"Document {new_document.name} updated successfully.")
     if record_usage:
-        consume_credits(request, available_credits, new_document.num_pages)
+        await consume_credits(request, available_credits, new_document.num_pages)
     return 200, DocumentOut(
         id=new_document.id,
         name=new_document.name,
@@ -1051,7 +1051,7 @@ async def search(
         async for row in results
     ]
 
-    consume_credits(request, available_credits, 1)
+    await consume_credits(request, available_credits, 1)
 
     return 200, QueryOut(query=payload.query, results=formatted_results)
 
@@ -1130,7 +1130,7 @@ async def filter(
 
             documents.append(document_out)
 
-        consume_credits(request, available_credits, 1)
+        await consume_credits(request, available_credits, 1)
         return 200, documents
     else:
         base_query = await filter_collections(payload, request.auth)
@@ -1144,7 +1144,7 @@ async def filter(
             async for col in base_query
         ]
 
-        consume_credits(request, available_credits, 1)
+        await consume_credits(request, available_credits, 1)
         return 200, collections
 
 
@@ -1384,7 +1384,7 @@ async def embeddings(
             # change object to _object
             output_data["_object"] = output_data.pop("object")
 
-        consume_credits(request, available_credits, num_pages)
+        await consume_credits(request, available_credits, num_pages)
 
         return 200, EmbeddingsOut(**output_data)
 
