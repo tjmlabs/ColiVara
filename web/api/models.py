@@ -320,7 +320,8 @@ class Document(models.Model):
             logger.info(f"Successfully saved all pages in document {self.name}")
         except Exception as e:
             # If there's an error, delete the document and pages
-            await self.adelete()  # will cascade delete the pages
+            if self.pk:
+                await self.adelete()  # will cascade delete the pages
             raise ValidationError(f"Failed to save pages: {str(e)}")
 
         return

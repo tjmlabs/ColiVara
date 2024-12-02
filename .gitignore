@@ -12,3 +12,4 @@ __pycache__/
 coverage.xml
 node_modules/
 staticfiles/
+cron.log
