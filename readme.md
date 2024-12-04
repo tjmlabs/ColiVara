@@ -2,13 +2,13 @@
 
 [![codecov](https://codecov.io/gh/tjmlabs/ColiVara/branch/main/graph/badge.svg)](https://codecov.io/gh/tjmlabs/ColiVara) [![Tests](https://github.com/tjmlabs/ColiVara/actions/workflows/test.yml/badge.svg)](https://github.com/tjmlabs/Colivara/actions/workflows/test.yml) 
 
-[![Discord](https://dcbadge.limes.pink/api/server/https://discord.gg/DtGRxWuj8y)](https://discord.gg/[INVITE](https://discord.gg/DtGRxWuj8y))
+[![Discord](https://dcbadge.limes.pink/api/server/https://discord.gg/DtGRxWuj8y)](https://discord.gg/DtGRxWuj8y)
 
 **State of the Art Retrieval - with a delightful developer experience**
 
-ColiVara is a suite of services that allows you to store, search, and retrieve documents based on their **_visual_** embedding.
+Colivara is a suite of services that allows you to store, search, and retrieve documents based on their **_visual_** embedding. ColiVara has state of the art retrieval performance on both text and visual documents, offering superior multimodal understanding and control. 
 
-It is a web-first implementation of the ColPali paper using ColQwen2 as the LLM model. It works exactly like RAG from the end-user standpoint - but using vision models instead of chunking and text-processing for documents.
+It is a web-first implementation of the ColPali paper using ColQwen2 as the LLM model. It works exactly like RAG from the end-user standpoint - but using vision models instead of chunking and text-processing for documents. No OCR, no text extraction, no broken tables, or missing images. What you see, is what you get.
 
 ### Cloud Quickstart:
 
@@ -124,9 +124,30 @@ _Credit: [helloIamleonie on X](https://x.com/helloiamleonie)_
 
 We run independent evaluations with major releases. The evaluations are based on the ColPali paper and are designed to be reproducible. We use the Vidore dataset and leaderboard as the baseline for our evaluations.
 
+![Evaluation Results](docs/benchmark_comparison_chart.png)
+
 You can run the evaluation independently using our eval repo at: https://github.com/tjmlabs/ColiVara-eval
 
 ![ColPali Evals](docs/evaluation.jpg)
+
+
+### Release 1.5.0 (hierarchical clustering) - latest
+
+| Benchmark               | Colivara Score | Avg Latency (s) | Num Docs |
+| ----------------------- | -------------- | --------------- | -------- |
+| Average                 | 86.8           | ----            | ----     |
+| ArxivQA                 | 87.6           | 3.2             | 500      |
+| DocVQA                  | 54.8           | 2.9             | 500      |
+| InfoVQA                 | 90.1           | 2.9             | 500      |
+| Shift Project           | 87.7           | 5.3             | 1000     |
+| Artificial Intelligence | 98.7           | 4.3             | 1000     |
+| Energy                  | 96.4           | 4.5             | 1000     |
+| Government Reports      | 96.8           | 4.4             | 1000     |
+| Healthcare Industry     | 98.5           | 4.5             | 1000     |
+| TabFQuad                | 86.6           | 3.7             | 280      |
+| TatDQA                  | 70.9           | 8.4             | 1663     |
+
+
 
 ## Components:
 
@@ -143,9 +164,8 @@ You can run the evaluation independently using our eval repo at: https://github.
 
 ## Roadmap
 
-1. Independent Evals for quality + latency
-2. Full Demo with Generative Models
-3. Automated SDKs for popular languages other than Python
+1. Full Demo with Generative Models
+2. Automated SDKs for popular languages other than Python
 
 ## Getting Started (Local Setup)
 
