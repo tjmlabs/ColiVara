@@ -330,6 +330,28 @@ class DocumentIn(Schema):
             raise ValueError("Either 'url' or 'base64' must be provided.")
         if self.url and self.base64:
             raise ValueError("Only one of 'url' or 'base64' should be provided.")
+
+        # Validate base64
+        if self.base64:
+            base64_pattern = r"^[A-Za-z0-9+/]+={0,2}$"
+            is_base64 = (
+                re.match(base64_pattern, self.base64) and len(self.base64) % 4 == 0
+            )
+
+            if not is_base64:
+                raise ValueError(
+                    "Provided 'base64' is not valid. Please provide a valid base64 string."
+                )
+
+        # Validate URL
+        if self.url:
+            parsed = urlparse(self.url)
+            is_url = all([parsed.scheme, parsed.netloc])
+
+            if not is_url:
+                raise ValueError(
+                    "Provided 'url' is not valid. Please provide a valid URL."
+                )
         return self
 
 

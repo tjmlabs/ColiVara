@@ -541,6 +541,58 @@ async def test_create_document_pdf_url_await(async_client, user):
     }
 
 
+async def test_create_document_invalid_url(async_client, user):
+    response = await async_client.post(
+        "/documents/upsert-document/",
+        json={
+            "name": "Test Document Fixture",
+            "url": "Hello",
+            "wait": True,
+        },
+        headers={"Authorization": f"Bearer {user.token}"},
+    )
+
+    assert response.status_code == 422
+    assert response.json() == {
+        "detail": [
+            {
+                "type": "value_error",
+                "loc": ["body", "payload"],
+                "msg": "Value error, Provided 'url' is not valid. Please provide a valid URL.",
+                "ctx": {
+                    "error": "Provided 'url' is not valid. Please provide a valid URL."
+                },
+            }
+        ]
+    }
+
+
+async def test_create_document_invalid_base64(async_client, user):
+    response = await async_client.post(
+        "/documents/upsert-document/",
+        json={
+            "name": "Test Document Fixture",
+            "base64": "Hello",
+            "wait": True,
+        },
+        headers={"Authorization": f"Bearer {user.token}"},
+    )
+
+    assert response.status_code == 422
+    assert response.json() == {
+        "detail": [
+            {
+                "type": "value_error",
+                "loc": ["body", "payload"],
+                "msg": "Value error, Provided 'base64' is not valid. Please provide a valid base64 string.",
+                "ctx": {
+                    "error": "Provided 'base64' is not valid. Please provide a valid base64 string."
+                },
+            }
+        ]
+    }
+
+
 async def test_create_document_pdf_url_async(async_client, user):
     response = await async_client.post(
         "/documents/upsert-document/",
