@@ -2113,16 +2113,16 @@ input[type="search"]::-webkit-search-results-decoration {
   height: 324px;
 }
 
+.h-auto{
+  height: auto;
+}
+
 .h-full{
   height: 100%;
 }
 
 .h-px{
   height: 1px;
-}
-
-.h-auto{
-  height: auto;
 }
 
 .min-h-screen{
@@ -3086,6 +3086,11 @@ input[type="search"]::-webkit-search-results-decoration {
   padding-right: 0.125rem;
 }
 
+.px-1{
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
 .px-2{
   padding-left: 0.5rem;
   padding-right: 0.5rem;
@@ -3154,11 +3159,6 @@ input[type="search"]::-webkit-search-results-decoration {
 .py-8{
   padding-top: 2rem;
   padding-bottom: 2rem;
-}
-
-.px-1{
-  padding-left: 0.25rem;
-  padding-right: 0.25rem;
 }
 
 .pb-10{
@@ -3444,11 +3444,6 @@ input[type="search"]::-webkit-search-results-decoration {
 .text-yellow-800{
   --tw-text-opacity: 1;
   color: rgb(133 77 14 / var(--tw-text-opacity));
-}
-
-.text-purple-600{
-  --tw-text-opacity: 1;
-  color: rgb(147 51 234 / var(--tw-text-opacity));
 }
 
 .underline{
