@@ -2121,6 +2121,10 @@ input[type="search"]::-webkit-search-results-decoration {
   height: 1px;
 }
 
+.h-auto{
+  height: auto;
+}
+
 .min-h-screen{
   min-height: 100vh;
 }
@@ -3048,6 +3052,11 @@ input[type="search"]::-webkit-search-results-decoration {
   fill: #9ca3af;
 }
 
+.object-cover{
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
 .p-1{
   padding: 0.25rem;
 }
@@ -3145,6 +3154,11 @@ input[type="search"]::-webkit-search-results-decoration {
 .py-8{
   padding-top: 2rem;
   padding-bottom: 2rem;
+}
+
+.px-1{
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
 }
 
 .pb-10{
@@ -3430,6 +3444,11 @@ input[type="search"]::-webkit-search-results-decoration {
 .text-yellow-800{
   --tw-text-opacity: 1;
   color: rgb(133 77 14 / var(--tw-text-opacity));
+}
+
+.text-purple-600{
+  --tw-text-opacity: 1;
+  color: rgb(147 51 234 / var(--tw-text-opacity));
 }
 
 .underline{
@@ -3973,6 +3992,12 @@ input[type="search"]::-webkit-search-results-decoration {
   content: var(--tw-content);
   -o-border-image: linear-gradient(to bottom,transparent,rgb(203 213 225 / .8),transparent)1;
      border-image: linear-gradient(to bottom,transparent,rgb(203 213 225 / .8),transparent)1;
+}
+
+.hover\:scale-\[1\.02\]:hover{
+  --tw-scale-x: 1.02;
+  --tw-scale-y: 1.02;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 .hover\:bg-black:hover{
