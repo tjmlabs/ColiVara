@@ -323,6 +323,7 @@ class DocumentIn(Schema):
     url: Optional[str] = None
     base64: Optional[str] = None
     wait: Optional[bool] = False
+    use_proxy: Optional[bool] = False
 
     @model_validator(mode="after")
     def base64_or_url(self) -> Self:
@@ -380,6 +381,7 @@ class DocumentInPatch(Schema):
     )
     url: Optional[str] = None
     base64: Optional[str] = None
+    use_proxy: Optional[bool] = False
 
     @model_validator(mode="after")
     def at_least_one_field(self) -> Self:
@@ -440,7 +442,7 @@ async def process_upsert_document(
             await document.save_base64_to_s3(payload.base64)
 
         # this method will embed the document and save it to the database
-        await document.embed_document()
+        await document.embed_document(payload.use_proxy)
         document = (
             await Document.objects.select_related("collection")
             .annotate(num_pages=Count("pages"))
@@ -805,7 +807,7 @@ async def partial_update_document(
         document.name = payload.name or document.name
         # we want to delete the old pages, since we will re-embed the document
         await document.pages.all().adelete()
-        await document.embed_document()
+        await document.embed_document(payload.use_proxy)
         record_usage = True
 
     elif payload.base64:
@@ -813,7 +815,7 @@ async def partial_update_document(
         document.name = payload.name or document.name
         await document.save_base64_to_s3(payload.base64)
         await document.pages.all().adelete()
-        await document.embed_document()
+        await document.embed_document(payload.use_proxy)
         record_usage = True
 
     else:

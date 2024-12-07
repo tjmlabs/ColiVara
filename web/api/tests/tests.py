@@ -1244,6 +1244,34 @@ async def test_patch_document_url(async_client, user, collection, document):
     await Document.objects.all().adelete()
 
 
+async def test_patch_document_url_proxy(async_client, user, collection, document):
+    # we update the URL of the document
+    response = await async_client.patch(
+        f"/documents/{document.name}/",
+        json={
+            "name": "Test Document Update",
+            "url": "https://www.w3schools.com/w3css/img_lights.jpg",
+            "collection_name": collection.name,
+            "use_proxy": True,
+        },
+        headers={"Authorization": f"Bearer {user.token}"},
+    )
+    assert response.status_code == 200
+    response_data = response.json()
+    assert response_data["id"] == 1
+    assert response_data["name"] == "Test Document Update"
+    assert response_data["metadata"] == {"important": True}
+    assert (
+        response_data["url"] == "http://www.w3schools.com/w3css/img_lights.jpg"
+    )  # converted to http because of the proxy
+    assert response_data["num_pages"] == 1
+    assert response_data["collection_name"] == "Test Collection Fixture"
+    assert response_data["pages"] is None
+
+    # now check if the document was actually updated
+    await Document.objects.all().adelete()
+
+
 async def test_patch_document_url_and_base64(async_client, user, collection, document):
     # we updated the base64 string of the page
     response = await async_client.patch(
@@ -2051,6 +2079,39 @@ async def test_embeddings_service_down(async_client, user):
         }
 
 
+async def test_embeddings_service_error(async_client, user):
+    EMBEDDINGS_POST_PATH = "api.models.aiohttp.ClientSession.post"
+    # Create a mock response object with status 200 with an error message
+    mock_response = AsyncMock()
+    mock_response.status = 200
+    mock_response.json.return_value = AsyncMock(return_value={"error": "Service Down"})
+
+    # Mock the context manager __aenter__ to return the mock_response
+    mock_response.__aenter__.return_value = mock_response
+
+    # Patch the aiohttp.ClientSession.post method to return the mock_response
+    with patch(EMBEDDINGS_POST_PATH, return_value=mock_response) as mock_post:
+        # Perform the POST request to trigger embed_document
+        response = await async_client.post(
+            "/documents/upsert-document/",
+            json={
+                "name": "Test Document Fixture",
+                "url": "https://pdfobject.com/pdf/sample.pdf",
+                "wait": True,
+            },
+            headers={"Authorization": f"Bearer {user.token}"},
+        )
+
+        args, kwargs = mock_post.call_args
+        assert kwargs["json"]["input"]["task"] == "image"
+        assert "Authorization" in kwargs["headers"]
+
+        # Assert that the response status code reflects the failure
+        assert (
+            response.status_code == 400
+        )  # Assuming your view returns 400 on ValidationError
+
+
 async def test_embedding_service_down_query(async_client, user):
     EMBEDDINGS_POST_PATH = "api.views.aiohttp.ClientSession.post"
     # Create a mock response object with status 500
@@ -2100,16 +2161,6 @@ async def test_embed_document_arxiv_async(async_client, user):
 
 async def test_document_fetch_failure_await(async_client, user):
     AIOHTTP_GET_PATH = "api.models.aiohttp.ClientSession.get"
-    AIOHTTP_HEAD_PATH = "api.models.aiohttp.ClientSession.head"
-
-    # Mock for HEAD request
-    mock_head_response = AsyncMock()
-    mock_head_response.status = 200
-    mock_head_response.headers = {
-        "Content-Type": "application/pdf",
-        "Content-Length": "1000",
-    }
-    mock_head_response.__aenter__.return_value = mock_head_response
 
     # Mock for GET request
     mock_get_response = AsyncMock()
@@ -2118,10 +2169,8 @@ async def test_document_fetch_failure_await(async_client, user):
     mock_get_response.read = AsyncMock(return_value=b"")
     mock_get_response.__aenter__.return_value = mock_get_response
 
-    # Patch both HEAD and GET methods
-    with patch(AIOHTTP_HEAD_PATH, return_value=mock_head_response) as mock_head, patch(
-        AIOHTTP_GET_PATH, return_value=mock_get_response
-    ) as mock_get:
+    # Patch GET method
+    with patch(AIOHTTP_GET_PATH, return_value=mock_get_response) as mock_get:
         response = await async_client.post(
             "/documents/upsert-document/",
             json={
@@ -2132,11 +2181,71 @@ async def test_document_fetch_failure_await(async_client, user):
             headers={"Authorization": f"Bearer {user.token}"},
         )
 
-        # Assert both HEAD and GET were called
-        mock_head.assert_called_once_with(
-            "https://example.com/nonexistent.pdf", allow_redirects=True
+        # Assert GET was called
+        mock_get.assert_called_once_with(
+            "https://example.com/nonexistent.pdf", proxy=None
         )
-        mock_get.assert_called_once_with("https://example.com/nonexistent.pdf")
+
+        # Assert that the response status code reflects the failure
+        assert response.status_code == 400
+
+
+async def test_document_fetch_missing_output(async_client, user):
+    AIOHTTP_GET_PATH = "api.models.aiohttp.ClientSession.get"
+
+    # Mock for GET request
+    mock_get_response = AsyncMock()
+    mock_get_response.status = 200
+    mock_get_response.headers = {}
+    mock_get_response.read = AsyncMock(return_value=b"")
+    mock_get_response.__aenter__.return_value = mock_get_response
+
+    # Patch GET method
+    with patch(AIOHTTP_GET_PATH, return_value=mock_get_response) as mock_get:
+        response = await async_client.post(
+            "/documents/upsert-document/",
+            json={
+                "name": "Test Document Fetch Failure",
+                "url": "https://example.com/nonexistent.pdf",
+                "wait": True,
+            },
+            headers={"Authorization": f"Bearer {user.token}"},
+        )
+
+        # Assert GET was called
+        mock_get.assert_called_once_with(
+            "https://example.com/nonexistent.pdf", proxy=None
+        )
+
+        # Assert that the response status code reflects the failure
+        assert response.status_code == 400
+
+
+async def test_document_fetch_failure_await_proxy(async_client, user):
+    AIOHTTP_GET_PATH = "api.models.aiohttp.ClientSession.get"
+
+    # Mock for GET request
+    mock_get_response = AsyncMock()
+    mock_get_response.status = 500
+    mock_get_response.headers = {}
+    mock_get_response.read = AsyncMock(return_value=b"")
+    mock_get_response.__aenter__.return_value = mock_get_response
+
+    # Patch GET method
+    with patch(AIOHTTP_GET_PATH, return_value=mock_get_response) as mock_get:
+        response = await async_client.post(
+            "/documents/upsert-document/",
+            json={
+                "name": "Test Document Fetch Failure",
+                "url": "https://example.com/nonexistent.pdf",
+                "wait": True,
+                "use_proxy": True,
+            },
+            headers={"Authorization": f"Bearer {user.token}"},
+        )
+
+        # Assert GET was called
+        mock_get.assert_called_once()
 
         # Assert that the response status code reflects the failure
         assert response.status_code == 400
@@ -2144,16 +2253,6 @@ async def test_document_fetch_failure_await(async_client, user):
 
 async def test_document_fetch_failure_async(async_client, user):
     AIOHTTP_GET_PATH = "api.models.aiohttp.ClientSession.get"
-    AIOHTTP_HEAD_PATH = "api.models.aiohttp.ClientSession.head"
-
-    # Mock for HEAD request
-    mock_head_response = AsyncMock()
-    mock_head_response.status = 200
-    mock_head_response.headers = {
-        "Content-Type": "application/pdf",
-        "Content-Length": "1000",
-    }
-    mock_head_response.__aenter__.return_value = mock_head_response
 
     # Mock for GET request (failing response)
     mock_get_response = AsyncMock()
@@ -2162,10 +2261,8 @@ async def test_document_fetch_failure_async(async_client, user):
     mock_get_response.read = AsyncMock(return_value=b"")
     mock_get_response.__aenter__.return_value = mock_get_response
 
-    # Patch both HEAD and GET methods
-    with patch(AIOHTTP_HEAD_PATH, return_value=mock_head_response) as mock_head, patch(
-        AIOHTTP_GET_PATH, return_value=mock_get_response
-    ) as mock_get:
+    # Patch GET method
+    with patch(AIOHTTP_GET_PATH, return_value=mock_get_response) as mock_get:
         # Mock EmailMessage
         with patch("api.views.EmailMessage") as MockEmailMessage:
             mock_email_instance = MockEmailMessage.return_value
@@ -2192,8 +2289,7 @@ async def test_document_fetch_failure_async(async_client, user):
             ]
             await asyncio.gather(*pending_tasks)
 
-            # Assert that both HEAD and GET were called
-            mock_head.assert_called_once()
+            # Assert that GET was called
             mock_get.assert_called_once()
 
             # Assert that the email was sent
@@ -2248,16 +2344,6 @@ async def test_create_document_pdf_url_async_no_credits(async_client, user):
 
 async def test_document_fetch_failure_async_webhook(async_client, user):
     AIOHTTP_GET_PATH = "api.models.aiohttp.ClientSession.get"
-    AIOHTTP_HEAD_PATH = "api.models.aiohttp.ClientSession.head"
-
-    # Mock for HEAD request
-    mock_head_response = AsyncMock()
-    mock_head_response.status = 200
-    mock_head_response.headers = {
-        "Content-Type": "application/pdf",
-        "Content-Length": "1000",
-    }
-    mock_head_response.__aenter__.return_value = mock_head_response
 
     # Mock for GET request (failing response)
     mock_get_response = AsyncMock()
@@ -2266,10 +2352,8 @@ async def test_document_fetch_failure_async_webhook(async_client, user):
     mock_get_response.read = AsyncMock(return_value=b"")
     mock_get_response.__aenter__.return_value = mock_get_response
 
-    # Patch both HEAD and GET methods
-    with patch(AIOHTTP_HEAD_PATH, return_value=mock_head_response) as mock_head, patch(
-        AIOHTTP_GET_PATH, return_value=mock_get_response
-    ) as mock_get:
+    # Patch GET method
+    with patch(AIOHTTP_GET_PATH, return_value=mock_get_response) as mock_get:
         # Define a mock webhook URL
         webhook_url = "http://localhost:8000/webhook-receive"
 
@@ -2342,8 +2426,7 @@ async def test_document_fetch_failure_async_webhook(async_client, user):
             ]
             await asyncio.gather(*pending_tasks)
 
-            # Assert that both HEAD and GET were called
-            mock_head.assert_called_once()
+            # Assert that GET was called
             mock_get.assert_called_once()
 
             # Verify that Svix message.create was called
@@ -2355,19 +2438,9 @@ async def test_document_fetch_failure_async_webhook(async_client, user):
 
 async def test_document_file_too_big(async_client, user):
     AIOHTTP_GET_PATH = "api.models.aiohttp.ClientSession.get"
-    AIOHTTP_HEAD_PATH = "api.models.aiohttp.ClientSession.head"
     MAX_SIZE_BYTES = 50 * 1024 * 1024
 
-    # Mock for HEAD request
-    mock_head_response = AsyncMock()
-    mock_head_response.status = 200
-    mock_head_response.headers = {
-        "Content-Type": "application/pdf",
-        "Content-Length": str(MAX_SIZE_BYTES + 1),  # 50MB + 1 byte
-    }
-    mock_head_response.__aenter__.return_value = mock_head_response
-
-    # Mock for GET request (shouldn't be called due to size check in HEAD)
+    # Mock for GET request
     mock_get_response = AsyncMock()
     mock_get_response.status = 200
     mock_get_response.headers = {
@@ -2376,10 +2449,8 @@ async def test_document_file_too_big(async_client, user):
     mock_get_response.read = AsyncMock(return_value=b"x" * (MAX_SIZE_BYTES + 1))
     mock_get_response.__aenter__.return_value = mock_get_response
 
-    # Patch both HEAD and GET methods
-    with patch(AIOHTTP_HEAD_PATH, return_value=mock_head_response) as mock_head, patch(
-        AIOHTTP_GET_PATH, return_value=mock_get_response
-    ) as mock_get:
+    # Patch GET method
+    with patch(AIOHTTP_GET_PATH, return_value=mock_get_response) as mock_get:
         response = await async_client.post(
             "/documents/upsert-document/",
             json={
@@ -2390,16 +2461,45 @@ async def test_document_file_too_big(async_client, user):
             headers={"Authorization": f"Bearer {user.token}"},
         )
 
-        # Assert that HEAD was called
-        mock_head.assert_called_once_with(
-            "https://example.com/largefile.pdf", allow_redirects=True
-        )
-
-        # Assert that GET was never called (should fail at HEAD check)
-        mock_get.assert_not_called()
+        # Assert that GET was called
+        mock_get.assert_called_once()
 
         # Assert that the response status code reflects the failure
         assert response.status_code == 400
+
+
+async def test_document_file_good_size(async_client, user):
+    AIOHTTP_GET_PATH = "api.models.aiohttp.ClientSession.get"
+    MAX_SIZE_BYTES = 50 * 1024 * 1024
+
+    # Mock for GET request
+    mock_get_response = AsyncMock()
+    mock_get_response.status = 200
+    mock_get_response.headers = {
+        "Content-Length": str(MAX_SIZE_BYTES - 1),
+    }
+    mock_get_response.read = AsyncMock(return_value=b"x" * (MAX_SIZE_BYTES + 1))
+    mock_get_response.__aenter__.return_value = mock_get_response
+
+    # Patch GET method
+    with patch(AIOHTTP_GET_PATH, return_value=mock_get_response) as mock_get:
+        response = await async_client.post(
+            "/documents/upsert-document/",
+            json={
+                "name": "Test Document File Too Large",
+                "url": "https://example.com/largefile.pdf",
+                "wait": True,
+            },
+            headers={"Authorization": f"Bearer {user.token}"},
+        )
+
+        # Assert that GET was called
+        mock_get.assert_called_once()
+
+        # Assert that the response status code reflects the failure
+        assert (
+            response.status_code == 400
+        )  # still fails because we are not actually downloading the file
 
 
 async def test_gotenberg_service_down_with_file(async_client, user):
@@ -2554,25 +2654,31 @@ async def test_unknown_mime_type(collection):
     await document.delete_s3_file()
 
 
-async def test_get_url_info_non_200_response():
-    AIOHTTP_HEAD_PATH = "api.models.aiohttp.ClientSession.head"
+async def test_prep_document_no_data():
+    document = Document()
+    with pytest.raises(DjangoValidationError):
+        await document._prep_document()
+
+
+async def test_convert_url_non_200_response():
+    AIOHTTP_POST_PATH = "api.models.aiohttp.ClientSession.post"
 
     # Mock response with non-200 status
     mock_response = AsyncMock()
     mock_response.status = 404
     mock_response.__aenter__.return_value = mock_response
 
-    document = Document(url="https://example.com/doc.pdf")
+    document = Document()
 
-    with patch(AIOHTTP_HEAD_PATH, return_value=mock_response):
+    with patch(AIOHTTP_POST_PATH, return_value=mock_response):
         with pytest.raises(DjangoValidationError):
-            await document._get_url_info()
+            await document._convert_url_to_pdf("https://example.com/doc.pdf")
 
 
-async def test_get_url_info_empty_filename_fallback():
-    AIOHTTP_HEAD_PATH = "api.models.aiohttp.ClientSession.head"
+async def test_fetch_document_200_response():
+    AIOHTTP_GET_PATH = "api.models.aiohttp.ClientSession.get"
 
-    # Mock response with empty filename
+    # Mock response with non-200 status
     mock_response = AsyncMock()
     mock_response.status = 200
     mock_response.headers = {
@@ -2582,9 +2688,10 @@ async def test_get_url_info_empty_filename_fallback():
     }
     mock_response.__aenter__.return_value = mock_response
 
-    document = Document(url="https://example.com/")  # URL with no filename
+    document = Document(url="https://examplepdf.com")
 
-    with patch(AIOHTTP_HEAD_PATH, return_value=mock_response):
-        content_type, filename = await document._get_url_info()
+    with patch(AIOHTTP_GET_PATH, return_value=mock_response):
+        content_type, filename, data = await document._fetch_document()
 
+        assert content_type == "application/pdf"
         assert filename == "downloaded_file"

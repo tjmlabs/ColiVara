@@ -296,6 +296,22 @@ AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", default="dummy_bucket")
 # Svix
 SVIX_TOKEN = env("SVIX_TOKEN", default="")
 
+# SENTRY
+SENTRY_DSN = env("SENTRY_DSN", default=None)
+
+if SENTRY_DSN:
+    import sentry_sdk
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        traces_sample_rate=0.1,
+    )
+
+    logger.info("Sentry is enabled.")
+
+# PROXY
+PROXY_URL = env("PROXY_URL", default=None)
+
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.s3.S3Storage",
