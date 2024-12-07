@@ -160,7 +160,7 @@ def _navigate_to_homepage(page: Page, base_url):
     expect(page).to_have_url(f"{base_url}/")
 
     # You can also check for other elements specific to your homepage
-    expect(page.locator("text=The RAG solution you're looking for")).to_be_visible()
+    expect(page.locator("text=Make your RAG application 10x Smarter")).to_be_visible()
 
 
 def _create_account(page: Page, email: str, base_url):
