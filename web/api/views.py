@@ -21,7 +21,8 @@ from ninja.files import UploadedFile
 from ninja.security import HttpBearer
 from pgvector.utils import HalfVector
 from pydantic import Field, model_validator
-from svix.api import ApplicationIn, EndpointIn, EndpointUpdate, MessageIn, SvixAsync
+from svix.api import (ApplicationIn, EndpointIn, EndpointUpdate, MessageIn,
+                      SvixAsync)
 from typing_extensions import Self
 
 from .models import Collection, Document, MaxSim, Page
@@ -451,7 +452,13 @@ async def process_upsert_document(
             )
         )
         logger.info(f"Document {document.name} processed successfully.")
-        await consume_credits(request, available_credits, document.num_pages)
+
+        if payload.use_proxy:
+            await consume_credits(
+                request, available_credits, document.num_pages + 10
+            )  # 10 extra credits for proxy usage
+        else:
+            await consume_credits(request, available_credits, document.num_pages)
 
         if (
             not payload.wait
@@ -831,7 +838,12 @@ async def partial_update_document(
     )
     logger.info(f"Document {new_document.name} updated successfully.")
     if record_usage:
-        await consume_credits(request, available_credits, new_document.num_pages)
+        if payload.use_proxy:
+            await consume_credits(
+                request, available_credits, new_document.num_pages + 10
+            )  # 10 extra credits for proxy usage
+        else:
+            await consume_credits(request, available_credits, new_document.num_pages)
     return 200, DocumentOut(
         id=new_document.id,
         name=new_document.name,
