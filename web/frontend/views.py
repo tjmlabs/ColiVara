@@ -193,7 +193,7 @@ def stripe_webhook(request):
         logger.info("Received event: Subscription updated")
         customer_id = data_object["customer"]
         # we want to sleep here as we get update events with race conditions with checkout.session.completed
-        sleep(1)
+        sleep(2)
         user = CustomUser.objects.get(stripe_customer_id=customer_id)
         logger.info(f"User Email: {user.email}")
         incoming_price_id = data_object["items"]["data"][0]["plan"]["id"]
