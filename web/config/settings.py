@@ -296,6 +296,9 @@ AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", default="dummy_bucket")
 # Svix
 SVIX_TOKEN = env("SVIX_TOKEN", default="")
 
+# PROXY
+PROXY_URL = env("PROXY_URL", default=None)
+
 STORAGES = {
     "default": {
         "BACKEND": "storages.backends.s3.S3Storage",
