@@ -3,12 +3,13 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage
+from django.core.paginator import Paginator
 from django.shortcuts import redirect, render
 from django.utils.crypto import get_random_string
 from django.views.decorators.http import require_POST
 from svix.api import ApplicationIn, EndpointIn, EndpointUpdate, Svix
 
-from .models import CustomUser
+from .models import CreditUsage, CustomUser
 
 
 @login_required
@@ -23,6 +24,15 @@ def edit_account(request):
     else:
         credits_used = 100 - initial_grant
         starting_credits = 100
+
+    credit_usages_list = CreditUsage.objects.filter(user=request.user).order_by(
+        "-created_at"
+    )
+    paginator = Paginator(credit_usages_list, 10)  # Show 10 usages per page
+
+    page_number = request.GET.get("page")
+    credit_usages = paginator.get_page(page_number)
+
     return render(
         request,
         "account/edit_account.html",
@@ -30,6 +40,7 @@ def edit_account(request):
             "user": request.user,
             "credits_used": credits_used,
             "starting_credits": starting_credits,
+            "credit_usages": credit_usages,
         },
     )
 
