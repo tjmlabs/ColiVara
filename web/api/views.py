@@ -857,9 +857,9 @@ async def partial_update_document(
                 request,
                 available_credits,
                 new_document.num_pages + 10,
-                document.num_pages,
+                new_document.num_pages,
                 True,
-                document.name,
+                new_document.name,
                 "patch",
             )  # 10 extra credits for proxy usage
         else:
@@ -867,9 +867,9 @@ async def partial_update_document(
                 request,
                 available_credits,
                 new_document.num_pages,
-                document.num_pages,
+                new_document.num_pages,
                 False,
-                document.name,
+                new_document.name,
                 "patch",
             )
     return 200, DocumentOut(
