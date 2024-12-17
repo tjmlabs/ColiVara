@@ -825,6 +825,37 @@ async def test_create_document_pdf_base64_await(async_client, user, collection):
     await Document.objects.all().adelete()
 
 
+async def test_create_document_pdf_base64_long_name_await(
+    async_client, user, collection
+):
+    # test_docs/ is a directory in the same level as the test.py file - we will use a sample PDF file from there
+
+    with open("api/tests/test_docs/sample.pdf", "rb") as f:
+        # convert the file to base64
+        base64_string = base64_string = base64.b64encode(f.read()).decode("utf-8")
+
+    response = await async_client.post(
+        "/documents/upsert-document/",
+        json={
+            "name": "VeryLongDocumentName" * 10,
+            "base64": base64_string,
+            "wait": True,
+        },
+        headers={"Authorization": f"Bearer {user.token}"},
+    )
+    response_data = response.json()
+    assert response.status_code == 201
+    # The URL should now be a pre-signed S3 URL
+    assert "s3.amazonaws.com" in response_data["url"]
+    assert response_data["id"] == 1
+    assert response_data["name"] == "VeryLongDocumentName" * 10
+    assert response_data["metadata"] == {}
+    assert response_data["num_pages"] == 1
+    assert response_data["collection_name"] == "default_collection"
+    assert response_data["pages"] is None
+    await Document.objects.all().adelete()
+
+
 async def test_create_document_pdf_base64_async(async_client, user, collection):
     # test_docs/ is a directory in the same level as the test.py file - we will use a sample PDF file from there
 

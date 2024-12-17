@@ -35,8 +35,21 @@ def get_upload_path(instance, filename):
     # Sanitize email to be safe for use in paths
     safe_email = owner_email.replace("@", "_at_")
     if settings.DEBUG:
-        return f"dev-documents/{safe_email}/{filename}"  # pragma: no cover
-    return f"documents/{safe_email}/{filename}"
+        upload_path = f"dev-documents/{safe_email}/{filename}"  # pragma: no cover
+    else:
+        upload_path = f"documents/{safe_email}/{filename}"
+
+    MAX_UPLOAD_PATH_LENGTH = 116
+    if len(upload_path) <= MAX_UPLOAD_PATH_LENGTH:
+        return upload_path
+
+    extension = os.path.splitext(upload_path)[1]
+    trimmed_upload_path = (
+        upload_path[: MAX_UPLOAD_PATH_LENGTH - len(extension)] + extension
+    )
+
+    logger.info(f"Trimmed upload path to {trimmed_upload_path}")
+    return trimmed_upload_path
 
 
 def get_extension_from_mime(mime_type):
