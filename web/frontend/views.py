@@ -194,7 +194,11 @@ def stripe_webhook(request):
         customer_id = data_object["customer"]
         # we want to sleep here as we get update events with race conditions with checkout.session.completed
         sleep(2)
-        user = CustomUser.objects.get(stripe_customer_id=customer_id)
+        try:
+            user = CustomUser.objects.get(stripe_customer_id=customer_id)
+        except CustomUser.DoesNotExist:
+            logger.error(f"User with customer ID {customer_id} not found")
+            return JsonResponse({"status": "success"}, status=200)
         logger.info(f"User Email: {user.email}")
         incoming_price_id = data_object["items"]["data"][0]["plan"]["id"]
         logger.info(f"Incoming Price ID: {incoming_price_id}")
