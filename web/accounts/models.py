@@ -120,11 +120,11 @@ class CustomUser(AbstractUser):
                     f"Error recording consumed credits for {self.email}", "fatal"
                 )
 
-    def record_credit_usage(
+    async def record_credit_usage(
         self, request_type, credits_used, num_pages, used_proxy, filename
     ):
         # create the credit usage object
-        CreditUsage.objects.create(
+        await CreditUsage.objects.acreate(
             user=self,
             request_type=request_type,
             credits_used=credits_used,

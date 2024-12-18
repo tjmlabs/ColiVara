@@ -1504,7 +1504,7 @@ async def consume_credits(
         )
 
     # track credit usage
-    await sync_to_async(request.auth.record_credit_usage)(
+    await request.auth.record_credit_usage(
         request_type, consumed_credits, num_pages, used_proxy, filename
     )
 
