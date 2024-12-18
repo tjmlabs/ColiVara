@@ -22,6 +22,26 @@ class Team(models.Model):
         return self.name
 
 
+class CreditUsage(models.Model):
+    USAGE_TYPES = (
+        ("upsert", "Upsert"),
+        ("patch", "Patch"),
+        ("search", "Search"),
+        ("filter", "Filter"),
+        ("embeddings", "Embeddings"),
+    )
+
+    user = models.ForeignKey(
+        "CustomUser", related_name="credit_usage", on_delete=models.CASCADE
+    )
+    credits_used = models.IntegerField(default=1)  # default to 1 credit for any usage
+    created_at = models.DateTimeField(auto_now_add=True)
+    num_pages = models.IntegerField(default=1)  # default to 1 page for any usage
+    used_proxy = models.BooleanField(default=False)
+    filename = models.CharField(max_length=255, default="N/A")
+    request_type = models.CharField(max_length=50, choices=USAGE_TYPES)
+
+
 class CustomUser(AbstractUser):
     TIER = (
         ("free", "Free"),
@@ -99,6 +119,19 @@ class CustomUser(AbstractUser):
                 sentry_sdk.capture_message(
                     f"Error recording consumed credits for {self.email}", "fatal"
                 )
+
+    async def record_credit_usage(
+        self, request_type, credits_used, num_pages, used_proxy, filename
+    ):
+        # create the credit usage object
+        await CreditUsage.objects.acreate(
+            user=self,
+            request_type=request_type,
+            credits_used=credits_used,
+            num_pages=num_pages,
+            used_proxy=used_proxy,
+            filename=filename,
+        )
 
     def get_credit_usage(self):
         stripe.api_key = settings.STRIPE_SECRET_KEY

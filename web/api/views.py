@@ -455,10 +455,24 @@ async def process_upsert_document(
 
         if payload.use_proxy:
             await consume_credits(
-                request, available_credits, document.num_pages + 10
+                request,
+                available_credits,
+                document.num_pages + 10,
+                document.num_pages,
+                True,
+                document.name,
+                "upsert",
             )  # 10 extra credits for proxy usage
         else:
-            await consume_credits(request, available_credits, document.num_pages)
+            await consume_credits(
+                request,
+                available_credits,
+                document.num_pages,
+                document.num_pages,
+                False,
+                document.name,
+                "upsert",
+            )
 
         if (
             not payload.wait
@@ -840,10 +854,24 @@ async def partial_update_document(
     if record_usage:
         if payload.use_proxy:
             await consume_credits(
-                request, available_credits, new_document.num_pages + 10
+                request,
+                available_credits,
+                new_document.num_pages + 10,
+                new_document.num_pages,
+                True,
+                new_document.name,
+                "patch",
             )  # 10 extra credits for proxy usage
         else:
-            await consume_credits(request, available_credits, new_document.num_pages)
+            await consume_credits(
+                request,
+                available_credits,
+                new_document.num_pages,
+                new_document.num_pages,
+                False,
+                new_document.name,
+                "patch",
+            )
     return 200, DocumentOut(
         id=new_document.id,
         name=new_document.name,
@@ -1089,7 +1117,7 @@ async def search(
         async for row in results
     ]
 
-    await consume_credits(request, available_credits, 1)
+    await consume_credits(request, available_credits, 1, 1, False, "N/A", "search")
 
     return 200, QueryOut(query=payload.query, results=formatted_results)
 
@@ -1168,7 +1196,7 @@ async def filter(
 
             documents.append(document_out)
 
-        await consume_credits(request, available_credits, 1)
+        await consume_credits(request, available_credits, 1, 1, False, "N/A", "filter")
         return 200, documents
     else:
         base_query = await filter_collections(payload, request.auth)
@@ -1182,7 +1210,7 @@ async def filter(
             async for col in base_query
         ]
 
-        await consume_credits(request, available_credits, 1)
+        await consume_credits(request, available_credits, 1, 1, False, "N/A", "filter")
         return 200, collections
 
 
@@ -1440,12 +1468,22 @@ async def embeddings(
             # change object to _object
             output_data["_object"] = output_data.pop("object")
 
-        await consume_credits(request, available_credits, num_pages)
+        await consume_credits(
+            request, available_credits, num_pages, num_pages, False, "N/A", "embeddings"
+        )
 
         return 200, EmbeddingsOut(**output_data)
 
 
-async def consume_credits(request, available_credits, consumed_credits):
+async def consume_credits(
+    request,
+    available_credits,
+    consumed_credits,
+    num_pages,
+    used_proxy,
+    filename,
+    request_type,
+):
     logger.info(f"Current available credits: {available_credits}")
 
     # available credit is a 100 one time grant, so, we keep using this until it runs out, without hitting stripe
@@ -1464,6 +1502,11 @@ async def consume_credits(request, available_credits, consumed_credits):
         logger.info(
             f"Set available credits to 0 and recorded {consumed_credits - available_credits} consumed credits"
         )
+
+    # track credit usage
+    await request.auth.record_credit_usage(
+        request_type, consumed_credits, num_pages, used_proxy, filename
+    )
 
 
 """ Webhooks """

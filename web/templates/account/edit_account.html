@@ -200,6 +200,43 @@
                                                 {{ credits_used }} credits used out of {{ starting_credits }} credits in the past 30 days. Additional usage will be billed at 0.01 $ per credit
                                                 {% endif %}
                                             </p>
+                                            <p class="text-base leading-normal">Your recent API requests</p>
+                                            <table class="min-w-full divide-y divide-gray-200">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Filename</th>
+                                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pages</th>
+                                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Used Proxy</th>
+                                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Request Type</th>
+                                                        <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Credits used</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white divide-y divide-gray-200">
+                                                    {% for usage in credit_usages %}
+                                                        <tr>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ usage.created_at }}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ usage.filename }}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ usage.num_pages }}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ usage.used_proxy }}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ usage.request_type }}</td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ usage.credits_used }}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+
+                                            <!-- Pagination controls -->
+                                            <div class="mt-4">
+                                                <div class="inline-flex mt-2">
+                                                    {% if credit_usages.has_previous %}
+                                                        <a href="?page={{ credit_usages.previous_page_number }}" class="btn-sm py-1.5 rounded-lg !text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full mx-1">Previous</a>
+                                                    {% endif %}
+                                                    {% if credit_usages.has_next %}
+                                                        <a href="?page={{ credit_usages.next_page_number }}" class="btn-sm py-1.5 rounded-lg !text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full mx-1">Next</a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
                                             
 
                                             <!-- The data-scrollspy-target attribute makes the scrollspy work -->
