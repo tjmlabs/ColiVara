@@ -1,12 +1,16 @@
 import datetime
+import hashlib
 import logging
 
+import requests
 import sentry_sdk
 import stripe
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.mail import EmailMessage
 from django.db import models, transaction
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.crypto import get_random_string
 
 logger = logging.getLogger(__name__)
@@ -314,3 +318,36 @@ class CustomUser(AbstractUser):
         )
         email.send()
         pass
+
+
+@receiver(post_save, sender=CustomUser)
+def check_quota_limit(sender, instance, **kwargs):
+    if instance.get_available_credits() <= 25:
+        hashed = hashlib.md5(instance.email.lower().encode("utf-8")).hexdigest()
+
+        # get the contact id
+        headers = {
+            "Authorization": f"Bearer {settings.MARKETING_EMAIL_API_KEY}",
+        }
+
+        response = requests.get(
+            f"https://api.emailoctopus.com/lists/{settings.MARKETING_EMAIL_LIST_ID}/contacts/{hashed}",
+            headers=headers,
+        )
+        id = response.json().get("id")
+
+        # call the automation endpoint
+        payload = {
+            "contactId": id,
+        }
+
+        headers = {
+            "Authorization": f"Bearer {settings.MARKETING_EMAIL_API_KEY}",
+            "content-type": "application/json",
+        }
+
+        response = requests.post(
+            f"https://api.emailoctopus.com/automations/{settings.QUOTA_LIMIT_AUTOMATION_ID}/queue",
+            json=payload,
+            headers=headers,
+        )
