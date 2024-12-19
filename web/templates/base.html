@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="{% static 'css/vendors/aos.css' %}">
     {% block extra_head %}
     {% endblock extra_head %}
-    
   </head>
   <body class="font-inter antialiased bg-gray-50 text-gray-900 tracking-tight">
     <!-- Page wrapper -->
@@ -78,6 +77,23 @@
       <script src="{% static 'js/main.js' %}"></script>
       {% block extra_scripts %}
       {% endblock extra_scripts %}
+      <!-- Reddit Conversion tracking -->
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            !function(w,d){if(!w.rdt){var p=w.rdt=function(){p.sendEvent?p.sendEvent.apply(p,arguments):p.callQueue.push(arguments)};p.callQueue=[];var t=d.createElement("script");t.src="https://www.redditstatic.com/ads/pixel.js",t.async=!0;var s=d.getElementsByTagName("script")[0];s.parentNode.insertBefore(t,s)}}(window,document);
+    
+            {% if user.is_authenticated %}
+                rdt('init', 'a2_g6zw2yll5a6n', {
+                    email: '{{ user.email|default:"" }}',
+                    externalId: '{{ user.id|default:"" }}'
+                });
+            {% else %}
+                rdt('init', 'a2_g6zw2yll5a6n');
+            {% endif %}
+    
+            rdt('track', 'PageVisit');
+        });
+        </script>
     </div>
   </body>
 </html>
