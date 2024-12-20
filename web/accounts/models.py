@@ -322,7 +322,7 @@ class CustomUser(AbstractUser):
 
 @receiver(post_save, sender=CustomUser)
 def check_quota_limit(sender, instance, **kwargs):
-    if instance.get_available_credits() <= 25:
+    if instance.get_available_credits() <= 25 and instance.tier == "free":
         hashed = hashlib.md5(instance.email.lower().encode("utf-8")).hexdigest()
 
         # get the contact id
