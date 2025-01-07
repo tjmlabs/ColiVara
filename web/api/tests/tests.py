@@ -1385,6 +1385,44 @@ async def test_search_documents(async_client, user, collection, document):
     assert response.json() != []
 
 
+async def test_search_image(async_client, user, collection, document):
+    response = await async_client.post(
+        "/search-image/",
+        json={
+            "img_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+            "top_k": 1,
+        },
+        headers={"Authorization": f"Bearer {user.token}"},
+    )
+    assert response.status_code == 200
+    assert response.json() != []
+
+
+async def test_search_image_invalid_base64(async_client, user, collection, document):
+    response = await async_client.post(
+        "/search-image/",
+        json={
+            "img_base64": "Hello",
+            "top_k": 1,
+        },
+        headers={"Authorization": f"Bearer {user.token}"},
+    )
+
+    assert response.status_code == 422
+    assert response.json() == {
+        "detail": [
+            {
+                "type": "value_error",
+                "loc": ["body", "payload"],
+                "msg": "Value error, Provided 'base64' is not valid. Please provide a valid base64 string.",
+                "ctx": {
+                    "error": "Provided 'base64' is not valid. Please provide a valid base64 string."
+                },
+            }
+        ]
+    }
+
+
 async def test_filter_collections(async_client, user, collection, document):
     response = await async_client.post(
         "/filter/",
@@ -1486,6 +1524,22 @@ async def test_search_filter_collection_name(async_client, user, collection, doc
     response = await async_client.post(
         "/search/",
         json={"query": "What is 1 + 1", "top_k": 1, "collection_name": collection.name},
+        headers={"Authorization": f"Bearer {user.token}"},
+    )
+    assert response.status_code == 200
+    assert response.json() != []
+
+
+async def test_search_image_filter_collection_name(
+    async_client, user, collection, document
+):
+    response = await async_client.post(
+        "/search-image/",
+        json={
+            "img_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+            "top_k": 1,
+            "collection_name": collection.name,
+        },
         headers={"Authorization": f"Bearer {user.token}"},
     )
     assert response.status_code == 200
@@ -2159,6 +2213,31 @@ async def test_embedding_service_down_query(async_client, user):
         response = await async_client.post(
             "/search/",
             json={"query": "hello", "top_k": 1},
+            headers={"Authorization": f"Bearer {user.token}"},
+        )
+
+        assert response.status_code == 503
+
+
+async def test_embedding_service_down_search_image(async_client, user):
+    EMBEDDINGS_POST_PATH = "api.views.aiohttp.ClientSession.post"
+    # Create a mock response object with status 500
+    mock_response = AsyncMock()
+    mock_response.status = 500
+    mock_response.json.return_value = AsyncMock(return_value={"error": "Service Down"})
+
+    # Mock the context manager __aenter__ to return the mock_response
+    mock_response.__aenter__.return_value = mock_response
+
+    # Patch the aiohttp.ClientSession.post method to return the mock_response
+    with patch(EMBEDDINGS_POST_PATH, return_value=mock_response):
+        # Perform the POST request to trigger embed_document
+        response = await async_client.post(
+            "/search-image/",
+            json={
+                "img_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=",
+                "top_k": 1,
+            },
             headers={"Authorization": f"Bearer {user.token}"},
         )
 

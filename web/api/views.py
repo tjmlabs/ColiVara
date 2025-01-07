@@ -991,6 +991,27 @@ class QueryIn(Schema):
     query_filter: Optional[QueryFilter] = None
 
 
+class SearchImageIn(Schema):
+    img_base64: str
+    collection_name: Optional[str] = "all"
+    top_k: Optional[int] = 3
+    query_filter: Optional[QueryFilter] = None
+
+    @model_validator(mode="after")
+    def base64(self) -> Self:
+        # Validate base64
+        base64_pattern = r"^[A-Za-z0-9+/]+={0,2}$"
+        is_base64 = (
+            re.match(base64_pattern, self.img_base64) and len(self.img_base64) % 4 == 0
+        )
+
+        if not is_base64:
+            raise ValueError(
+                "Provided 'base64' is not valid. Please provide a valid base64 string."
+            )
+        return self
+
+
 class PageOutQuery(Schema):
     collection_name: str
     collection_id: int
@@ -1006,6 +1027,10 @@ class PageOutQuery(Schema):
 
 class QueryOut(Schema):
     query: str
+    results: List[PageOutQuery]
+
+
+class SearchImageOut(Schema):
     results: List[PageOutQuery]
 
 
@@ -1120,6 +1145,110 @@ async def search(
     await consume_credits(request, available_credits, 1, 1, False, "N/A", "search")
 
     return 200, QueryOut(query=payload.query, results=formatted_results)
+
+
+@router.post(
+    "/search-image/",
+    tags=["search"],
+    auth=Bearer(),
+    response={200: SearchImageOut, 503: GenericError},
+)
+async def search_image(
+    request: Request, payload: SearchImageIn
+) -> Tuple[int, SearchImageOut] | Tuple[int, GenericError]:
+    """
+    Search for pages similar to a given image.
+
+    This endpoint allows the user to search for pages similar to a given image.
+    The search is performed across all documents in the specified collection.
+
+    Args:
+        request: The HTTP request object, which includes the user information.
+        payload (SearchImageIn): The input data for the search, which includes the image in base64 format and collection ID.
+
+    Returns:
+        SearchImageOut: The search results, a list of similar pages.
+
+    Raises:
+        HttpError: If the collection does not exist or the img_base64 is invalid.
+
+    Example:
+        POST /search-image/
+        {
+            "img_base64": "base64_string",
+            "collection_name": "my_collection",
+            "top_k": 3,
+            "query_filter": {
+                "on": "document",
+                "key": "breed",
+                "value": "collie",
+                "lookup": "contains"
+            }
+        }
+    """
+    image_embeddings = await get_image_embeddings(payload.img_base64)
+    if not image_embeddings:
+        return 503, GenericError(
+            detail="Failed to get embeddings from the embeddings service"
+        )
+    query_length = len(image_embeddings)  # we need this for normalization
+
+    # we want to cast the embeddings to halfvec
+    casted_image_embeddings = [
+        HalfVector(embedding).to_text() for embedding in image_embeddings
+    ]
+
+    # building the query:
+
+    # 1. filter the pages based on the collection_id and the query_filter
+    base_query = await filter_query(payload, request.auth)
+
+    # 2. annotate the query with the max sim score
+    # maxsim needs 2 arrays of embeddings, one for the pages and one for the query
+    pages_query = (
+        base_query.annotate(page_embeddings=ArrayAgg("embeddings__embedding"))
+        .annotate(max_sim=MaxSim("page_embeddings", casted_image_embeddings))
+        .order_by("-max_sim")[: payload.top_k or 3]
+    )
+    # 3. execute the query
+    results = pages_query.values(
+        "id",
+        "page_number",
+        "img_base64",
+        "document__id",
+        "document__name",
+        "document__metadata",
+        "document__collection__id",
+        "document__collection__name",
+        "document__collection__metadata",
+        "max_sim",
+    )
+    # Normalization
+    normalization_factor = query_length
+
+    # Format the results
+    formatted_results = [
+        PageOutQuery(
+            collection_name=row["document__collection__name"],
+            collection_id=row["document__collection__id"],
+            collection_metadata=(
+                row["document__collection__metadata"]
+                if row["document__collection__metadata"]
+                else {}
+            ),
+            document_name=row["document__name"],
+            document_id=row["document__id"],
+            document_metadata=(
+                row["document__metadata"] if row["document__metadata"] else {}
+            ),
+            page_number=row["page_number"],
+            raw_score=row["max_sim"],
+            normalized_score=row["max_sim"] / normalization_factor,
+            img_base64=row["img_base64"],
+        )
+        async for row in results
+    ]
+    return 200, SearchImageOut(results=formatted_results)
 
 
 @router.post(
@@ -1239,7 +1368,34 @@ async def get_query_embeddings(query: str) -> List:
             return out["output"]["data"][0]["embedding"]
 
 
-async def filter_query(payload: QueryIn, user: CustomUser) -> QuerySet[Page]:
+async def get_image_embeddings(img_base64: str) -> List:
+    EMBEDDINGS_URL = settings.ALWAYS_ON_EMBEDDINGS_URL
+    embed_token = settings.EMBEDDINGS_URL_TOKEN
+    headers = {"Authorization": f"Bearer {embed_token}"}
+    payload = {
+        "input": {
+            "task": "image",
+            "input_data": [img_base64],
+        }
+    }
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            EMBEDDINGS_URL, json=payload, headers=headers
+        ) as response:
+            if response.status != 200:
+                logger.error(
+                    f"Failed to get embeddings from the embeddings service: {response.status}"
+                )
+                return []
+            out = await response.json()
+            # returning  a dynamic array of embeddings, each of which is a list of 128 floats
+            # example: [[0.1, 0.2, 0.3, ...], [0.4, 0.5, 0.6, ...]]
+            return out["output"]["data"][0]["embedding"]
+
+
+async def filter_query(
+    payload: Union[QueryIn, SearchImageIn], user: CustomUser
+) -> QuerySet[Page]:
     base_query = Page.objects.select_related("document__collection")
     if payload.collection_name == "all":
         base_query = base_query.filter(document__collection__owner=user)

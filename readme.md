@@ -1,23 +1,30 @@
-# ColiVara = COntextualized Late Interaction Vision Augmented Retrieval API
+# ColiVara 
+**State of the Art Retrieval - with a delightful developer experience**
 
 [![codecov](https://codecov.io/gh/tjmlabs/ColiVara/branch/main/graph/badge.svg)](https://codecov.io/gh/tjmlabs/ColiVara) [![Tests](https://github.com/tjmlabs/ColiVara/actions/workflows/test.yml/badge.svg)](https://github.com/tjmlabs/Colivara/actions/workflows/test.yml) 
 
 [![Discord](https://dcbadge.limes.pink/api/server/https://discord.gg/DtGRxWuj8y)](https://discord.gg/DtGRxWuj8y)
 
-**State of the Art Retrieval - with a delightful developer experience**
 
 Colivara is a suite of services that allows you to store, search, and retrieve documents based on their **_visual_** embedding. ColiVara has state of the art retrieval performance on both text and visual documents, offering superior multimodal understanding and control. 
 
-It is a web-first implementation of the ColPali paper using ColQwen2 as the LLM model. It works exactly like RAG from the end-user standpoint - but using vision models instead of chunking and text-processing for documents. No OCR, no text extraction, no broken tables, or missing images. What you see, is what you get.
+It is a web-first implementation of the **ColPali** paper using ColQwen2 as the LLM model. It works exactly like RAG from the end-user standpoint - but using vision models instead of chunking and text-processing for documents. 
+
+**No OCR, no text extraction, no broken tables, or missing images. What you see, is what you get.**
 
 ### Cloud Quickstart:
 
 1. Get a free API Key from the [ColiVara Website](https://colivara.com).
 
-2. Install the Python SDK and use it to interact with the API.
+2. Install our Python/Typescript SDK and use it to interact with the API.
 
 ```bash
 pip install colivara-py
+```
+or in Typescript
+
+```bash
+npm install colivara-ts
 ```
 
 3. Index a document. Colivara accepts a file url, or base64 encoded file, or a file path. We support over 100 file formats including PDF, DOCX, PPTX, and more. We will also automatically take a screenshot of URLs (webpages) and index them.
@@ -35,15 +42,38 @@ client = ColiVara(
 # Upload a document to the default_collection
 document = client.upsert_document(
     name="sample_document",
+    # You can use a file path, base64 encoded file, or a URL
     url="https://example.com/sample.pdf",
     # optional - add metadata
     metadata={"author": "John Doe"},
     # optional - specify a collection
     collection_name="user_1_collection", 
-    # optional - wait for the document to index
+    # optional - wait for the document to index. Webhooks are also supported.
     wait=True
 )
 ```
+or
+
+```typescript
+import { ColiVara } from 'colivara-ts';
+
+// Initialize the client
+const client = new ColiVara('your-api-key');
+
+// Upload a document
+const document = await client.upsertDocument({
+    name: 'sample_document',
+    // optional - specify a collection
+    collection_name: 'user_1_collection',
+    // You can use a file path, base64 encoded file, or a URL
+    url: 'https://example.com/sample.pdf',
+    // optional - wait for the document to index. Webhooks are also supported.
+    wait: true,
+    // optional - add metadata
+    metadata: { author: 'John Doe' }
+});
+```
+
 
 4. Search for a document. You can filter by collection name, collection metadata, and document metadata. You can also specify the number of results you want.
 
@@ -75,6 +105,40 @@ results = client.search(
 print(results)
 ```
 
+In Typescript: 
+
+```typescript
+// Simple search
+const results = await client.search({query: "what is 1+1?"})
+
+// search with a specific collection
+const results = await client.search({query: "what is 1+1?", collection_name: "user_1_collection"})
+
+// Search with a filter on document metadata
+const results = await client.search({
+    query: "what is 1+1?",
+    query_filter: {
+        on: "document",
+        key: "author",
+        value: "John Doe",
+        lookup: "key_lookup"
+    }
+})
+
+// search with a filter on collection metadata
+const results = await client.search({
+    query: "what is 1+1?",
+    query_filter: {
+        on: "collection",
+        key: ["tag1", "tag2"],
+        lookup: "has_any_keys"
+    }
+})
+
+// top 3 pages with the most relevant information
+console.log(results)
+```
+
 ### Documentation:
 
 Our documentation is available at [docs.colivara.com](https://docs.colivara.com).
@@ -82,7 +146,7 @@ Our documentation is available at [docs.colivara.com](https://docs.colivara.com)
 
 
 > [!NOTE]
-> If you prefer Swagger, you can try our endpoints at [ColiVara API Swagger](https://api.colivara.com/v1/docs/). You can also import an openAPI spec (for example for Postman) from the swagger documentation endpoint at [`v1/docs/openapi.json`](https://api.colivara.com/v1/docs/openapi.json)
+> If you prefer Swagger, you can try our endpoints at [ColiVara API Swagger](https://api.colivara.com/v1/docs). You can also import an openAPI spec (for example for Postman) from the swagger documentation endpoint at [`v1/docs/openapi.json`](https://api.colivara.com/v1/docs/openapi.json)
 
 
 ### Why?
@@ -101,24 +165,49 @@ _From the ColPali paper:_
 
 **How does it work?**
 
-_Credit: [helloIamleonie on X](https://x.com/helloiamleonie)_
+In short, ColPali is an advanced document retrieval model that leverages Vision Language Models to integrate both textual and visual elements for highly accurate and efficient document search. ColiVara builds on this model to provide a seamless and user-friendly API for document retrieval.
 
-![ColPali Explainer](docs/colipali-explainer.jpg)
+**If my documents are text-based, why do I need ColiVara?**
+
+Even when your documents are text-based, ColiVara can provide a more accurate and efficient retrieval system. This is because ColiVara uses Late-Interaction style embeddings which is more accurate than pooled embeddings. Our benchmarks contains text-only datasets and we outperform existing systems on these datasets.
+
+
+**Do I need a vector database?**
+
+No - ColiVara uses Postgres and pgVector to store vectors for you. You DO NOT need to generate, save, or manage embeddings in anyway.
+
+**Do you covert the documents to markdown/text?**
+
+No - ColiVara treats everything as an image, and uses vision models. There are no parsing, chunking, or OCR involved. This method outperforms chunking, and OCR for both text-based documents and visual documents.
+
+**How does non-pdf documents or web pages work?**
+
+We run a pipeline to convert them to images, and perform our normal image-based retrieval. This all happen for you under the hood, and you get the top-k pages when performing retrieval.
+
+**Can I use my vector database?**
+
+Yes - we have an embedding endpoint that only generates embeddings without saving or doing anything else. You can store these embeddings at your end. Keep in mind that we use late-interaction and multi-vectors, many vector databases do not support this yet.
+
+**Do I have to use the SDKs?**
+
+No - the SDKs are provided for your convenience. You can use the REST API directly if you prefer.
 
 ## Key Features
 
-- **State of the Art retrieval**: The API is based on the ColPali paper and uses the ColQwen2 model for embeddings. It outperforms existing retrieval systems on both quality and latency.
-- **User Management**: Multi-user setup with each user having their own collections and documents.
+- **State of the Art retrieval**: ColiVara outperforms existing retrieval systems on both quality and latency.
+
 - **Wide Format Support**: Supports over 100 file formats including PDF, DOCX, PPTX, and more.
-- **Webpage Support**: Automatically takes a screenshot of webpages and indexes them even if it is not a file.
-- **Collections**: A user can have multiple collections. For example, a user can have a collection for research papers and another for books. Allowing for efficient retrieval and organization of documents.
-- **Documents**: Each collection can have multiple documents with unlimited and user-defined metadata.
-- **Filtering**: Filtering for collections and documents on arbitrary metadata fields. For example, you can filter documents by author or year. Or filter collections by type.
+
+- **Filtering**: ColiVara allows for filtering on collections and documents on arbitrary metadata fields. For example, you can filter documents by author or year. Or filter collections by type. You get the best of both worlds - structured and unstructured data.
+
 - **Convention over Configuration**: The API is designed to be easy to use with opinionated and optimized defaults.
+
 - **Modern PgVector Features**: We use HalfVecs for faster search and reduced storage requirements.
+
 - **REST API**: Easy to use REST API with Swagger documentation.
+
 - **Comprehensive**: Full CRUD operations for documents, collections, and users.
-- **Dockerized**: Easy to setup and run with Docker and Docker Compose.
+
 
 ## Evals:
 
@@ -157,15 +246,10 @@ You can run the evaluation independently using our eval repo at: https://github.
 
    > You can run the embedding service separately and use your own storage and API for the rest of the components. The Embedding service is designed to be modular and can be used with any storage and API. (For example, if you want to use Qdrant for storage and Node for the API)
 
-4. Language-specific SDKs for the API (Typescript SDK Coming Soon)
+4. Language-specific SDKs for the API 
    1. Python SDK: [colivara-py](https://github.com/tjmlabs/colivara-py)
+   2. Typescript SDK: [colivara-ts](https://github.com/tjmlabs/colivara-ts)
 
-
-
-## Roadmap
-
-1. Full Demo with Generative Models
-2. Automated SDKs for popular languages other than Python
 
 ## Getting Started (Local Setup)
 
