@@ -1186,6 +1186,12 @@ async def search_image(
             }
         }
     """
+    available_credits = await sync_to_async(request.auth.get_available_credits)()
+    if available_credits < 1 and request.auth.tier == "free":
+        return 402, GenericError(
+            detail="You have no available credits. Please upgrade your subscription."
+        )
+
     image_embeddings = await get_image_embeddings(payload.img_base64)
     if not image_embeddings:
         return 503, GenericError(
@@ -1248,6 +1254,9 @@ async def search_image(
         )
         async for row in results
     ]
+
+    await consume_credits(request, available_credits, 1, 1, False, "N/A", "search")
+
     return 200, SearchImageOut(results=formatted_results)
 
 
