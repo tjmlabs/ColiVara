@@ -28,7 +28,7 @@ services:
 
   redis:
     image: "redis:alpine"
-    command: redis-server --maxmemory 2gb --maxmemory-policy allkeys-lru
+    command: redis-server --maxmemory 2gb --maxmemory-policy allkeys-lru --save "" --appendonly no
     ports:
       - "6379:6379"
     volumes:
