@@ -216,7 +216,7 @@ def edit_document(request, document_id):
                 use_proxy=use_proxy,
             )
 
-            if wait:
+            if wait or (not url and not file):
                 partial_update_document_sync(request.user, document, payload)
                 messages.success(request, "Document updated successfully.")
             else:
