@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<main class="grow">
+        
+    <section class="relative">
+
+        <!-- Stripes illustration -->
+        <div class="absolute left-1/2 transform -translate-x-1/2 top-0 pointer-events-none -z-10" aria-hidden="true">
+            <img class="max-w-none" src="{% static 'images/stripes.svg' %}" width="768" height="432" alt="Stripes" />
+        </div>
+
+        <!-- Circles -->
+        <div class="absolute left-1/2 -translate-x-1/2 -top-32 ml-[580px] pointer-events-none" aria-hidden="true">
+            <div class="w-80 h-80 rounded-full bg-gradient-to-tr from-blue-500 opacity-50 blur-[160px]"></div>
+        </div>
+        <div class="absolute left-1/2 -translate-x-1/2 top-[420px] ml-[380px] pointer-events-none" aria-hidden="true">
+            <div
+                class="w-80 h-80 rounded-full bg-gradient-to-tr from-blue-500 to-gray-900 opacity-50 blur-[160px]">
+            </div>
+        </div>        
+
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+
+            <!-- Main content -->
+            <div class="flex justify-between pt-32 pb-12 md:pt-40 md:pb-20">
+
+                <!-- Document Management Form -->
+                <div class="grow w-full">
+                    <div class="ml-auto">
+                        {% if is_editing %}
+                        <!-- Edit Document Form -->
+                        <h1 class="text-3xl font-bold mb-3">Edit Document</h1>
+                        <form method="POST" enctype="multipart/form-data" action="{% url 'edit_document' document.id %}">
+                            {% csrf_token %}
+
+                            <!-- Document Name -->
+                            <div class="mb-4">
+                                <label for="name" class="block text-sm font-medium text-gray-700">Document Name</label>
+                                <input type="text" id="name" name="name" value="{{ document.name }}" class="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+
+                            <!-- File Upload or URL -->
+                            <div class="mb-4">
+                                <label for="file_or_url" class="block text-sm font-medium text-gray-700">Upload File or Provide URL</label>
+                                
+                                <!-- File Upload -->
+                                <input type="file" id="file" name="file" class="block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm mb-2">
+                                
+                                <!-- File URL -->
+                                <input type="url" id="file_url" name="file_url" placeholder="Enter file URL" class="block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                
+                                <!-- Or an optional error message for validation -->
+                                <small class="text-gray-500">Please upload a file or provide a URL.</small>
+                            </div>
+
+                            <!-- Wait and Use Proxy Checkboxes next to each other -->
+                            <div class="mb-4 flex items-center space-x-4">
+                                <!-- Wait Checkbox -->
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="wait" name="wait" class="mt-1" {% if wait %}checked{% endif %}>
+                                    <label for="wait" class="ml-2 mt-1 block text-sm font-medium text-gray-700">Wait</label>
+                                </div>
+
+                                <!-- Use Proxy Checkbox -->
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="use_proxy" name="use_proxy" class="mt-1" {% if use_proxy %}checked{% endif %}>
+                                    <label for="use_proxy" class="ml-2 mt-1 block text-sm font-medium text-gray-700">Use Proxy</label>
+                                </div>
+                            </div>
+
+                            <!-- Metadata (Optional) -->
+                            <div class="mb-4">
+                                <label for="metadata" class="block text-sm font-medium text-gray-700">Metadata (Optional)</label>
+                                <div id="metadata-container" class="space-y-2">
+                                    {% for key, value in document.metadata.items %}
+                                        <div class="flex space-x-2">
+                                            <input type="text" name="metadata_key[]" value="{{ key }}" placeholder="Key" class="block w-1/3 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                            <input type="text" name="metadata_value[]" value="{{ value }}" placeholder="Value" class="block w-2/3 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <!-- Add More Key-Value Pairs Button -->
+                                <button type="button" class="mt-2 text-blue-500" onclick="addMetadataField()">Add Metadata</button>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex space-x-4">
+                                <button type="submit" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Edit Document
+                                </button>
+                            </div>
+                        </form>
+                        {% else %}
+                        <!-- Create Document Form -->
+                        <h1 class="text-3xl font-bold mb-3">Create Document</h1>
+                        <form method="POST" enctype="multipart/form-data" action="{% url 'create_document' %}">
+                            {% csrf_token %}
+
+                            <!-- Collection Selection -->
+                            <div class="mb-4">
+                                <label for="collection" class="block text-sm font-medium text-gray-700">Collection</label>
+                                <select id="collection" name="collection" class="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    <option value="default_collection" {% if collection == 'default_collection' %}selected{% endif %}>Default Collection</option>
+                                    {% for collection_name in user_collections %}
+                                        <option value="{{ collection_name }}" {% if collection == collection_name %}selected{% endif %}>{{ collection_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Document Name -->
+                            <div class="mb-4">
+                                <label for="name" class="block text-sm font-medium text-gray-700">Document Name</label>
+                                <input type="text" id="name" name="name" value="{{ name }}" class="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            </div>
+
+                            <!-- File Upload or URL -->
+                            <div class="mb-4">
+                                <label for="file_or_url" class="block text-sm font-medium text-gray-700">Upload File or Provide URL</label>
+                                
+                                <!-- File Upload -->
+                                <input type="file" id="file" name="file" class="block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm mb-2">
+                                
+                                <!-- File URL -->
+                                <input type="url" id="file_url" name="file_url" placeholder="Enter file URL" class="block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                
+                                <!-- Or an optional error message for validation -->
+                                <small class="text-gray-500">Please upload a file or provide a URL.</small>
+                            </div>
+
+                            <!-- Wait and Use Proxy Checkboxes next to each other -->
+                            <div class="mb-4 flex items-center space-x-4">
+                                <!-- Wait Checkbox -->
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="wait" name="wait" class="mt-1" {% if wait %}checked{% endif %}>
+                                    <label for="wait" class="ml-2 mt-1 block text-sm font-medium text-gray-700">Wait</label>
+                                </div>
+
+                                <!-- Use Proxy Checkbox -->
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="use_proxy" name="use_proxy" class="mt-1" {% if use_proxy %}checked{% endif %}>
+                                    <label for="use_proxy" class="ml-2 mt-1 block text-sm font-medium text-gray-700">Use Proxy</label>
+                                </div>
+                            </div>
+
+                            <!-- Metadata (Optional) -->
+                            <div class="mb-4">
+                                <label for="metadata" class="block text-sm font-medium text-gray-700">Metadata (Optional)</label>
+                                <div id="metadata-container" class="space-y-2">
+                                    <!-- Initial Key-Value Pair Inputs -->
+                                    <div class="flex space-x-2">
+                                        <input type="text" name="metadata_key[]" placeholder="Key" class="block w-1/3 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        <input type="text" name="metadata_value[]" placeholder="Value" class="block w-2/3 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    </div>
+                                </div>
+                                <!-- Add More Key-Value Pairs Button -->
+                                <button type="button" class="mt-2 text-blue-500" onclick="addMetadataField()">Add Metadata</button>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex space-x-4">
+                                <button type="submit" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Create Document
+                                </button>
+                            </div>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+{% endblock content %}
+{% block extra_scripts %}
+<script>
+    // Function to add more key-value fields
+    function addMetadataField() {
+        const container = document.getElementById('metadata-container');
+        const newField = document.createElement('div');
+        newField.classList.add('flex', 'space-x-2');
+        newField.innerHTML = `
+            <input type="text" name="metadata_key[]" placeholder="Key" class="block w-1/3 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+            <input type="text" name="metadata_value[]" placeholder="Value" class="block w-2/3 px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        `;
+        container.appendChild(newField);
+    }
+</script>
+{% endblock extra_scripts %}

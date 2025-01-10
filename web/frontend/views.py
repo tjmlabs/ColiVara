@@ -1,12 +1,19 @@
+import base64
 import json
 import logging
+from threading import Thread
 from time import sleep
 
 import stripe
 from accounts.models import CustomUser, Team
+from api.models import Collection, Document
+from api.views import (DocumentIn, DocumentInPatch,
+                       partial_update_document_sync,
+                       process_upsert_document_sync)
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -68,6 +75,177 @@ def stripe_checkout(request):
         metadata={"subscription_type": subscription_type, "user_id": request.user.id},
     )
     return redirect(checkout_session.url, code=303)
+
+
+@login_required
+def documents_portal(request):
+    if request.method == "POST":
+        # Get the list of selected document IDs
+        document_ids = request.POST.getlist("documents")
+
+        if not document_ids:
+            messages.error(request, "No documents selected.")
+            return redirect("documents_portal")
+
+        # Delete the documents
+        try:
+            documents = Document.objects.filter(id__in=document_ids)
+            documents.delete()
+        except Document.DoesNotExist:
+            messages.error(request, "Some documents do not exist.")
+
+        messages.success(request, "Documents deleted successfully.")
+        # Redirect back to the document portal
+        return redirect("documents_portal")
+    else:
+        user_documents_list = (
+            Document.objects.all()
+            .filter(collection__owner=request.user)
+            .order_by("-created_at")
+        )
+
+        paginator = Paginator(user_documents_list, 10)  # Show 10 documents per page
+
+        page_number = request.GET.get("page")
+        user_documents = paginator.get_page(page_number)
+        return render(
+            request, "documents_portal.html", {"user_documents": user_documents}
+        )
+
+
+@login_required
+def create_document(request):
+    if request.method == "POST":
+        # Retrieve form data
+        collection_name = request.POST.get("collection", "default_collection")
+        wait = request.POST.get("wait") == "on"
+        use_proxy = request.POST.get("use_proxy") == "on"
+        document_name = request.POST.get("name")
+        metadata_keys = request.POST.getlist("metadata_key[]")
+        metadata_values = request.POST.getlist("metadata_value[]")
+        file = request.FILES.get("file")
+        url = request.POST.get("file_url")
+
+        # Combine keys and values into a dictionary
+        metadata = {
+            key: value
+            for key, value in zip(metadata_keys, metadata_values)
+            if key and value
+        }
+
+        # Handle file upload
+        if file:
+            # convert file to base64
+            file_content = file.read()
+            base64_file = base64.b64encode(file_content).decode()
+        else:
+            base64_file = None
+
+        try:
+            payload = DocumentIn(
+                name=document_name,
+                collection_name=collection_name,
+                metadata=metadata,
+                url=url,
+                base64=base64_file,
+                wait=wait,
+                use_proxy=use_proxy,
+            )
+
+            if wait:
+                process_upsert_document_sync(request.user, payload)
+                messages.success(request, "Document created successfully.")
+            else:
+                # Create and start a new thread for the background task
+                thread = Thread(
+                    target=process_upsert_document_sync, args=(request.user, payload)
+                )
+                thread.start()
+                messages.success(
+                    request, "Document is being processed in the background."
+                )
+            return redirect("documents_portal")
+        except Exception as e:
+            messages.error(request, f"Failed to create document: {e}")
+            return redirect("create_document")
+    else:
+        user_collections = Collection.objects.all().filter(owner=request.user)
+        return render(
+            request,
+            "view_document.html",
+            {"user_collections": user_collections, "is_editing": False},
+        )
+
+
+@login_required
+def edit_document(request, document_id):
+    # Fetch the document by its ID
+    document = Document.objects.get(id=document_id)
+
+    if request.method == "POST":
+        # Handle form submission for editing the document
+        document_name = request.POST.get("name")
+        wait = request.POST.get("wait") == "on"
+        use_proxy = request.POST.get("use_proxy") == "on"
+        metadata_keys = request.POST.getlist("metadata_key[]")
+        metadata_values = request.POST.getlist("metadata_value[]")
+        file = request.FILES.get("file")
+        url = request.POST.get("file_url")
+
+        # Combine keys and values into a dictionary
+        metadata = {
+            key: value
+            for key, value in zip(metadata_keys, metadata_values)
+            if key and value
+        }
+
+        # Handle file upload
+        if file:
+            # convert file to base64
+            file_content = file.read()
+            base64_file = base64.b64encode(file_content).decode()
+        else:
+            base64_file = None
+
+        try:
+            payload = DocumentInPatch(
+                name=document_name,
+                metadata=metadata,
+                url=url,
+                base64=base64_file,
+                use_proxy=use_proxy,
+            )
+
+            if wait:
+                partial_update_document_sync(request.user, document, payload)
+                messages.success(request, "Document updated successfully.")
+            else:
+                # Create and start a new thread for the background task
+                thread = Thread(
+                    target=partial_update_document_sync,
+                    args=(request.user, document, payload),
+                )
+                thread.start()
+                messages.success(
+                    request, "Document is being updated in the background."
+                )
+            return redirect("documents_portal")
+        except Exception as e:
+            messages.error(request, f"Failed to updated document: {e}")
+            return redirect("edit_document", document_id=document.id)
+
+    else:
+        # For GET request, render the template with existing document data
+        user_collections = Collection.objects.filter(owner=request.user)
+        return render(
+            request,
+            "view_document.html",
+            {
+                "user_collections": user_collections,
+                "document": document,
+                "is_editing": True,  # Flag to indicate that this is an edit
+            },
+        )
 
 
 @login_required

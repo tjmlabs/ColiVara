@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<main class="grow">
+        
+    <section class="relative">
+
+        <!-- Stripes illustration -->
+        <div class="absolute left-1/2 transform -translate-x-1/2 top-0 pointer-events-none -z-10" aria-hidden="true">
+            <img class="max-w-none" src="{% static 'images/stripes.svg' %}" width="768" height="432" alt="Stripes" />
+        </div>
+
+        <!-- Circles -->
+        <div class="absolute left-1/2 -translate-x-1/2 -top-32 ml-[580px] pointer-events-none" aria-hidden="true">
+            <div class="w-80 h-80 rounded-full bg-gradient-to-tr from-blue-500 opacity-50 blur-[160px]"></div>
+        </div>
+        <div class="absolute left-1/2 -translate-x-1/2 top-[420px] ml-[380px] pointer-events-none" aria-hidden="true">
+            <div
+                class="w-80 h-80 rounded-full bg-gradient-to-tr from-blue-500 to-gray-900 opacity-50 blur-[160px]">
+            </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+
+            <!-- Main content -->
+            <div class="flex justify-between pt-32 pb-12 md:pt-40 md:pb-20">
+
+                <div class="grow w-full">
+                    <div class="ml-auto">
+                        <h1 class="text-3xl font-bold mb-3">Documents Portal</h1>
+                    </div>
+                    <p class="text-base leading-normal">Your Documents</p>
+                    
+                    <!-- Form to delete selected documents -->
+                    <form method="POST" action="{% url 'documents_portal' %}">
+                        {% csrf_token %}
+                        
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr>
+                                    <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <!-- Checkbox to select all documents -->
+                                        <input type="checkbox" id="select-all" class="mr-2">
+                                    </th>
+                                    <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                    <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Collection Name</th>
+                                    <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for document in user_documents %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <input type="checkbox" name="documents" value="{{ document.id }}" class="document-checkbox">
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <!-- Make the document name a link to the edit view -->
+                                            <a href="{% url 'edit_document' document.id %}" class="text-blue-600 hover:text-blue-800">{{ document.name }}</a>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ document.collection.name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ document.created_at }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                
+                        <!-- Pagination controls -->
+                        <div class="mt-4">
+                            <div class="inline-flex mt-2">
+                                {% if user_documents.has_previous %}
+                                    <a href="?page={{ user_documents.previous_page_number }}" class="btn-sm py-1.5 rounded-lg !text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full mx-1">Previous</a>
+                                {% endif %}
+                                {% if user_documents.has_next %}
+                                    <a href="?page={{ user_documents.next_page_number }}" class="btn-sm py-1.5 rounded-lg !text-white bg-gradient-to-t from-blue-600 to-blue-500 bg-[length:100%_100%] hover:bg-[length:100%_150%] bg-[bottom] shadow w-full mx-1">Next</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                
+                        <!-- Delete Selected Button -->
+                        <div class="mt-6">
+                            <button type="submit" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Delete Selected
+                            </button>
+                        </div>
+                    </form>
+                
+                    <!-- Create Document Button -->
+                    <div class="mt-6">
+                        <a href="{% url 'create_document' %}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Create Document
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock content %}
+{% block extra_scripts %}
+<script>
+    document.getElementById("select-all").addEventListener("change", function() {
+        const checkboxes = document.querySelectorAll(".document-checkbox");
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+    });
+</script>
+{% endblock extra_scripts %}

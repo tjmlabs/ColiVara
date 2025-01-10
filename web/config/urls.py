@@ -1,5 +1,7 @@
 # protect the admin login page
 from allauth.account.decorators import secure_admin_login
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from ninja import NinjaAPI
@@ -23,7 +25,7 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     path("", include("frontend.urls")),
     path("v1/", api.urls),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
 admin.autodiscover()

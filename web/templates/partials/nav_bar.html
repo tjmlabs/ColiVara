@@ -37,6 +37,10 @@
                             <a class="text-gray-600 hover:text-gray-900 px-5 py-2 flex items-center transition duration-150 ease-in-out"
                                href="{% url 'edit_account' %}">My Account</a>
                         </li>
+                        <li>
+                            <a class="text-gray-600 hover:text-gray-900 px-5 py-2 flex items-center transition duration-150 ease-in-out"
+                               href="{% url 'documents_portal' %}">Documents</a>
+                        </li>
                     {% else %}
                         <li class="px-3 py-1">
                             {% url 'home'  as home_url %}
