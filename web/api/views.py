@@ -8,7 +8,7 @@ from urllib.parse import urlparse
 
 import aiohttp
 from accounts.models import CustomUser
-from asgiref.sync import sync_to_async
+from asgiref.sync import async_to_sync, sync_to_async
 from django.conf import settings
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.mail import EmailMessage
@@ -22,7 +22,7 @@ from ninja.security import HttpBearer
 from pgvector.utils import HalfVector
 from pydantic import Field, model_validator
 from svix.api import (ApplicationIn, EndpointIn, EndpointUpdate, MessageIn,
-                      SvixAsync)
+                      Svix, SvixAsync)
 from typing_extensions import Self
 
 from .models import Collection, Document, MaxSim, Page
@@ -393,17 +393,168 @@ class DocumentInPatch(Schema):
         return self
 
 
-async def process_upsert_document(
-    request: Request, payload: DocumentIn
+def process_upsert_document_sync(
+    user: CustomUser, payload: DocumentIn
 ) -> Tuple[int, DocumentOut] | Tuple[int, GenericError]:
-    collection, _ = await Collection.objects.aget_or_create(
-        name=payload.collection_name, owner=request.auth
+    # Note: Any changes to this method need to be applied to the async version process_upsert_document
+    collection, _ = Collection.objects.get_or_create(
+        name=payload.collection_name, owner=user
     )
     try:
-        available_credits = await sync_to_async(request.auth.get_available_credits)()
+        available_credits = user.get_available_credits()
         logger.info(f"Available credits: {available_credits}")
 
-        if available_credits < 1 and request.auth.tier == "free":
+        if available_credits < 1 and user.tier == "free":
+            # raise an exception so it's caught by the error handler
+            error_message = (
+                "You have no available credits. Please upgrade your subscription."
+            )
+            if payload.wait:
+                return 402, GenericError(detail=error_message)
+            else:
+                raise ValueError(error_message)
+
+        # we look up the document by name and collection
+        # if it exists, we update its metadate and embeddings (by calling embed_document)
+        exists = Document.objects.filter(
+            name=payload.name, collection=collection
+        ).exists()
+        if exists:
+            logger.info(
+                f"Document {payload.name} already exists, updating metadata and embeddings."
+            )
+            # we update the metadata and embeddings
+            document = Document.objects.get(name=payload.name, collection=collection)
+            document.metadata = payload.metadata
+            document.url = payload.url or ""
+            # we delete the old pages, since we will re-embed the document
+            document.pages.all().delete()
+        else:
+            logger.info(f"Document {payload.name} does not exist, creating it.")
+            # we create a new document
+            document = Document(
+                name=payload.name,
+                metadata=payload.metadata,
+                collection=collection,
+                url=payload.url or "",
+            )
+        if payload.base64:
+            async_to_sync(document.save_base64_to_s3)(payload.base64)
+
+        # this method will embed the document and save it to the database
+        async_to_sync(document.embed_document)(payload.use_proxy)
+        document = (
+            Document.objects.select_related("collection")
+            .annotate(num_pages=Count("pages"))
+            .get(
+                id=document.id,
+            )
+        )
+        logger.info(f"Document {document.name} processed successfully.")
+
+        if payload.use_proxy:
+            async_to_sync(consume_credits)(
+                user,
+                available_credits,
+                document.num_pages + 10,
+                document.num_pages,
+                True,
+                document.name,
+                "upsert",
+            )  # 10 extra credits for proxy usage
+        else:
+            async_to_sync(consume_credits)(
+                user,
+                available_credits,
+                document.num_pages,
+                document.num_pages,
+                False,
+                document.name,
+                "upsert",
+            )
+
+        if not payload.wait and user.svix_application_id and settings.SVIX_TOKEN != "":
+            # send an event to the webhook
+            svix = Svix(settings.SVIX_TOKEN)
+            svix.message.create(
+                user.svix_application_id,
+                MessageIn(
+                    event_type="upsert.success",
+                    payload={
+                        "type": "upsert.success",
+                        "message": "Document upserted successfully",
+                        "id": document.id,
+                        "name": document.name,
+                        "metadata": document.metadata,
+                        "url": async_to_sync(document.get_url)(),
+                        "num_pages": document.num_pages,
+                        "collection_name": document.collection.name,
+                    },
+                ),
+            )
+
+        return 201, DocumentOut(
+            id=document.id,
+            name=document.name,
+            metadata=document.metadata,
+            url=async_to_sync(document.get_url)(),
+            num_pages=document.num_pages,
+            collection_name=document.collection.name,
+        )
+
+    except Exception as e:
+        logger.error(f"Error processing document: {str(e)}")
+
+        if not payload.wait and user.svix_application_id and settings.SVIX_TOKEN != "":
+            # send an event to the webhook
+            svix = Svix(settings.SVIX_TOKEN)
+            svix.message.create(
+                user.svix_application_id,
+                MessageIn(
+                    event_type="upsert.fail",
+                    payload={
+                        "type": "upsert.fail",
+                        "message": "There was an error processing your document",
+                        "name": payload.name,
+                        "metadata": payload.metadata,
+                        "collection_name": payload.collection_name,
+                        "error": str(e),
+                    },
+                ),
+            )
+        elif (
+            not payload.wait
+        ):  # only send an email in the async case and if there's no webhook
+            user_email = user.email
+            admin_email = settings.ADMINS[0][1]
+            from_email = settings.DEFAULT_FROM_EMAIL
+
+            to = [user_email]
+            email = EmailMessage(
+                subject="Document Upsertion Failed",
+                body=f"There was an error processing your document: {str(e)}",
+                to=to,
+                bcc=[admin_email],
+                from_email=from_email,
+            )
+            email.content_subtype = "html"
+            email.send()
+
+        return 400, GenericError(detail=str(e))
+
+
+async def process_upsert_document(
+    user: CustomUser, payload: DocumentIn
+) -> Tuple[int, DocumentOut] | Tuple[int, GenericError]:
+    collection, _ = await Collection.objects.aget_or_create(
+        name=payload.collection_name, owner=user
+    )
+    # Note: Any changes to this method need to be applied to the synchronous version process_upsert_document_sync
+    try:
+        available_credits = await sync_to_async(user.get_available_credits)()
+        logger.info(f"Available credits: {available_credits}")
+
+        if available_credits < 1 and user.tier == "free":
             # raise an exception so it's caught by the error handler
             error_message = (
                 "You have no available credits. Please upgrade your subscription."
@@ -455,7 +606,7 @@ async def process_upsert_document(
 
         if payload.use_proxy:
             await consume_credits(
-                request,
+                user,
                 available_credits,
                 document.num_pages + 10,
                 document.num_pages,
@@ -465,7 +616,7 @@ async def process_upsert_document(
             )  # 10 extra credits for proxy usage
         else:
             await consume_credits(
-                request,
+                user,
                 available_credits,
                 document.num_pages,
                 document.num_pages,
@@ -474,15 +625,11 @@ async def process_upsert_document(
                 "upsert",
             )
 
-        if (
-            not payload.wait
-            and request.auth.svix_application_id
-            and settings.SVIX_TOKEN != ""
-        ):
+        if not payload.wait and user.svix_application_id and settings.SVIX_TOKEN != "":
             # send an event to the webhook
             svix = SvixAsync(settings.SVIX_TOKEN)
             await svix.message.create(
-                request.auth.svix_application_id,
+                user.svix_application_id,
                 MessageIn(
                     event_type="upsert.success",
                     payload={
@@ -510,15 +657,11 @@ async def process_upsert_document(
     except Exception as e:
         logger.error(f"Error processing document: {str(e)}")
 
-        if (
-            not payload.wait
-            and request.auth.svix_application_id
-            and settings.SVIX_TOKEN != ""
-        ):
+        if not payload.wait and user.svix_application_id and settings.SVIX_TOKEN != "":
             # send an event to the webhook
             svix = SvixAsync(settings.SVIX_TOKEN)
             await svix.message.create(
-                request.auth.svix_application_id,
+                user.svix_application_id,
                 MessageIn(
                     event_type="upsert.fail",
                     payload={
@@ -534,7 +677,7 @@ async def process_upsert_document(
         elif (
             not payload.wait
         ):  # only send an email in the async case and if there's no webhook
-            user_email = request.auth.email
+            user_email = user.email
             admin_email = settings.ADMINS[0][1]
             from_email = settings.DEFAULT_FROM_EMAIL
 
@@ -601,10 +744,10 @@ async def upsert_document(
         )
 
     if payload.wait:
-        return await process_upsert_document(request, payload)
+        return await process_upsert_document(request.auth, payload)
     else:
         # Schedule the background task
-        asyncio.create_task(process_upsert_document(request, payload))
+        asyncio.create_task(process_upsert_document(request.auth, payload))
         return 202, GenericMessage(
             detail="Document is being processed in the background."
         )
@@ -794,6 +937,7 @@ async def partial_update_document(
     Raises:
         HTTPException: If the document is not found or the user is not authorized to update it.
     """
+    # Note: Any changes to this method need to be applied to the synchronous version partial_update_document_sync
     collection_name = payload.collection_name
     try:
         query = Document.objects.select_related("collection")
@@ -854,7 +998,7 @@ async def partial_update_document(
     if record_usage:
         if payload.use_proxy:
             await consume_credits(
-                request,
+                request.auth,
                 available_credits,
                 new_document.num_pages + 10,
                 new_document.num_pages,
@@ -864,7 +1008,7 @@ async def partial_update_document(
             )  # 10 extra credits for proxy usage
         else:
             await consume_credits(
-                request,
+                request.auth,
                 available_credits,
                 new_document.num_pages,
                 new_document.num_pages,
@@ -877,6 +1021,77 @@ async def partial_update_document(
         name=new_document.name,
         metadata=new_document.metadata,
         url=await new_document.get_url(),
+        num_pages=new_document.num_pages,
+        collection_name=new_document.collection.name,
+    )
+
+
+def partial_update_document_sync(
+    user: CustomUser, document: Document, payload: DocumentInPatch
+) -> Tuple[int, DocumentOut] | Tuple[int, GenericError]:
+    # Note: Any changes to this method need to be applied to the async version partial_update_document
+    available_credits = user.get_available_credits()
+
+    if available_credits < 1 and user.tier == "free":
+        return 402, GenericError(
+            detail="You have no available credits. Please upgrade your subscription."
+        )
+
+    if payload.url and payload.url != document.url:
+        document.url = payload.url
+        document.metadata = payload.metadata or document.metadata
+        document.name = payload.name or document.name
+        # we want to delete the old pages, since we will re-embed the document
+        document.pages.all().delete()
+        async_to_sync(document.embed_document)(payload.use_proxy)
+        record_usage = True
+
+    elif payload.base64:
+        document.metadata = payload.metadata or document.metadata
+        document.name = payload.name or document.name
+        async_to_sync(document.save_base64_to_s3)(payload.base64)
+        document.pages.all().delete()
+        async_to_sync(document.embed_document)(payload.use_proxy)
+        record_usage = True
+
+    else:
+        document.name = payload.name or document.name
+        document.metadata = payload.metadata or document.metadata
+        document.save()
+        record_usage = False
+
+    new_document = (
+        Document.objects.select_related("collection")
+        .annotate(num_pages=Count("pages"))
+        .get(id=document.id)
+    )
+    logger.info(f"Document {new_document.name} updated successfully.")
+    if record_usage:
+        if payload.use_proxy:
+            async_to_sync(consume_credits)(
+                user,
+                available_credits,
+                new_document.num_pages + 10,
+                new_document.num_pages,
+                True,
+                new_document.name,
+                "patch",
+            )  # 10 extra credits for proxy usage
+        else:
+            async_to_sync(consume_credits)(
+                user,
+                available_credits,
+                new_document.num_pages,
+                new_document.num_pages,
+                False,
+                new_document.name,
+                "patch",
+            )
+    return 200, DocumentOut(
+        id=new_document.id,
+        name=new_document.name,
+        metadata=new_document.metadata,
+        url=async_to_sync(new_document.get_url)(),
         num_pages=new_document.num_pages,
         collection_name=new_document.collection.name,
     )
@@ -1142,7 +1357,7 @@ async def search(
         async for row in results
     ]
 
-    await consume_credits(request, available_credits, 1, 1, False, "N/A", "search")
+    await consume_credits(request.auth, available_credits, 1, 1, False, "N/A", "search")
 
     return 200, QueryOut(query=payload.query, results=formatted_results)
 
@@ -1255,7 +1470,7 @@ async def search_image(
         async for row in results
     ]
 
-    await consume_credits(request, available_credits, 1, 1, False, "N/A", "search")
+    await consume_credits(request.auth, available_credits, 1, 1, False, "N/A", "search")
 
     return 200, SearchImageOut(results=formatted_results)
 
@@ -1334,7 +1549,9 @@ async def filter(
 
             documents.append(document_out)
 
-        await consume_credits(request, available_credits, 1, 1, False, "N/A", "filter")
+        await consume_credits(
+            request.auth, available_credits, 1, 1, False, "N/A", "filter"
+        )
         return 200, documents
     else:
         base_query = await filter_collections(payload, request.auth)
@@ -1348,7 +1565,9 @@ async def filter(
             async for col in base_query
         ]
 
-        await consume_credits(request, available_credits, 1, 1, False, "N/A", "filter")
+        await consume_credits(
+            request.auth, available_credits, 1, 1, False, "N/A", "filter"
+        )
         return 200, collections
 
 
@@ -1634,14 +1853,20 @@ async def embeddings(
             output_data["_object"] = output_data.pop("object")
 
         await consume_credits(
-            request, available_credits, num_pages, num_pages, False, "N/A", "embeddings"
+            request.auth,
+            available_credits,
+            num_pages,
+            num_pages,
+            False,
+            "N/A",
+            "embeddings",
         )
 
         return 200, EmbeddingsOut(**output_data)
 
 
 async def consume_credits(
-    request,
+    user,
     available_credits,
     consumed_credits,
     num_pages,
@@ -1653,23 +1878,23 @@ async def consume_credits(
 
     # available credit is a 100 one time grant, so, we keep using this until it runs out, without hitting stripe
     if available_credits >= consumed_credits:
-        await sync_to_async(request.auth.set_available_credits)(
+        await sync_to_async(user.set_available_credits)(
             available_credits - consumed_credits
         )
         logger.info(f"Decreased available credits by {consumed_credits}")
     else:
-        await sync_to_async(request.auth.record_consumed_credits)(
+        await sync_to_async(user.record_consumed_credits)(
             consumed_credits - available_credits
         )
 
         if available_credits != 0:
-            await sync_to_async(request.auth.set_available_credits)(0)
+            await sync_to_async(user.set_available_credits)(0)
         logger.info(
             f"Set available credits to 0 and recorded {consumed_credits - available_credits} consumed credits"
         )
 
     # track credit usage
-    await request.auth.record_credit_usage(
+    await user.record_credit_usage(
         request_type, consumed_credits, num_pages, used_proxy, filename
     )
 

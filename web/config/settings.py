@@ -2,6 +2,7 @@
 
 import logging
 from pathlib import Path
+import os
 
 from environs import Env
 
@@ -372,3 +373,6 @@ SESSION_COOKIE_HTTPONLY = True
 MARKETING_EMAIL_LIST_ID = env("MARKETING_EMAIL_LIST_ID", default="dummy id")
 MARKETING_EMAIL_API_KEY = env("MARKETING_EMAIL_API_KEY", default="dummy key")
 QUOTA_LIMIT_AUTOMATION_ID = env("QUOTA_LIMIT_AUTOMATION_ID", default="dummy id")
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
