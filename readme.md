@@ -32,18 +32,13 @@ npm install colivara-ts
 ```python
 from colivara_py import ColiVara
 
-client = ColiVara(
-    # this is the default and can be omitted
-    api_key=os.environ.get("COLIVARA_API_KEY"),
-    # this is the default and can be omitted
-    base_url="https://api.colivara.com"
-)
+client = ColiVara(api_key="your_api_key")
 
 # Upload a document to the default_collection
 document = client.upsert_document(
     name="sample_document",
     # You can use a file path, base64 encoded file, or a URL
-    url="https://example.com/sample.pdf",
+    document_url="https://example.com/sample.pdf",
     # optional - add metadata
     metadata={"author": "John Doe"},
     # optional - specify a collection
@@ -66,7 +61,7 @@ const document = await client.upsertDocument({
     // optional - specify a collection
     collection_name: 'user_1_collection',
     // You can use a file path, base64 encoded file, or a URL
-    url: 'https://example.com/sample.pdf',
+    document_url: 'https://example.com/sample.pdf',
     // optional - wait for the document to index. Webhooks are also supported.
     wait: true,
     // optional - add metadata
