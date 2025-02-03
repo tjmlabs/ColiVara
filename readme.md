@@ -1,18 +1,15 @@
+<p align="center">
+  <img src="colivara-image.png" alt="ColiVara" width=650px>
+</p>
+
 # ColiVara 
 **State of the Art Retrieval - with a delightful developer experience**
 
-[![codecov](https://codecov.io/gh/tjmlabs/ColiVara/branch/main/graph/badge.svg)](https://codecov.io/gh/tjmlabs/ColiVara) [![Tests](https://github.com/tjmlabs/ColiVara/actions/workflows/test.yml/badge.svg)](https://github.com/tjmlabs/Colivara/actions/workflows/test.yml) 
-
-[![Discord](https://dcbadge.limes.pink/api/server/https://discord.gg/DtGRxWuj8y)](https://discord.gg/DtGRxWuj8y)
+[![codecov](https://codecov.io/gh/tjmlabs/ColiVara/branch/main/graph/badge.svg)](https://codecov.io/gh/tjmlabs/ColiVara) [![Tests](https://github.com/tjmlabs/ColiVara/actions/workflows/test.yml/badge.svg)](https://github.com/tjmlabs/Colivara/actions/workflows/test.yml)
 
 
-Colivara is a suite of services that allows you to store, search, and retrieve documents based on their **_visual_** embedding. ColiVara has state of the art retrieval performance on both text and visual documents, offering superior multimodal understanding and control. 
 
-It is a web-first implementation of the **ColPali** paper using ColQwen2 as the LLM model. It works exactly like RAG from the end-user standpoint - but using vision models instead of chunking and text-processing for documents. 
-
-**No OCR, no text extraction, no broken tables, or missing images. What you see, is what you get.**
-
-### Cloud Quickstart:
+### Quickstart:
 
 1. Get a free API Key from the [ColiVara Website](https://colivara.com).
 
@@ -21,31 +18,30 @@ It is a web-first implementation of the **ColPali** paper using ColQwen2 as the 
 ```bash
 pip install colivara-py
 ```
-or in Typescript
+or
 
 ```bash
 npm install colivara-ts
 ```
 
-3. Index a document. Colivara accepts a file url, or base64 encoded file, or a file path. We support over 100 file formats including PDF, DOCX, PPTX, and more. We will also automatically take a screenshot of URLs (webpages) and index them.
+3. Index a document (a file url, base64 encoded file, or path). It supports over 100 file formats including PDF, DOCX, PPTX, and more.
 
 ```python
 from colivara_py import ColiVara
 
-client = ColiVara(api_key="your_api_key")
+client = ColiVara(api_key=os.environ.get("COLIVARA_API_KEY"), # default and can be omitted
+                  base_url="https://api.colivara.com"         # default and can be omitted
+                  )
 
 # Upload a document to the default_collection
 document = client.upsert_document(
-    name="sample_document",
-    # You can use a file path, base64 encoded file, or a URL
-    document_url="https://example.com/sample.pdf",
-    # optional - add metadata
-    metadata={"author": "John Doe"},
-    # optional - specify a collection
-    collection_name="user_1_collection", 
-    # optional - wait for the document to index. Webhooks are also supported.
-    wait=True
+                  name="sample_document",       
+                  document_url="https://example.com/sample.pdf",   # You can use a file path, base64 encoded file, or a URL
+                  metadata={"author": "John Doe"},        # optional - add metadata
+                  collection_name="user_1_collection",    # optional - specify a collection
+                  wait=True                               # optional - wait for indexing (supports Webhooks)
 )
+
 ```
 or
 
@@ -292,6 +288,18 @@ docker-compose exec web pytest
 ```bash
 docker-compose exec web mypy .
 ```
+
+## Support
+For support, join our Discord community where you can:
+- Get help with setup and configuration
+- Report bugs and request features  
+- Connect with other ColiVara users
+- Stay updated on new releases and announcements
+
+Click the badge below to join:
+
+[![Discord](https://dcbadge.limes.pink/api/server/https://discord.gg/DtGRxWuj8y)](https://discord.gg/DtGRxWuj8y)
+
 
 ## License
 
