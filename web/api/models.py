@@ -20,8 +20,7 @@ from django.db.models import FloatField, Func, JSONField, Q
 from django_stubs_ext.db.models import TypedModelMeta
 from pdf2image import convert_from_bytes
 from pgvector.django import HalfVectorField
-from tenacity import (retry, retry_if_exception_type, stop_after_attempt,
-                      wait_fixed)
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_fixed
 
 logger = logging.getLogger(__name__)
 
@@ -257,9 +256,7 @@ class Document(models.Model):
                     raise ValidationError(
                         f"Failed to get embeddings from the embeddings service. Repsonse: {out}"
                     )
-                logger.info(
-                    f"Got embeddings for batch of {len(images)} images. delayTime: {out['delayTime']}, executionTime: {out['executionTime']}"
-                )
+                logger.info(f"Got embeddings for batch of {len(images)} images.")
             return out["output"]["data"]
 
         base64_images = await self._prep_document(use_proxy=use_proxy)
