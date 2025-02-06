@@ -272,7 +272,8 @@ docker-compose exec web python manage.py createsuperuser
 # get the token from the superuser creation
 docker-compose exec web python manage.py shell
 from accounts.models import CustomUser
-user = CustomUser.objects.first().token # save this token somewhere
+user = CustomUser.objects.first().token 
+print(user) # save this token somewhere (use it for authorization)
 ```
 
 4. Application will be running at http://localhost:8001 and the swagger documentation at http://localhost:8001/v1/docs
