@@ -282,6 +282,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
 AWS_S3_ACCESS_KEY_ID = env("AWS_S3_ACCESS_KEY_ID", default="dummy_key")
 AWS_S3_SECRET_ACCESS_KEY = env("AWS_S3_SECRET_ACCESS_KEY", default="dummy_key")
 AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", default="dummy_bucket")
+AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", default="us-east-1")
 
 # Svix
 SVIX_TOKEN = env("SVIX_TOKEN", default="")
@@ -307,7 +308,7 @@ STORAGES = {
         "BACKEND": "storages.backends.s3.S3Storage",
         "OPTIONS": {
             "bucket_name": AWS_STORAGE_BUCKET_NAME,
-            "region_name": "us-east-1",  # e.g., 'us-west-1'
+            "region_name": AWS_S3_REGION_NAME # "us-east-1",  # e.g., 'us-west-1'
             "default_acl": None,  # Makes files private by default
             "querystring_auth": True,  # Requires signed URLs for access
             "querystring_expire": 3600,  # Expiry time for signed URLs (1 hour)
