@@ -1,0 +1,24 @@
+# tjmlabs shared gitleaks config.
+# Extends the built-in ruleset (100+ detectors) and adds an allowlist so the
+# legitimate example/fixture env files in our templates don't trip the gate.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "tjmlabs allowlisted example/fixture files and paths"
+paths = [
+  '''(^|/)\.env\.example$''',
+  '''(^|/)\.env\.test$''',
+  '''(^|/)\.env\.sample$''',
+  '''(^|/)tests?/test\.env$''',
+  '''(^|/)tests?/fixtures/''',
+  '''(^|/)README(\.md)?$''',
+  '''(^|/)docs/''',
+]
+
+# Ignore obvious placeholder values so example files with dummy keys stay quiet.
+regexTarget = "match"
+regexes = [
+  '''(?i)(your[-_]?api[-_]?key|changeme|placeholder|xxxx+|example|dummy|<[^>]+>)''',
+]
