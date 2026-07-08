@@ -7,14 +7,16 @@ useDefault = true
 
 [allowlist]
 description = "tjmlabs allowlisted example/fixture files and paths"
+# NOTE: docs/ and README are deliberately NOT allowlisted. A real key pasted into
+# a readme is a common leak path, so we keep scanning them and rely on the
+# placeholder regex below to suppress obvious examples. If a legit example still
+# trips the gate, add a '# gitleaks:allow' comment on that line.
 paths = [
   '''(^|/)\.env\.example$''',
   '''(^|/)\.env\.test$''',
   '''(^|/)\.env\.sample$''',
   '''(^|/)tests?/test\.env$''',
   '''(^|/)tests?/fixtures/''',
-  '''(^|/)README(\.md)?$''',
-  '''(^|/)docs/''',
 ]
 
 # Ignore obvious placeholder values so example files with dummy keys stay quiet.
